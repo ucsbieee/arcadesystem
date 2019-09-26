@@ -1,0 +1,148 @@
+<!DOCTYPE HTML>
+<!--
+	Massively by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Generic Page - Massively by HTML5 UP</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Header -->
+				<header id="header">
+					<a href="index.html" class="logo">ARCADE SYSTEM PROJECT</a>
+				</header>
+
+				<!-- Nav -->
+				<nav id="nav">
+					<ul class="links">
+						<li class="active"><a href="index.html">Project homepage</a></li>
+						<li><a href="lessons.html">Lessons</a></li>
+						<li><a href="documentation.html">Documentation</a></li>
+					</ul>
+				</nav>
+
+				<!-- Main -->
+					<div id="main">
+
+						<!-- Post -->
+							<section class="post">
+								<header class="major">
+									<span class="date">September 25, 2019</span>
+									<h1>Project Lessons</h1>
+								</header>
+								<p><b>Introduction:</b> Welcome to the lessons page of the Virtual Arcade System Software Project! This poject
+										is a great opportunity to get started with object oriented programming in C++ regardless of your programming experience. If you are a beginner, don't worry! These lessons 
+										will guide you through every step of building this project. Now let's get started!</p>
+										<p><b><i>Note: This project does not assume any prior programming experience. However, this is not
+											an easy project and will require you to spend time reading through these lessons if you have 
+											little to no programming experience.</i></b> 
+										</br><hr><h2>Lesson 0: Environment setup (completion time: 20 minutes)</h2> 
+										<b>Overview:</b> Before we do anything, we need to set up an environment in which we can program in. This step is very important,
+										so please read and follow every instruction carefully. This setup can be very frustrating if you 
+										miss a step or something goes wrong so please be patient and email me with any questions. </p>
+										
+										
+										1. No matter what language you use, when building a software project you need an environment where you can write code. For this project
+								we will be using Visual Studio Code which is a very flexible code editor with tools and extensions that will help us build our project. Follow <a href="https://code.visualstudio.com/download" target="_blank">this link</a>
+							and download the according version (Windows, Mac, or Linux). Follow through the steps in the installation wizard and leave the default settings unless
+							you want to configure it in a certain way (adding a desktop shortcut, downloading it in a certain directory, etc).
+
+						<br></br>After installing Visual Studio Code we need to configure it so that we can develop in C++. Open it up if you haven't already and click the extensions icon (under the debuf icon) in the left side bar. 
+						Search for C++,click the first extension, and install it. This extension helps us write C++ code but does not come with a C++ compiler which we need to be able to run our code.
+						 A compiler is a program that takes our C++ code and translates it into lower level code that is used to make an executable program. Setting up  Visual Studio Code with a C++
+						compiler will be different based on your OS (Windows, Mac, Linux) so follow the steps based on what computer you have.
+					</p>
+					<h3>Windows</h3>
+					<p>Unfortunately Windows does not come with a C++ compiler so we will need to download some extra tools. We will be downloading MinGW which comes with
+						tools we need including a compiler, debugger, and a make utility. Download it at <a href="https://sourceforge.net/projects/mingw-w64/" target="_blank">this link</a> and follow the steps
+						in the installation wizard. Now we need to add the bin folder to the path so that we can access the utilities from anywhere. Now that we have the tools we need to set them up with
+						Visual Studio Code which can be done with a configuration file. Search C/C++ Edit configurations and edit as follows. Now that the compiler is set up
+						we can test the following sample program. Open a new file and paste this. Now open the terminal and type this and if it outputs correctly then we have C++ working.
+					<br></br> The next step is to set up the SDL2 library. This librar provides us with many functions that we will use to do things like creating windows, display graphics, capture user input, and much more which 
+					would otherwise be very difficult to do from scratch. To set up this library we need files... I have already packaged all these to make the process simple in a repository online. To access This
+					we need a tool called git. Git is a version control tool which means ... We can store code remotely and locally. We are going to get the remote code and put it locally. It has all the stuff we need.
+					</p>
+					<h3>Mac</h3>
+					<h3>Linux</h3>
+								
+							</section>
+
+					</div>
+
+				<!-- Footer -->
+					<footer id="footer">
+						<section>
+							<form method="post" action="#">
+								<div class="fields">
+									<div class="field">
+										<label for="name">Name</label>
+										<input type="text" name="name" id="name" />
+									</div>
+									<div class="field">
+										<label for="email">Email</label>
+										<input type="text" name="email" id="email" />
+									</div>
+									<div class="field">
+										<label for="message">Message</label>
+										<textarea name="message" id="message" rows="3"></textarea>
+									</div>
+								</div>
+								<ul class="actions">
+									<li><input type="submit" value="Send Message" /></li>
+								</ul>
+							</form>
+						</section>
+						<section class="split contact">
+							<section class="alt">
+								<h3>Address</h3>
+								<p>1234 Somewhere Road #87257<br />
+								Nashville, TN 00000-0000</p>
+							</section>
+							<section>
+								<h3>Phone</h3>
+								<p><a href="#">(000) 000-0000</a></p>
+							</section>
+							<section>
+								<h3>Email</h3>
+								<p><a href="#">info@untitled.tld</a></p>
+							</section>
+							<section>
+								<h3>Social</h3>
+								<ul class="icons alt">
+									<li><a href="#" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
+									<li><a href="#" class="icon brands alt fa-facebook-f"><span class="label">Facebook</span></a></li>
+									<li><a href="#" class="icon brands alt fa-instagram"><span class="label">Instagram</span></a></li>
+									<li><a href="#" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+								</ul>
+							</section>
+						</section>
+					</footer>
+
+				<!-- Copyright -->
+					<div id="copyright">
+						<ul><li>&copy; Untitled</li><li>Design: <a href="https://html5up.net">HTML5 UP</a></li></ul>
+					</div>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/jquery.scrollex.min.js"></script>
+			<script src="assets/js/jquery.scrolly.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
