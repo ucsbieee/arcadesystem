@@ -52,21 +52,57 @@
 										miss a step or something goes wrong so please be patient and email me with any questions. </p>
 										
 										
-										1. No matter what language you use, when building a software project you need an environment where you can write code. For this project
-								we will be using Visual Studio Code which is a very flexible code editor with tools and extensions that will help us build our project. Follow <a href="https://code.visualstudio.com/download" target="_blank">this link</a>
-							and download the according version (Windows, Mac, or Linux). Follow through the steps in the installation wizard and leave the default settings unless
-							you want to configure it in a certain way (adding a desktop shortcut, downloading it in a certain directory, etc).
+										<h4>1. Downloading a code editor</h4> No matter what language you use, when building a software project you need an environment where you can write code. For this project
+								we will be using Visual Studio Code which is a free code editor with tools and extensions that will help us build our project. Follow <a href="https://code.visualstudio.com/download" target="_blank">this link</a>
+							and download the according version (Windows or Mac).<br></br>
+							
+							<ul>
+								<li>On <b>Windows</b>, an installation setup wizard should pop up (if not it will appear as something similar to "VSCodeUserSetup-x64-1.38.1.exe" in your downloads folder, double click it). Just hit next through the setup
+									and leave the default settings unless you want to configure the installation in a certain way.</li>
+								<li>On <b>Mac</b> it should show up in your downloads. Move the Visual Studio Code .app into 
+									your applications folder and then open up the app.</li>
+							  </ul>
 
-						<br></br>After installing Visual Studio Code we need to configure it so that we can develop in C++. Open it up if you haven't already and click the extensions icon (under the debuf icon) in the left side bar. 
-						Search for C++,click the first extension, and install it. This extension helps us write C++ code but does not come with a C++ compiler which we need to be able to run our code.
-						 A compiler is a program that takes our C++ code and translates it into lower level code that is used to make an executable program. Setting up  Visual Studio Code with a C++
-						compiler will be different based on your OS (Windows, Mac, Linux) so follow the steps based on what computer you have.
+							<h4>2. Configuring Visual Studio Code for C++</h4>After installing Visual Studio Code we need to configure it so that we can develop in C++. Open it up if you haven't already and click the extensions icon (under the debug icon) in the left side bar. 
+						Search for C++, click the first extension, and install it as shown in this image. <img src="images/extensions_img.jpg" alt="" style="float: left; width: 100%; margin-right: 1%;">This extension helps us write C++ code but does not come with a C++ compiler which we need to be able to run our code.
+						 A compiler is a program that takes our C++ code and translates it into lower level code which we will use to make an executable program. Setting up  Visual Studio Code with a C++
+						compiler will be different based on your OS so follow the steps based on what computer you are using.
 					</p>
 					<h3>Windows</h3>
-					<p>Unfortunately Windows does not come with a C++ compiler so we will need to download some extra tools. We will be downloading MinGW which comes with
-						tools we need including a compiler, debugger, and a make utility. Download it at <a href="https://sourceforge.net/projects/mingw-w64/" target="_blank">this link</a> and follow the steps
-						in the installation wizard. Now we need to add the bin folder to the path so that we can access the utilities from anywhere. Now that we have the tools we need to set them up with
-						Visual Studio Code which can be done with a configuration file. Search C/C++ Edit configurations and edit as follows. Now that the compiler is set up
+					<p><img src="images/mingw_img.jpg" alt="" style="float: right; width: 40%; margin-left: 1%">
+						<ol>Unfortunately Windows does not come with a C++ compiler so we will need to download some extra tools. We will be downloading MinGW which comes with a compiler, debugger, and a make utility, which we need to build this project. 
+						<ol>
+							</br><li>Download it at <a href="https://sourceforge.net/projects/mingw-w64/" target="_blank">this link</a>. After it downloads double click on the installer which should say something like "mingw-w64-install.exe" (check your downloads folder if it doesn't pop up and double click it like before). 
+							</li> </br>
+							<li>Click next through the installer setup and when you get to the "Installation folder" section as shown to the right, copy and paste the path of the destination folder into notepad or somewhere because we will need it. Continue through the rest of the setup and wait for it to install.
+								</li>
+							</br><li>Next we need to add the path to the "bin" folder for MinGW to our PATH so that we can access the tools from any directory. Follow these steps which reference the images below. 
+								<ul>
+									<li>
+										search environment in the windows search bar and select "Edit the system environment variables"
+									</li>
+									<li>
+											Click the "Environment Variables" button
+									</li>
+									<li>
+												Then click the "path" row under "System Variables" and click the "edit" button
+									</li>
+									<li>
+											Finally click the "New" button and paste the installation directory that we copied from before. IMPORTANT: make sure that you add "\mingw32\bin" at the end after you paste. Click "ok" on all the open tabs.
+								    </li>
+								</ul>
+							</li>
+						</ol>
+						<div class="row">
+								<div class="column">
+								  <img src="images/env1.jpg" alt="" style="float: left; width: 50%; margin-right: 1%;margin-bottom: 3%;">
+								  <img src="images/env2.jpg" alt="" style="float: left; width: 50%; margin-right: 1%;margin-bottom: 3%;">
+								  <img src="images/env3.jpg" alt="" style="float: left; width: 50%; margin-right: 1%;margin-bottom: 3%;">	
+								  <img src="images/env4.jpg" alt="" style="float: left; width: 50%; margin-right: 1%;margin-bottom: 3%;">								</div>
+
+								<div class="column">
+							  </div>
+						 <br></br>  Search C/C++ Edit configurations and edit as follows. Now that the compiler is set up
 						we can test the following sample program. Open a new file and paste this. Now open the terminal and type this and if it outputs correctly then we have C++ working.
 					<br></br> The next step is to set up the SDL2 library. This librar provides us with many functions that we will use to do things like creating windows, display graphics, capture user input, and much more which 
 					would otherwise be very difficult to do from scratch. To set up this library we need files... I have already packaged all these to make the process simple in a repository online. To access This
