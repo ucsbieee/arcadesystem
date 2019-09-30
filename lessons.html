@@ -44,9 +44,9 @@
 										is a great opportunity to get started with object oriented programming in C++ regardless of your programming experience. If you are a beginner, don't worry! These lessons 
 										will guide you through every step of building this project. Now let's get started!</p>
 										<p><b><i>Note: This project does not assume any prior programming experience. However, this is not
-											an easy project and will require you to spend time reading through these lessons if you have 
+											an easy project and may require you to spend time reading through these lessons and other resources I have linked if you have 
 											little to no programming experience.</i></b> 
-										</br><hr><h2>Lesson 0: Environment setup (completion time: 20 minutes)</h2> 
+										</br><hr><h2>Lesson 0: Environment setup (completion time: 30 minutes)</h2> 
 										<b>Overview:</b> Before we do anything, we need to set up an environment in which we can program in. This step is very important,
 										so please read and follow every instruction carefully. This setup can be very frustrating if you 
 										miss a step or something goes wrong so please be patient and email me with any questions. </p>
@@ -102,8 +102,7 @@
 
 								<div class="column">
 							  </div>
-						 <br></br>  Search C/C++ Edit configurations and edit as follows. Now that the compiler is set up
-						we can test the following sample program. Open a new file and paste this. Now open the terminal and type this and if it outputs correctly then we have C++ working.
+						 <br></br> Now we need to configure Visual Studio Code with the C++ compiler g++ that comes with MinGW by editing a properties file. To do this we need to go to the Command pallete by clicking View -> Command Pallette or CTRL + SHIFT + P. In the search bar type C++ and click the "Edit Configurations (UI)" option. A new tab will open called C/C++ Configurations. Scroll down to the "Compiler Path" section and click on the drop down menu. g++ should show up as an option, click it and make sure to put double quotes around the path. Under intelliSense mode choose "msvc-x64". Our environment is finally setup for C++ so let's check it to make sure it works. Go to File -> New File and type test.cpp. Copy and paste the following code. Then in te terminal type this command and press enter. Finally run it by doing this command. If you get this output then C++ is working correctly with Visual Studio Code. If not, check to make sure all the steps are correct. If you get funky errors, send me an email or come to my office hour. Otherwise, let's move on to the next step.
 					<br></br> The next step is to set up the SDL2 library. This librar provides us with many functions that we will use to do things like creating windows, display graphics, capture user input, and much more which 
 					would otherwise be very difficult to do from scratch. To set up this library we need files... I have already packaged all these to make the process simple in a repository online. To access This
 					we need a tool called git. Git is a version control tool which means ... We can store code remotely and locally. We are going to get the remote code and put it locally. It has all the stuff we need.
