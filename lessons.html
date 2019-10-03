@@ -12,6 +12,7 @@
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 	</head>
+
 	<body class="is-preload">
 
 		<!-- Wrapper -->
@@ -42,42 +43,58 @@
 								</header>
 								<p><b>Introduction:</b> Welcome to the lessons page of the Virtual Arcade System Software Project! This poject
 										is a great opportunity to get started with object oriented programming in C++ regardless of your programming experience. If you are a beginner, don't worry! These lessons 
-										will guide you through every step of building this project. Now let's get started!</p>
-										<p><b><i>Note: This project does not assume any prior programming experience. However, this is not
+										will guide you through every step of building this project. Now let's get started!
+								</p>
+										<p>
+											<b><i>Note: This project does not assume any prior programming experience. However, this is not
 											an easy project and may require you to spend time reading through these lessons and other resources I have linked if you have 
 											little to no programming experience.</i></b> 
-										</br><hr><h2>Lesson 0: Environment setup (completion time: 30 minutes)</h2> 
-										<b>Overview:</b> Before we do anything, we need to set up an environment in which we can program in. This step is very important,
-										so please read and follow every instruction carefully. This setup can be very frustrating if you 
-										miss a step or something goes wrong so please be patient and email me with any questions. </p>
+											</br><hr><h2>Lesson 0: Environment setup (completion time: 30 minutes)</h2> 
+											<i>For terms or concepts that may require additional explanation, I have provided clickable links to simple articles that provide more detail.</i>
+											<br></br>
+											<b>Overview:</b> Before we do anything, we need to set up an environment in which we can program in. This step is very important,
+											so please read and follow every instruction carefully. This setup can be very frustrating if you 
+											miss a step or something goes wrong so please be patient and email me with any questions. 
+										</p>
 										
 										
-										<h4>1. Downloading a code editor</h4> No matter what language you use, when building a software project you need an environment where you can write code. For this project
-								we will be using Visual Studio Code which is a free code editor with tools and extensions that will help us build our project. Follow <a href="https://code.visualstudio.com/download" target="_blank">this link</a>
-							and download the according version (Windows or Mac).<br></br>
+										<h4>1. Downloading a code editor</h4>
+										 No matter what language you use, when building a software project you need an environment where you can write code. For this project
+										 we will be using Visual Studio Code which is a free code editor with tools and extensions that will help us build our project. Follow <a href="https://code.visualstudio.com/download" target="_blank">this link</a>
+										 and download the according version (Windows or Mac).<br></br>
 							
-							<ul>
-								<li>On <b>Windows</b>, an installation setup wizard should pop up (if not it will appear as something similar to "VSCodeUserSetup-x64-1.38.1.exe" in your downloads folder, double click it). Just hit next through the setup
-									and leave the default settings unless you want to configure the installation in a certain way.</li>
-								<li>On <b>Mac</b> it should show up in your downloads. Move the Visual Studio Code .app into 
-									your applications folder and then open up the app.</li>
-							  </ul>
+										<ul>
+											<li>On <b>Windows</b>, an installation setup wizard should pop up (if not it will appear as something similar to "VSCodeUserSetup-x64-1.38.1.exe" in your downloads folder, double click it). Just hit next through the setup
+												and leave the default settings unless you want to configure the installation in a certain way.</li>
+											<li>On <b>Mac</b> it should show up in your downloads. Move the Visual Studio Code .app into 
+												your applications folder and then open up the app.</li>
+										</ul>
 
-							<h4>2. Configuring Visual Studio Code for C++</h4>After installing Visual Studio Code we need to configure it so that we can develop in C++. Open it up if you haven't already and click the extensions icon (under the debug icon) in the left side bar. 
+										<h4>2. Configuring Visual Studio Code for C++</h4>
+							After installing Visual Studio Code we need to configure it so that we can develop in C++. Open it up if you haven't already and click the extensions icon (under the debug icon) in the left side bar. 
 						Search for C++, click the first extension, and install it as shown in this image. <img src="images/extensions_img.jpg" alt="" style="float: left; width: 100%; margin-right: 1%;">This extension helps us write C++ code but does not come with a C++ compiler which we need to be able to run our code.
-						 A compiler is a program that takes our C++ code and translates it into lower level code which we will use to make an executable program. Setting up  Visual Studio Code with a C++
-						compiler will be different based on your OS so follow the steps based on what computer you are using.
-					</p>
-					<h3>Windows</h3>
-					<p><img src="images/mingw_img.jpg" alt="" style="float: right; width: 40%; margin-left: 1%">
-						<ol>Unfortunately Windows does not come with a C++ compiler so we will need to download some extra tools. We will be downloading MinGW which comes with a compiler, debugger, and a make utility, which we need to build this project. 
+						 A compiler is a program that takes our C++ code and translates it into lower level "object code" which we will use to make an executable program. </br><b><i>For a better explanation of a compiler <a href="https://www.coronadoenterprises.com/tutorials/cpp/cpp_ans.html" target="_blank">click here</a></i></b>. </br>Setting up  Visual Studio Code with a C++
+						compiler will be different based on your OS so follow the steps based on your computer.
+						<br></br><h4>3. Setting up Visual Studio Code with a C++ compiler</h4>
+						<center>
+						</br>	<a href="#Windows">Windows</a>
+								&nbsp;|&nbsp;
+								<a href="#Mac">Mac</a>
+						</center><hr>
+						<a name="Windows"></a>	
+				<br>	<h3>Windows</h3> 
+<p><img src="images/mingw_img.jpg" alt="" style="float: right; width: 40%; margin-left: 1%">
+						Unfortunately Windows does not come with a C++ compiler so we will need to download some extra tools. We will be downloading MinGW which comes with a compiler, debugger, and a make utility, which we need to build this project. 
+						
 						<ol>
-							</br><li>Download it at <a href="https://sourceforge.net/projects/mingw-w64/" target="_blank">this link</a>. After it downloads double click on the installer which should say something like "mingw-w64-install.exe" (check your downloads folder if it doesn't pop up and double click it like before). 
+								<h4>Setting up MinGW</h4>
+							<li>Download it at <a href="https://sourceforge.net/projects/mingw-w64/" target="_blank">this link</a>. After it downloads double click on the installer which should say something like "mingw-w64-install.exe" (check your downloads folder if it doesn't pop up and double click it like before). 
 							</li> </br>
-							<li>Click next through the installer setup and when you get to the "Installation folder" section as shown to the right, copy and paste the path of the destination folder into notepad or somewhere because we will need it. Continue through the rest of the setup and wait for it to install.
+							<li>Click next through the installer setup and when you get to the <b>"Installation folder"</b> section as shown to the right, change the path to C:\MinGW. Continue through the rest of the setup and wait for it to install.
 								</li>
-							</br><li>Next we need to add the path to the "bin" folder for MinGW to our PATH so that we can access the tools from any directory. Follow these steps which reference the images below. 
-								<ul>
+							</br><li>Next we need to add the path to the "bin" folder for MinGW to our PATH variable so that we can access the tools from any directory. 
+								<i><br></br><a href="https://john-dugan.com/path-variable-in-windows/" target="_blank"> What is the PATH variable?</a> </br>Note: "path" vs "path variable". "path" typically refers to a location in a file system like "C:\Users\userOne\Documents\file.txt"</i><br></br>Follow these five steps to which each reference the five images below. 
+								<ol>
 									<li>
 										search environment in the windows search bar and select "Edit the system environment variables"
 									</li>
@@ -88,9 +105,10 @@
 												Then click the "path" row under "System Variables" and click the "edit" button
 									</li>
 									<li>
-											Finally click the "New" button and paste the installation directory that we copied from before. IMPORTANT: make sure that you add "\mingw32\bin" at the end after you paste. Click "ok" on all the open tabs.
-								    </li>
-								</ul>
+											Finally click the "New" button and type the installation directory that we had from before. IMPORTANT: make sure that you add "\mingw32\bin" at the end. Then click "ok" on all the open tabs.
+									</li>
+									<li>To test if you configured the PATH variable correctly, open the command prompt (search cmd in the windows search bar) and type "g++". You should get something like: "g++: fatal error: no input files compilation terminated."</li>
+								</ol>
 							</li>
 						</ol>
 						<div class="row">
@@ -98,77 +116,113 @@
 								  <img src="images/env1.jpg" alt="" style="float: left; width: 50%; margin-right: 1%;margin-bottom: 3%;">
 								  <img src="images/env2.jpg" alt="" style="float: left; width: 50%; margin-right: 1%;margin-bottom: 3%;">
 								  <img src="images/env3.jpg" alt="" style="float: left; width: 50%; margin-right: 1%;margin-bottom: 3%;">	
-								  <img src="images/env4.jpg" alt="" style="float: left; width: 50%; margin-right: 1%;margin-bottom: 3%;">								</div>
+								  <img src="images/env4.jpg" alt="" style="float: left; width: 50%; margin-right: 1%;margin-bottom: 3%;">
+								  <img src="images/env5.jpg" alt="" style="float: left; width: 50%; margin-right: 1%;margin-bottom: 3%;">
+								</div>
+						</div>
+						<h4>Setting up Visual Studio Code with g++ (still windows)</h4>
+						  Now we need to configure Visual Studio Code with the C++ compiler g++ that comes with MinGW by editing a properties file. However, first we must create and open a folder where we want these 
+						 configuration settings to take effect.
+						 <ul>
+							 <li>create a new folder on your computer, then in VS Code go to File->Open Folder and open that folder</li>
+							 <li>Now go to the Command pallete by clicking View -> Command Pallette or CTRL + SHIFT + P.</li>
+							 <li>In the search bar type C++ and click the "Edit Configurations (UI)" option. A new tab will open called C/C++ Configurations.</li>
+							 <li>Scroll down to the "Compiler Path" section and type "C:/MinGW/mingw32/bin/g++" in with the quotes.</li>
+							 <li>Under intelliSense mode choose "gcc-x64".</li>
+							 <img src="images/config_img.jpg" alt="" style="float: left; width: 100%; margin-right: 1%;">
+						 </ul>
+						 
+						 <h4>Testing if C++ works with Visual Studio Code on Windows</h4>
+						  Our environment is finally setup for C++ so let's check it to make sure it works.
+						 <ul>
+							 <li>Go to File -> New File. Save with CTRL + S and it will prompt you to name it, save as test.cpp</li>
+							 <li>Copy and paste the following code: 
+<xmp>#include <iostream>
+using namespace std;
 
-								<div class="column">
-							  </div>
-						 <br></br> Now we need to configure Visual Studio Code with the C++ compiler g++ that comes with MinGW by editing a properties file. To do this we need to go to the Command pallete by clicking View -> Command Pallette or CTRL + SHIFT + P. In the search bar type C++ and click the "Edit Configurations (UI)" option. A new tab will open called C/C++ Configurations. Scroll down to the "Compiler Path" section and click on the drop down menu. g++ should show up as an option, click it and make sure to put double quotes around the path. Under intelliSense mode choose "msvc-x64". Our environment is finally setup for C++ so let's check it to make sure it works. Go to File -> New File and type test.cpp. Copy and paste the following code. Then in te terminal type this command and press enter. Finally run it by doing this command. If you get this output then C++ is working correctly with Visual Studio Code. If not, check to make sure all the steps are correct. If you get funky errors, send me an email or come to my office hour. Otherwise, let's move on to the next step.
-					<br></br> The next step is to set up the SDL2 library. This librar provides us with many functions that we will use to do things like creating windows, display graphics, capture user input, and much more which 
-					would otherwise be very difficult to do from scratch. To set up this library we need files... I have already packaged all these to make the process simple in a repository online. To access This
-					we need a tool called git. Git is a version control tool which means ... We can store code remotely and locally. We are going to get the remote code and put it locally. It has all the stuff we need.
-					</p>
-					<h3>Mac</h3>
-					<h3>Linux</h3>
-								
-							</section>
+int main()
+{
+	cout << "If this prints then you have set up C++ correctly!";
+	return 0;
+}
+</xmp></li>
+							 <li>Go to Terminal -> New Terminal, press enter, and type the following commands:
+<xmp>g++ -o test test.cpp
+.\test
+</xmp>
+This image is what it should look like. If you get an error and can't figure it out please email me or come to my office hour.
+<div class="row">
+		<div class="column">
+				<img src="images/test_img.jpg" alt="" style="float: left; width: 100%; margin-right: 1%;">
+		</div>
+</div>
 
-					</div>
+							 </li>
+</ul> 
+<hr>
+</p>
+<a name="Mac"></a>
+<h3>MAC</h3>	
+<p>Fortunately, the setting up C++ to compile on a Mac is much easier than Windows because Mac has an easy way to install "command line developer tools" which will provide us with utilities like g++ (C++ compiler) and Make.
+		<h4>Downloading command line developer tools on Mac</h4>
+		<ol>
+				<li>
+					open the search by using Command + Space. Type in "Terminal" and press enter to open it up
+				</li>
+				<li>
+						In the terminal type "g++" to check if you have it installed already. If not you will get a pop up window to install the "command line developer tools". Make sure to click "install" and NOT "Get Xcode".
+				</li>
+				<li>
+							Now type g++ and make sure you get something like "$ g++ clang: error: no input files"
+				</li>
+			</ol>
+
+			<h4>Configuring Visual Studio Code with g++</h4>
+		<ol>
+				<li>
+					First we need to set up Visual Studio Code to open from the command line. In VS code type CTRL + SHIFT + P to open up the command pallete or go to View -> Command Pallete
+				</li>
+				<li>
+						Now type Shell and select "Shell Command: Install 'code' command in PATH." After it installs close VS code.
+				</li>
+				<li>
+							Now open up the terminal if you closed it and type "mkdir testFolder" to make a new folder. Enter that folder by typing "cd testFolder". Finally type "Code ." to open up this folder in VS Code.
+				</li>
+				<li>
+						Open the command pallette like before and type C++ and select  "Edit Configurations (UI)". A new tab called c_cpp_properties.json will open up. Edit the configurations as follows.
+			</li>
+			</ol>
+</p>
+<p>
+	<h4>3. Managing a new project using Git and linking to the SDL2 library</h4>
+	
+	Now that we have our code editor working with C++ we can start a project. When creating multifile projects
+	or any mid to large size programming project we want to manage them with a version-control system called Git and save our code online using
+	a site called Github.</br><a href="https://betterexplained.com/articles/a-visual-guide-to-version-control/" target="_blank">What is version control?</a>
+
+</br>I have created a repository (basically a directory to store a project) on github with some base code which we will build off of. This base code includes, makefiles and build tasks,
+the SDL2 library, and a small set of classes I created to help create a simple menu system. What we will be doing is copying the base code into a local directory
+on your computer and start from there.
+<ol>
+	<li>
+		first download git if you don't have it already <a href="https://git-scm.com/downloads" target="_blank">from this link</a>
+	</li>
+	<li>
+		next, create an account on github if you don't have one already <a href="https:github.com/" target="_blank">from this link</a>
+	</li>
+
+</ol>
+</p>
 
 				<!-- Footer -->
 					<footer id="footer">
-						<section>
-							<form method="post" action="#">
-								<div class="fields">
-									<div class="field">
-										<label for="name">Name</label>
-										<input type="text" name="name" id="name" />
-									</div>
-									<div class="field">
-										<label for="email">Email</label>
-										<input type="text" name="email" id="email" />
-									</div>
-									<div class="field">
-										<label for="message">Message</label>
-										<textarea name="message" id="message" rows="3"></textarea>
-									</div>
-								</div>
-								<ul class="actions">
-									<li><input type="submit" value="Send Message" /></li>
-								</ul>
-							</form>
-						</section>
-						<section class="split contact">
-							<section class="alt">
-								<h3>Address</h3>
-								<p>1234 Somewhere Road #87257<br />
-								Nashville, TN 00000-0000</p>
-							</section>
-							<section>
-								<h3>Phone</h3>
-								<p><a href="#">(000) 000-0000</a></p>
-							</section>
-							<section>
-								<h3>Email</h3>
-								<p><a href="#">info@untitled.tld</a></p>
-							</section>
-							<section>
-								<h3>Social</h3>
-								<ul class="icons alt">
-									<li><a href="#" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
-									<li><a href="#" class="icon brands alt fa-facebook-f"><span class="label">Facebook</span></a></li>
-									<li><a href="#" class="icon brands alt fa-instagram"><span class="label">Instagram</span></a></li>
-									<li><a href="#" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
-								</ul>
-							</section>
-						</section>
+						
 					</footer>
 
 				<!-- Copyright -->
 					<div id="copyright">
 						<ul><li>&copy; Untitled</li><li>Design: <a href="https://html5up.net">HTML5 UP</a></li></ul>
 					</div>
-
-			</div>
 
 		<!-- Scripts -->
 			<script src="assets/js/jquery.min.js"></script>
