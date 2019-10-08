@@ -43,13 +43,13 @@
 								</header>
 								<p><b>Introduction:</b> Welcome to the lessons page of the Virtual Arcade System Software Project! This poject
 										is a great opportunity to apply object oriented programming in C++. If you are a beginner, don't worry! These lessons 
-										will guide you through every step of building this project. Now let's get started!
+										will help guide you through the process of building this project.
 								</p>
 										<p>
 											<b><i>Note: This project does not assume any prior programming experience. However, this is not
 											an easy project and may require you to spend time reading through these lessons and other resources I have linked if you have 
 											little to no programming experience.</i></b> 
-											</br><hr><h2>Lesson 0: Environment setup (completion time: 30 minutes)</h2> 
+											</br><hr><h2>Lesson 0: Environment setup (completion time: 30 min - 1hr)</h2> 
 											<i>For terms or concepts that may require additional explanation, I have provided clickable links to simple articles that provide more detail.</i>
 											<br></br>
 											<b>Overview:</b> Before we do anything, we need to set up an environment in which we can program in. This step is very important,
@@ -168,14 +168,14 @@ This image is what it should look like. If you get an error and can't figure it 
 </p>
 <a name="Mac"></a>
 <h3>MAC</h3>	
-<p>Fortunately, the setting up C++ to compile on a Mac is much easier than Windows because Mac has an easy way to install "command line developer tools" which will provide us with utilities like g++ (C++ compiler) and Make.
+<p>Fortunately, setting up C++ to compile on a Mac is much easier than Windows because Mac has an easy way to install "command line developer tools" which will provide us with utilities like clang (C++ compiler) and Make.
 		<h4>Downloading command line developer tools on Mac</h4>
 		<ol>
 				<li>
 					open the search by using Command + Space. Type in "Terminal" and press enter to open it up
 				</li>
 				<li>
-						In the terminal type "clang" to check if you have it installed already. If not install it with the command "xcode-select --install".
+						In the terminal install the Command line tools with the command "xcode-select --install" Make sure you only install the tools and NOT xcode.
 				</li>
 				<li>
 						Now type clang and make sure you get something like "$ clang: error: no input files"
@@ -185,7 +185,7 @@ This image is what it should look like. If you get an error and can't figure it 
 			<h4>Configuring Visual Studio Code with g++</h4>
 		<ol>
 				<li>
-					First we need to set up Visual Studio Code to open from the command line. In VS code type CTRL + SHIFT + P to open up the command pallete or go to View -> Command Pallete
+					First we need to set up Visual Studio Code to open from the command line. In VS code use CTRL + SHIFT + P to open up the command pallete or go to View -> Command Pallete
 				</li>
 				<li>
 						Now type Shell and select "Shell Command: Install 'code' command in PATH." After it installs close VS code.
@@ -194,7 +194,8 @@ This image is what it should look like. If you get an error and can't figure it 
 							Now open up the terminal if you closed it and type "mkdir testFolder" to make a new folder. Enter that folder by typing "cd testFolder". Finally type "Code ." to open up this folder in VS Code.
 				</li>
 				<li>
-						Open the command pallette like before and type C++ and select  "Edit Configurations (UI)". A new tab called C/C++ Configurations will open up. In this tab scroll down to "compiler path" and paste "/usr/bin/clang". Also make sure intellisense is "clang-x64".
+						Open the command pallette like before and type C++ and select  "Edit Configurations (UI)". A new tab called C/C++ Configurations will open up. In this tab scroll down to "compiler path" and paste "/usr/bin/clang". Also make sure intellisense is "clang-x64" as shown.
+						<img src="images/macConfig.png" alt="" style="float: left; width: 100%; margin-right: 1%;">
 			</li>
 			<li>C++ is finally configured! Now let's test to make sure it works.</li>
 			</ol>
@@ -217,7 +218,7 @@ int main()
 This image is what it should look like. If you get an error and can't figure it out please email me or come to my office hour.
 <div class="row">
 		<div class="column">
-				<img src="images/test_img.jpg" alt="" style="float: left; width: 100%; margin-right: 1%;">
+				<img src="images/macTest.jpg" alt="" style="float: left; width: 100%; margin-right: 1%;">
 		</div>
 </div>
 </p>
@@ -239,20 +240,20 @@ This image is what it should look like. If you get an error and can't figure it 
 		</li>
 	</ul>  <a href="https://betterexplained.com/articles/a-visual-guide-to-version-control/" target="_blank">What is version control?</a>    <a href="https://blog.devmountain.com/git-vs-github-whats-the-difference/" target="_blank">Git vs GitHub</a>
 
-	<br></br></br>I have created a repository (basically a directory to store a project) on github with some base code which we will build off of. This base code includes, makefiles and build tasks,
+	<br></br></br>I have created a repository (basically a directory to store a project) on github with some base code which we will build off of. This base code includes build tasks,
 the SDL2 library, and a small set of classes I created to help create a simple menu system. What we will be doing is copying the base code into a local directory
-on your computer and start from there.
+on your computer and start from there. <br></br>
 <ol>
 	<li>
-		first download git if you don't have it already <a href="https://git-scm.com/downloads" target="_blank">from this link</a> In the installation 
+		first download git if you don't have it already <a href="https://git-scm.com/downloads" target="_blank">from this link.</a> In the installation 
 		wizard just click next through all the steps and install it.
 	</li>
 	<li>
 		next, create an account on github if you don't have one already <a href="https:github.com/" target="_blank">from this link</a>
 	</li>
-	<li> The next thing we need to do is configure git with our information. Type these commands with your name and email. 
-	</br> git config --global user.name "first last"</br>
-		  git config --global user.email email@website.com
+	<li> The next thing we need to do is configure git with our information. Type these commands into the command prompt (terminal) with your name and email. 
+	</br> git config --global user.name "firstName lastName"</br>
+		  git config --global user.email "email@website.com"
 		
 	</li>
 	<li>
@@ -266,15 +267,43 @@ on your computer and start from there.
 		<li>
 			<b>Mac: </b> "git clone https://github.com/geffencooper/ArcadeSystem_mac.git"
 		</li>
+		
 	</ul> 
 
 	<li>
-		Now type cd ArcadeSystem_windows or cd ArcadeSystem_mac, and then type ls.
-		You should see the following:
+		Now type "cd ArcadeSystem_windows" or "cd ArcadeSystem_mac", and then type "dir" if on Windows and "ls" if on Mac.
+		You should see the following folders: <b>.vscode, GUI_files, SDL_files, source </b>
 	</li>
 	</li>
 
 </ol>
+</p>
+
+<h4>5. Testing to see if SDL2 works</h4>
+<ol>
+	<li>
+		Open up Visual Studio code and go to File->Open Folder and open the according folder, "ArcadeSystem_windows" or "ArcadeSystem_mac"
+	</li>
+	<li>
+		Now use "CTRL (CMND on Mac) + SHIFT + B" to bring up a build task drop down. It should look like the following picture
+		<img src="images/build.jpg" alt="" style="float: left; width: 100%; margin-right: 1%;">
+	</li>
+	<li>
+		select "build all". Then type "CTRL (CMND on Mac) + SHIFT + B" and select "run ArcadeSystem"
+	</li>
+	<li>
+		you should get a blank window that says ArcadeSystem at the top as shown
+		<img src="images/output.jpg" alt="" style="float: left; width: 100%; margin-right: 1%;">
+	</li>
+	<li>
+		That's it!
+	</li>
+</ol>
+<p>
+	<hr>
+	<h4>Congradulations! You finished the environment setup. This is one of the more difficult and frustrating parts of building
+	software projects so don't get discouraged, the rest of the project is much more fun. </h4>
+	
 </p>
 
 				<!-- Footer -->
