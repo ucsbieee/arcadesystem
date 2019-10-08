@@ -42,7 +42,7 @@
 									<h1>Project Lessons</h1>
 								</header>
 								<p><b>Introduction:</b> Welcome to the lessons page of the Virtual Arcade System Software Project! This poject
-										is a great opportunity to get started with object oriented programming in C++ regardless of your programming experience. If you are a beginner, don't worry! These lessons 
+										is a great opportunity to apply object oriented programming in C++. If you are a beginner, don't worry! These lessons 
 										will guide you through every step of building this project. Now let's get started!
 								</p>
 										<p>
@@ -66,13 +66,13 @@
 										<ul>
 											<li>On <b>Windows</b>, an installation setup wizard should pop up (if not it will appear as something similar to "VSCodeUserSetup-x64-1.38.1.exe" in your downloads folder, double click it). Just hit next through the setup
 												and leave the default settings unless you want to configure the installation in a certain way.</li>
-											<li>On <b>Mac</b> it should show up in your downloads. Move the Visual Studio Code .app into 
+											<li>On <b>Mac</b> it should show up in your downloads as a .zip. Double click on this to extract the archive. Move the Visual Studio Code application into 
 												your applications folder and then open up the app.</li>
 										</ul>
 
 										<h4>2. Configuring Visual Studio Code for C++</h4>
 							After installing Visual Studio Code we need to configure it so that we can develop in C++. Open it up if you haven't already and click the extensions icon (under the debug icon) in the left side bar. 
-						Search for C++, click the first extension, and install it as shown in this image. <img src="images/extensions_img.jpg" alt="" style="float: left; width: 100%; margin-right: 1%;">This extension helps us write C++ code but does not come with a C++ compiler which we need to be able to run our code.
+						Search for C++, click the first extension, and install it as shown in this image. <img src="images/extensions_img.jpg" alt="" style="float: left; width: 100%; margin-right: 1%;">This extension helps us write C++ code but does not come with a C++ compiler.
 						 A compiler is a program that takes our C++ code and translates it into lower level "object code" which we will use to make an executable program. </br><b><i>For a better explanation of a compiler <a href="https://www.coronadoenterprises.com/tutorials/cpp/cpp_ans.html" target="_blank">click here</a></i></b>. </br>Setting up  Visual Studio Code with a C++
 						compiler will be different based on your OS so follow the steps based on your computer.
 						<br></br><h4>3. Setting up Visual Studio Code with a C++ compiler</h4>
@@ -92,8 +92,8 @@
 							</li> </br>
 							<li>Click next through the installer setup and when you get to the <b>"Installation folder"</b> section as shown to the right, change the path to C:\MinGW. Continue through the rest of the setup and wait for it to install.
 								</li>
-							</br><li>Next we need to add the path to the "bin" folder for MinGW to our PATH variable so that we can access the tools from any directory. 
-								<i><br></br><a href="https://john-dugan.com/path-variable-in-windows/" target="_blank"> What is the PATH variable?</a> </br>Note: "path" vs "path variable". "path" typically refers to a location in a file system like "C:\Users\userOne\Documents\file.txt"</i><br></br>Follow these five steps to which each reference the five images below. 
+							</br><li>Next we need to add the MinGW "bin" folder's path to our PATH variable so that we can access the tools from any directory. 
+								<i><br></br><a href="https://john-dugan.com/path-variable-in-windows/" target="_blank"> What is the PATH variable?</a> </br>Note: "path" vs "path variable". "path" typically refers to a location in a file system like "C:\Users\userOne\Documents\file.txt"</i><br></br>Follow these five steps which each reference the five images below. 
 								<ol>
 									<li>
 										search environment in the windows search bar and select "Edit the system environment variables"
@@ -105,7 +105,7 @@
 												Then click the "path" row under "System Variables" and click the "edit" button
 									</li>
 									<li>
-											Finally click the "New" button and type the installation directory that we had from before. IMPORTANT: make sure that you add "\mingw32\bin" at the end. Then click "ok" on all the open tabs.
+											Finally click the "New" button and type "C:\MinGW\mingw32\bin". Then click "ok" on all the open tabs.
 									</li>
 									<li>To test if you configured the PATH variable correctly, open the command prompt (search cmd in the windows search bar) and type "g++". You should get something like: "g++: fatal error: no input files compilation terminated."</li>
 								</ol>
@@ -137,7 +137,7 @@
 						 <ul>
 							 <li>Go to File -> New File. Save with CTRL + S and it will prompt you to name it, save as test.cpp</li>
 							 <li>Copy and paste the following code: 
-<xmp>#include <iostream>
+<pre><code>#include <iostream>
 using namespace std;
 
 int main()
@@ -145,11 +145,11 @@ int main()
 	cout << "If this prints then you have set up C++ correctly!";
 	return 0;
 }
-</xmp></li>
+</pre></code></li>
 							 <li>Go to Terminal -> New Terminal, press enter, and type the following commands:
-<xmp>g++ -o test test.cpp
+<pre><code>g++ -o test test.cpp
 .\test
-</xmp>
+</pre></code>
 This image is what it should look like. If you get an error and can't figure it out please email me or come to my office hour.
 <div class="row">
 		<div class="column">
@@ -158,8 +158,13 @@ This image is what it should look like. If you get an error and can't figure it 
 </div>
 
 							 </li>
-</ul> 
-<hr>
+</ul>
+<center>
+</br>	<a href="#Next">Next Step</a>
+		&nbsp;|&nbsp;
+</center><hr>
+
+
 </p>
 <a name="Mac"></a>
 <h3>MAC</h3>	
@@ -170,10 +175,10 @@ This image is what it should look like. If you get an error and can't figure it 
 					open the search by using Command + Space. Type in "Terminal" and press enter to open it up
 				</li>
 				<li>
-						In the terminal type "g++" to check if you have it installed already. If not you will get a pop up window to install the "command line developer tools". Make sure to click "install" and NOT "Get Xcode".
+						In the terminal type "clang" to check if you have it installed already. If not install it with the command "xcode-select --install".
 				</li>
 				<li>
-							Now type g++ and make sure you get something like "$ g++ clang: error: no input files"
+						Now type clang and make sure you get something like "$ clang: error: no input files"
 				</li>
 			</ol>
 
@@ -189,12 +194,37 @@ This image is what it should look like. If you get an error and can't figure it 
 							Now open up the terminal if you closed it and type "mkdir testFolder" to make a new folder. Enter that folder by typing "cd testFolder". Finally type "Code ." to open up this folder in VS Code.
 				</li>
 				<li>
-						Open the command pallette like before and type C++ and select  "Edit Configurations (UI)". A new tab called c_cpp_properties.json will open up. Edit the configurations as follows.
+						Open the command pallette like before and type C++ and select  "Edit Configurations (UI)". A new tab called C/C++ Configurations will open up. In this tab scroll down to "compiler path" and paste "/usr/bin/clang". Also make sure intellisense is "clang-x64".
 			</li>
+			<li>C++ is finally configured! Now let's test to make sure it works.</li>
 			</ol>
+			<h4>Testing C++ on MAC</h4>
+			Go to File -> New File. Save with CTRL + S and it will prompt you to name it, save as test.cpp</li>
+							 <li>Copy and paste the following code: 
+<pre><code>#include <iostream>
+using namespace std;
+
+int main()
+{
+	cout << "If this prints then you have set up C++ correctly!";
+	return 0;
+}
+</pre></code></li>
+							 <li>Go to Terminal -> New Terminal, press enter, and type the following commands:
+<pre><code>g++ -o test test.cpp
+./test
+</pre></code>
+This image is what it should look like. If you get an error and can't figure it out please email me or come to my office hour.
+<div class="row">
+		<div class="column">
+				<img src="images/test_img.jpg" alt="" style="float: left; width: 100%; margin-right: 1%;">
+		</div>
+</div>
 </p>
+<hr>
 <p>
-	<h4>3. Managing a new project using Git and linking to the SDL2 library</h4>
+		<a name="Next"></a>	 
+	<h4>4. Managing a new project using Git and linking to the SDL2 library</h4>
 	
 	Now that we have our code editor working with C++ we can start a project. When creating mid to large size
 	programming projects with multiple files, we want to manage our code with a tool called Git and save our code online using
@@ -214,10 +244,34 @@ the SDL2 library, and a small set of classes I created to help create a simple m
 on your computer and start from there.
 <ol>
 	<li>
-		first download git if you don't have it already <a href="https://git-scm.com/downloads" target="_blank">from this link</a>
+		first download git if you don't have it already <a href="https://git-scm.com/downloads" target="_blank">from this link</a> In the installation 
+		wizard just click next through all the steps and install it.
 	</li>
 	<li>
 		next, create an account on github if you don't have one already <a href="https:github.com/" target="_blank">from this link</a>
+	</li>
+	<li> The next thing we need to do is configure git with our information. Type these commands with your name and email. 
+	</br> git config --global user.name "first last"</br>
+		  git config --global user.email email@website.com
+		
+	</li>
+	<li>
+		Now that git is configured let's copy the base code to your local computer from github. Open the command prompt (terminal)
+		and navigate to a location where you want to save your project. This may be documents, desktop, or anywhere else you
+		want. Once in the location you want type this command:
+	<ul>
+		<li>
+			<b>Windows: </b> "git clone https://github.com/geffencooper/ArcadeSystem_windows.git"
+		</li>
+		<li>
+			<b>Mac: </b> "git clone https://github.com/geffencooper/ArcadeSystem_mac.git"
+		</li>
+	</ul> 
+
+	<li>
+		Now type cd ArcadeSystem_windows or cd ArcadeSystem_mac, and then type ls.
+		You should see the following:
+	</li>
 	</li>
 
 </ol>
