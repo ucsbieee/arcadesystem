@@ -6,7 +6,7 @@
 -->
 <html>
 	<head>
-		<title>Generic Page - Massively by HTML5 UP</title>
+		<title>Lessons</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
@@ -41,6 +41,14 @@
 									<span class="date">September 25, 2019</span>
 									<h1>Project Lessons</h1>
 								</header>
+								<ul>
+									<li>
+										<a href="#Lesson0">Lesson 0</a>
+									</li>
+									<li>
+										<a href="#Lesson1">Lesson 1</a>
+									</li>
+								</ul>
 								<p><b>Introduction:</b> Welcome to the lessons page of the Virtual Arcade System Software Project! This poject
 										is a great opportunity to apply object oriented programming in C++. If you are a beginner, don't worry! These lessons 
 										will help guide you through the process of building this project.
@@ -49,6 +57,7 @@
 											<b><i>Note: This project does not assume any prior programming experience. However, this is not
 											an easy project and may require you to spend time reading through these lessons and other resources I have linked if you have 
 											little to no programming experience.</i></b> 
+											<a name="Lesson0"></a>
 											</br><hr><h2>Lesson 0: Environment setup (completion time: 15 min - 45min)</h2> 
 											<i>For terms or concepts that may require additional explanation, I have provided clickable links to simple articles that provide more detail.</i>
 											<br></br>
@@ -324,6 +333,243 @@ on your computer and start from there. <br></br>
 	
 </p>
 
+<a name="Lesson1"></a>
+<p>
+</br><hr><h2>Lesson 1: Introducing the Menu System/Designing a GUI</h2> 
+Before getting into the design, watch this video for a demo of what the Arcade System will look like.
+<video width="400" controls>
+	<source src="demo.mp4" type="video/mp4">
+	Your browser does not support HTML5 video.
+</video>
+</p>
+<p>
+	<h4>Intro</h4>
+	For this project, the goal is to provide you with something which you can expand on so we will be building 
+	a "base" version of the Arcade System with a simple menu system, one game (brick breaker), and some music. At the end,
+	you will have the knowledge and opportunity to customize your Arcade by building your own games and adding your own images and music.
+</p>
+
+<p>
+	<img src="images/mainMenu_img.jpg" alt="" style="float: right; width: 40%; margin-left: 1%"><h4>Designing a GUI </h4> <a href="https://www.computerhope.com/jargon/g/gui.htm" target = "blank"> What is a GUI</a></br>
+	A GUI is a "Graphical User Interface" and is the way we interact with a program. We will go through the steps of designing a simple GUI that will be used to interact with our
+arcade system. However, due to time constraints we will not be programming this GUI from scratch. Instead we will just implement some files that I created
+to help program the GUI.</br></br>
+This image here on the right shows a visual of the GUI we will be making.	
+</p>
+
+<p>
+</br></br>
+	<h4>High Level Design</h4><img src="images/vision.jpg" alt="" style="float: right; width: 40%; margin-left: 1%">
+	How do we go about desiging a menu system from scratch? </br></br>
+	<ol>
+		<li>	
+				When building a multi file project, you don't want to start coding right away or you will end up with a bunch of messy code with no organization.
+		</br></br>The first step is to start with the high level logic and design. Start with a sketch or diagram of 
+		what you want your program to look like or how it might work. This image on the right is one of the early diagrams I made and represents a vision of what I wanted the arcade system to look like.
+		</li></br>
+		<li><img src="images/general.jpg" alt="" style="float: right; width: 40%; margin-left: 1%">
+			The next step is to take the specific image or vision and generalize it a bit and break it down into components
+			so that we can begin thinking in more of a programmatic way which makes the transition from design to implementation more fluid. Essentially,
+			we want to take our design and consider how we can create some structure from it.
+		</br></br> Consider this generalized diagram on the right. What does it resemble? It resembles
+		a tree-like structure right. Now using this more generic diagram let's think about the structure of a tree. A tree starts with what we call the "root" and expands
+		out into what we call "Nodes." Nodes are basically discrete points that hold data and are linked together to form the tree. Each box in the diagram is a node.
+		
+	</ol>
+	<h4>Being more explicit with our design</h4>
+	</li></br>
+		<img src="images/hierarchy.jpg" alt="" style="float: right; width: 40%; margin-left: 1%">
+		The next step is to get more explicit with our tree structure and start to define some rules and attributes.
+		In our tree structure we will define something called the Node->Screen->Button hierarchy which basically are
+		the three tiers of our menu system.
+		<ul>
+			<li>
+				<b>Node</b>: The node represents an organizational unit in our menu system and does not really do anything more. Its role will become more clear but in general we
+				can say that a node is a collection of screens.
+			</li>
+			<li>
+					<b>Screen</b>: The screen represents the guts of the node and is where all the action happens. The top level user will be unaware of the nodes and will
+					only interact with the screens. The screen also holds a list of buttons.
+			</li>
+			<li>
+					<b>Button</b>: The button is what facilitates movement through the tree and is what actually links screens to screens and nodes to nodes.
+			</li>
+			<li>
+				<b>parent-child relationship of nodes</b>: We also need to define the connections between nodes. In this tree we are going
+				to keep things simple and say that every "parent" node can have multiple "child" nodes, but every "child" node can only
+				have one parent. Basically, every node can branch out into multiple nodes, but each node can only link to one node above itself. This way
+				we avoid having loops in our tree.
+			</li>
+		</ul>
+		This picture below shows this hierarchy in action. We have a tree made up of nodes (grey and yellow boxes), which hold screens (blue boxes), which are linked using buttons (green and red lines)
+		and all the nodes follow the parent-child relationship we defined.
+		<img src="images/tree.jpg" style="float: right; width: 100%; margin-left: 1%; margin-bottom:5%">
+</p>
+<p>
+		<h4> Transitioning from design to implementation</h4>
+		So now that we have a good idea of how our menu system is designed, let's go into the details of implementation because 
+		this design needs to be described in code. So how do we do that? How do we take these attributes and rules that we used to describe our tree
+		structure and make them into code? 
+</br></br> <b>We use classes and create objects</b>
+<br> We have already categorized our design into distinct parts that we can visualize (Node, Screen, Button) and described them. Now we can take all the attributes
+and behaviors we associated with these parts and bundle them up into units which we call objects.
+</br></br> For a quick intro about classes and objects in C++ click <a href="https://www.programiz.com/cpp-programming/object-class" target = "blank">this link</a>
+</br></br>
+<img src="images/classes.png" style="float: right; width: 50%; margin-left: 1%; margin-bottom:5%">For example, if we want to do something in our tree like move screens or play music how do we do that? We use the buttons. We can bundle up a set of attributes and behaviors associated with actions into a button object.
+<ul>
+	<li>
+			In addition, we can bundle up the set of attributes and behaviors associated with the structure of our tree into screen and node objects
+			
+			
+	</li>
+	<li>
+			So essentially in C++, an object is a unit that bundles up a set of attributes and behaviors. It is also helpful to think about objects in C++ as real life objects, so for example take a look at these classes to the right which are blueprints to define objects.
+	</li>
+	<li>
+			Note how I described objects in two different ways
+			<ol>
+				<li>
+						We can take a real life object and describe its behaviors and attributes so that we can implement it as a construct in our program
+				</li>
+				<li>
+						Or we can take some high level abstract design and split it up into bundles of behaviors and attributes and form objects
+						These are just two ways you can think about objects
+				</li>
+			</ol>
+			
+	</li>
+</ul>
+<h4> Defining the Node, Screen, and Button Classes</h4>
+<p>
+	I highly reccomend looking through "Button.h", "Screen.h", and "Node.h" in the GUI_files->headers folder inside our project folder. These files define
+	a generic Button, Screen, and Node class. In summary:
+</br> 
+<ul>
+	<li>
+		<b>Button Attributes: </b> width, height, x position, y position
+	</br>
+	<b>Button Methods: </b> Accessors, mutators, update, render </br>
+	<a href="https://oop.tech-academy.co.uk/accessors-mutators/" target="blank">What are accessors and mutators</a>
+	</li>
+	<li>
+			<b>Screen Attributes: </b> list of ArcadeTexture objects
+		</br>
+		<b>Screen Methods: </b> Accessors, mutators, update, render </br>
+		</li>
+		<li>
+				<b>Node Attributes: </b> currentScreen object, list of screen objects, parent node object, renderer object
+			</br>
+			<b>Node Methods: </b> Accessors, mutators, update, render </br>
+			</li>
+</ul>
+You are probably wondering what an Arcade Texture object is and what update and render do. I will get into that below.
+</br>But before I do it is important to note how "generic" these classes are and by that I mean I only defined the most basic 
+and general attributes and methods that a button, screen, or node should have without getting too specific. </br>
+<h4>Inheritance</h4>This gives us the 
+flexibility to create different types of buttons or screens or nodes that share the same general attributes but behave in a specific way through
+<b>inheritance</b>. For a good explanation of inheritance in C++ read <a href="https://www.geeksforgeeks.org/inheritance-in-c/" target = "blank">this article</a>
+</br></br> So what I have done is inherited from the button class to create two different buttons (SimpleButton and OptionsButton) and inherited
+from the screen class to create two different screens (MenuScreen and GameScreen). You can see these in the GUI_files->headers folder.
+</br></br>
+<h4> Understanding the GUI loop</h4>
+So before we can start using the button, screen, and node objects to build our menu system we first have to understand how a GUI loop works.
+A GUI loop is just a series of three steps that our program follows:
+<ol>
+	<li>
+		<b>Handle Input</b>: First we want our GUI to track any user events such as mouse movement or keystrokes. We want our
+		menu system to be able to react to these events accordingly
+	</li>
+	<li>
+			<b>Update</b>: Next we need our GUI to update the states or values of certain variables based on te user input. For example, if the user move their mouse over a button we want to update
+			the state of that button to "selected."
+	</li>
+	<li>
+			<b>Render</b>: Rendering just means painting to the screen. So for example, our button state was updated to selected so now when we render
+			that button it will be rendered with some opacity to show that it is selcted.
+	</li>
+</ol>
+This loop repeats over and over again 60 times per second for the entirety of our program.
+
+To understand how this loop works in the context of our program take a look at this simplified main function which is where every C++ program begins.
+<pre><code>
+		int main(int argc, char* argv[])
+		{   
+			// initialize resources we need like the window
+			if (!init())
+			{
+				printf("Failed to initialize!\n");
+			}
+			// if initializes successfully then continue
+			else
+			{
+				// we want to run the gui loop until the user quits
+				bool quit = false;
+
+				// here we create the first node for our menu system
+				Node* currentNode = new RootNode(arcadeSystemRenderer, nullptr);
+
+				// ---------------THE GUI LOOP
+				while (!quit)
+				{   
+					// handle all user events until there are none left
+					SDL_Event e;
+					while (SDL_PollEvent(&e) != 0)
+					{
+						// update the current node 
+						currentNode->update(&e);
+
+						// user requests quit by clicking window X
+						if (e.type == SDL_QUIT)
+						{
+							quit = true;
+						}
+					}
+					currentNode->update(nullptr);
+					// render the current node
+					currentNode->render(arcadeSystemRenderer);
+					SDL_RenderPresent(arcadeSystemRenderer);
+				}
+			}
+		
+</code></pre>
+
+<p>
+	The GUI works like this
+	<ol>
+		<li>
+			Before going into the loop, create the first node in the menu system.
+			We hold it in a variable called currentNode because we only care about updating and rendering
+			the current node. There is no point in updating and rendering the other nodes if we aren't using them.
+		</li>
+		<li>
+			Now we enter the loop and run it until the user wants to quit
+		</li>
+		<li>
+			Next we check for user events and pass them to the current node until there are no events left.
+			When we update the currentNode it will call update for the currentSceen (again we only care about the current screen) which will
+			check if a button is selected or not.
+		</li>
+		<li>
+			If there are no events we still want to update the current node but just pass in no event
+		</li>
+		<li>
+			Finally we render the node to the screen. Node will render the current screen, which will render all its ArcadeTexture objects and all its buttons.
+		</li>
+	</ol>
+
+	An ArcadeTexture object is basically just an image or text that we want to put on the screen. I made a class called ArcadeTexture to simplify
+	the process of doing this.
+
+	<h4>conclusion</h4>
+	That was a lot of information so don't worry if a lot of it didn't make sense. Next class we will be going over
+	how to actually use these objects to create a menu system. </br></br><b>One important concept to remember is abstraction, it is not
+	critical to understand how button, screen, and node work under the hood but rather it is important to know how to use them because at the end 
+	of the day we just want to build the menu system. For example, its good to understand how a car generally works but you don't need to understand
+all the details of how it works under the hood in order to use it. In this case I have implemented the GUI classes for you and abstracted all the details away by
+providing a set of methods (we will learn these next class) for you to use to build a menu.</b>
+</p>
+</p>
+</p>
 				<!-- Footer -->
 					<footer id="footer">
 						
