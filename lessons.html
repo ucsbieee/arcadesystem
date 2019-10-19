@@ -38,7 +38,7 @@
 						<!-- Post -->
 							<section class="post">
 								<header class="major">
-									<span class="date">September 25, 2019</span>
+									<span class="date">October 18, 2019</span>
 									<h1>Project Lessons</h1>
 								</header>
 								<ul>
@@ -47,6 +47,9 @@
 									</li>
 									<li>
 										<a href="#Lesson1">Lesson 1</a>
+									</li>
+									<li>
+										<a href="#Lesson2">Lesson 2</a>
 									</li>
 								</ul>
 								<p><b>Introduction:</b> Welcome to the lessons page of the Virtual Arcade System Software Project! This poject
@@ -258,7 +261,7 @@ on your computer and start from there. <br></br>
 		wizard just click next through all the steps and install it.
 	</li>
 	<li>
-		next, create an account on github if you don't have one already <a href="https:github.com/" target="_blank">from this link</a>
+		next, create an account on github if you don't have one already <a href="https://github.com/" target="_blank">from this link</a>
 	</li>
 	<li> The next thing we need to do is configure git with our information. Type these commands into the command prompt (terminal) with your name and email. 
 	</br> git config --global user.name "firstName lastName"</br>
@@ -506,7 +509,7 @@ To understand how this loop works in the context of our program take a look at t
 				bool quit = false;
 
 				// here we create the first node for our menu system
-				Node* currentNode = new RootNode(arcadeSystemRenderer, nullptr);
+				RootNode currentNode(arcadeSystemRenderer, nullptr);
 
 				// ---------------THE GUI LOOP
 				while (!quit)
@@ -516,7 +519,7 @@ To understand how this loop works in the context of our program take a look at t
 					while (SDL_PollEvent(&e) != 0)
 					{
 						// update the current node 
-						currentNode->update(&e);
+						currentNode.update(&e);
 
 						// user requests quit by clicking window X
 						if (e.type == SDL_QUIT)
@@ -524,9 +527,9 @@ To understand how this loop works in the context of our program take a look at t
 							quit = true;
 						}
 					}
-					currentNode->update(nullptr);
+					currentNode.update(nullptr);
 					// render the current node
-					currentNode->render(arcadeSystemRenderer);
+					currentNode.render(arcadeSystemRenderer);
 					SDL_RenderPresent(arcadeSystemRenderer);
 				}
 			}
@@ -569,6 +572,650 @@ all the details of how it works under the hood in order to use it. In this case 
 providing a set of methods (we will learn these next class) for you to use to build a menu.</b>
 </p>
 </p>
+</p>
+
+<hr>
+
+<a name="Lesson2"></a>
+<p>
+	<h2>Lesson 2: Using Git and implementing the menu system</h2>
+	<h4>Exploring the project directory</h4>
+	<p>
+		Before we start coding let's take a look at our project directory which we copied from github in lesson 0.
+		<img src="images/directory.png" style="float: right; width: 50%; margin-left: 1%; margin-bottom:1%">
+		This image on the right shows what our project directory (also our git repository) looks like.
+		<ul>
+			<li>
+				<b>.git</b>: This folder signfies that "ArcadeSystem_windows" is a git repository so any changes made will be identified by git. <b>We won't open or change this folder directly</b>. 
+			<br></br>
+			</li>
+			<li>
+				<b>.vscode</b>: This folder stores configuration settings. It has files that specify things like the compiler path, include paths, build tasks, debugger settings. 
+				The "build arcadeSystem" task we call to compile our code is defined here.
+				<b> We won't open or change this folder</b>.<br></br>
+			</li>
+			<li>
+				<b>GUI_files</b>: This folder has all the classes and files necessary to build the menu system. The Node, Screen, and Button classes can be found in "GUI_files->headers"
+				if you are curious. 
+				We will be using these files and possibly opening them but <b> we will not change them</b>.<br></br>
+			</li>
+			<li>
+				<b>SDL_files</b>: This folder has files we need from the SDL2 library. These files are basically just a bunch of functions we can use to do things like detect keystrokes or put images on the screen.
+				 <b> We will not change or open this folder</b>.<br></br>
+			</li>
+			<li>
+				<b>source</b>: This folder is where all our resources (images and fonts) and source code (the C++ files we will make) for our project are located.
+			This is really the only folder you need to interact with. You can think of all the other folders as tools we need to help us build our project and
+		this source folder is where all the action happens and where the tools are used.</b><br></br>
+			</li>
+		</ul>
+	</p>
+
+	<h4> Using Git</h4>
+	<p>
+		Next we need to learn a little bit about git. If you remember from lesson 0 and read the articles,
+		git is a version control system (basically a tool that helps us manage our code). We will be using it
+		to track our code and also to publish it to a remote repository on your github account. You can think of github as a powerful version of google drive that is specifically for software.
+
+		<h5>Seeing git in action</h5>
+		<p>
+			To understand what git does, it is useful to see it in action. These three images below show a succession of events.
+			 <br></br>
+			 <b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 1. Start with some code &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			 2. Change or add to the code </b>
+			 <div class="column">
+				<img src="images/git1.png" alt="" style="float: left; width: 49%; margin-right: 1%;">
+				<img src="images/git2.png" alt="" style="float: left; width: 49%; margin-right: 1%;margin-bottom: 3%;">									</div>
+			  <div class="column">
+				  
+			</ol>
+			<p>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>3. Seeing the changes identified by git (left side is visual git interfce, right side is git command line interface)</b>
+			</p>
+			<img src="images/git3.png" alt="" style="float: left; width: 49%; margin-right: 1%; margin-bottom: 0%;">
+			<img src="images/git3cl.png" alt="" style="float: right; width: 49%; margin-right: 1%; margin-bottom: 1%;">
+		</p>
+		What we are seeing in the images in part three is git recognizing Main.cpp has been changed. You can interact with git through a visual interface or
+		a command line interface. In the command line interface we use the commands <b> git status</b> to check the current state of our repository and <b>git diff</b> to see what we changed.
+		<br></br><br></br>
+		Now that we have an idea of what git does, let's learn how it works and how to use it. Currently our files are part of a <b>git repository</b>. A repository is 
+		just a storage space where a project sits in. What makes it a git repository is that we have the <b>.git</b> folder which tracks all our changes and builds 
+		a history of our project that we can easily access and interact with.
+		<br></br>
+		Files in our project directory can be in different states: <b>untracked, modified, staged, and committed</b>.
+		<br></br>
+		<ul>
+			<li>
+					<img src="images/untracked.png" alt="" style="float: right; width: 50%; margin-right: 1%; margin-bottom: 3%;">
+				<b>Untracked:</b> files that are in our directory but are not tracked by the git repository.
+				<b>Note:</b> just because a file is in a directory with a .git folder does not mean it is tracked. For example, I created a new file
+				called test.cpp in the project directory. When I run the command <b>git status</b> it tells me the file is untracked. To start tracking it I use <b>git add <i>file</i></b>
+			</li><br></br>
+			<li>
+					<img src="images/modified.png" alt="" style="float: right; width: 50%; margin-right: 1%; margin-bottom: 0%;">
+					<b>Modified:</b> files that are being <b>tracked</b> by the git repository and have changed since the last time we "commited" (saved our changes) or since tracking them by adding them to the git repo.
+					<br></br>
+					What we see in this image are two things. 
+					<ol>
+						<li> We start tracking test.cpp by adding it to the git repo with <b>git add</b>.
+						This is seen by <b>git status</b> showing "new file". On the left we have it in "staged changes" which
+						shows any changes that we "added" to the git repo.
+						</b></li>.
+						<li>
+							We modify test.cpp by typing a comment. When we view "Changes" in the left we see the before and after at the top. <b>git status</b>
+							shows the first change (adding test.cpp to the directory) is "added" and ready to be "committed" (saved) but the second change (modifying test.cpp with a comment)
+							has not been "added" and is not ready to be committed (saved). Changes that we want to keep must be "added" with <b>git add</b>. A change
+							that is "added" is ready to be commited (saved) but is not saved yet.
+						</li>
+					</ol>
+				</li>
+				<li>
+					<b>Staged:</b> changes that we make in our directory that we want to eventually "commit" or save. We use the <b>git add <i>file</i></b> command.
+					When we uses git status, these "staged" or "added" files that we changed will be green not red meaning 
+					that they are ready to be saved.
+				</li>
+				<img src="images/commit.png" alt="" style="float: right; width: 50%; margin-right: 1%; margin-bottom: 3%;">
+				<li>
+					<b>Committed:</b> changes that are safely saved and stored in our git repository. This is shown in the image. Every time
+					we commit we must put a message with it. A commit is like a checkpoint in our project and signifies a series of changes.
+				</li>
+		</ul>
+		<img src="images/lifecycle.png" alt="" style="float: right; width: 50%; margin-right: 1%; margin-bottom: 1%;">
+		The whole process is summed up by this diagram which shows the different states of files. So for "test.cpp" we started as
+		<b>untracked</b> when we first added it to the directory. Then it became <b>tracked</b>, <b>unmodified</b>, and <b>staged</b> when
+		we used git add. Then it went to modified when we put a comment in the file. At this point the original empty file was staged but the
+		comment was not staged so if we committed the file then only the blank file would be saved. Finally, we added the change and committed it which 
+		puts it back at the unmodified state.
+		<br></br> <br></br> <br></br>
+		<b>This may seem confusing as there are nuances between what each of these states really means. Basically all you need to worry about
+		is git add and git commit. The visual git interface is very useful if you don't have experience with git or want
+	and easy way to see what is going on without needing to use the other git commands. This interface let's you see all the changes you made to each file.</b>
+	</p>
+	<p>
+			<h4>setting up a remote repository</h4>
+			Everything we have talked about up until now regarding git has been "locally". By this I mean we have only been using git to track and save changes
+			on your local computer, not online or another computer (With exception to lesson 0 when did use git to clone the repo from online). What we will be talking about now
+			is how to link your local git repository to a repository online using GitHub.
+			<br></br>
+			In git, remote repositories are versions of our project that are hosted somewhere else, in this case on GitHub. Because we cloned our repo from my GitHub, we automatically
+			have this as one of our remote repos. By default this remote repo is called "origin". We will add another remote repo from your Github so you 
+			can not only save your changes online but also copy changes from my repo if necessary.
+			
+			<ol>
+				<div class="row">
+						<img src="images/create.png" alt="" style="float: right; width: 20%; margin-right: 1%; margin-bottom: 1%;">
+						<img src="images/create2.png" alt="" style="float: right; width: 30%; margin-right: 1%; margin-bottom: 1%;">
+						<img src="images/create3.png"  style="float: right; width: 40%; margin-right: 1%; margin-bottom: 1%;">
+				</div>
+					<li>
+					First, we need make a new repository on github. Login to your github account online and click the + symbol in the top right and then "new repository." Name your repository
+					whatever you want like yourNameArcade and click "create repository." In the next window select HTTPS and copy the url. Look at the three images above as a reference.
+				</li>
+								<li>Next, we want to change the name of our current remote repo from "origin" to "upstream" so that we know it is the original source.
+						<br>In visual studio code, open the terminal and type: <code>git remote rename origin upstream</code>
+				</li>
+				<li>
+					Now we need to add a remote repo called origin and link it to the repo we just created in github. In the same terminal session
+					type this command <code>git add remote origin <i>URL to your repo</i></code> example URL: https://github.com/geffencooper/geffenArcade.git
+				</li>
+				<li>
+					Finally, we want to "push" or send our current git repository with all our files to this remote repo. In the same terminal window type:
+					<code>git push origin master</code>. <b>To check that it worked, go to your github and refresh the page, it should have our project in there.</b>
+				</li>
+				<li>
+					the image below shows the steps. When I type <code>git remote -v</code> it prints out the urls of each
+					remote repo. You can do this as a check to make sure the upstream is my repo and origin is your repo.
+				</li>
+				<img src="images/remote.png"  style="float: right; width: 100%; margin-right: 1%; margin-top: 1%;">
+
+			</ol>
+			<h3>That's it for git we can now start coding. This setup can be confusing if it is your first time so please do not hesitate to email me with questions at any time. Please
+				also come to my office hour if you need help.
+			</h3>
+	</p>
+	<hr>
+	<h3>implementing the menu system</h3>
+	I am going to go through a basic example of how to use the methods and classes I provided. For the full code for the menu system 
+	I made a repo on GitHub and have the link at the bottom of this lesson. The repo has a ReadMe with information on how to use and set up the code.
+	<br></br>
+	<img src="images/rootNode.png"  style="float: right; width: 50%; margin-right: 1%; margin-top: 1%;">
+	<h4>Step 1: Creating a new node</h4>
+	The first step to implementing the menu system is creating a new node. If you recall our menu system is a tree of nodes.
+	To do this create a new file called "RootNode.h" in the source directory of the project. Do this by right-clicking source and 
+	then clicking new file as sown in the image.
+
+	<br></br>	<br></br>
+	<h5>This is the code for a basic rootNode that flips between two screens when you click a button.</h5>
+	Copy-paste this into your RootNode.h. Also, below this is code you need for "Main.cpp". I will dissect the code in detail below.
+	
+	<p>
+		<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// RootNode </span>
+ 
+<span style="color: #408080; font-style: italic">// include the files we need</span>
+<span style="color: #BC7A00">#include &quot;Node.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;Config.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;MenuScreen.h&quot; </span>
+<span style="color: #BC7A00">#include &quot;SimpleButton.h&quot; </span>
+ 
+<span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">RootNode</span> <span style="color: #666666">:</span> <span style="color: #008000; font-weight: bold">public</span> Node <span style="color: #408080; font-style: italic">// publicly inherits from Node</span>
+{
+<span style="color: #A0A000">public:</span>
+    <span style="color: #408080; font-style: italic">// Constructor                                            // initializer list</span>
+    RootNode(SDL_Renderer<span style="color: #666666">*</span> renderer_in, Node<span style="color: #666666">*</span> parentNode_in)<span style="color: #666666">:</span> Node(renderer_in, parentNode_in)
+    {
+ 
+        <span style="color: #408080; font-style: italic">// first create screens for the node</span>
+        MenuScreen<span style="color: #666666">*</span> screen1 <span style="color: #666666">=</span> createMenuScreen();
+        MenuScreen<span style="color: #666666">*</span> screen2 <span style="color: #666666">=</span> createMenuScreen();
+ 
+        <span style="color: #408080; font-style: italic">// create images and text to put on the screen using an ArcadeTexture object</span>
+        ArcadeTexture<span style="color: #666666">*</span> screen1Background <span style="color: #666666">=</span> createImage(renderer_in, <span style="color: #BA2121">&quot;rootNodeImages/rootNodeScreenBackground.png&quot;</span>, <span style="color: #008000">true</span>);
+        ArcadeTexture<span style="color: #666666">*</span> screen2Background <span style="color: #666666">=</span> createImage(renderer_in, <span style="color: #BA2121">&quot;rootNodeImages/rootNodeScreenBackground.png&quot;</span>, <span style="color: #008000">true</span>);
+
+        ArcadeTexture<span style="color: #666666">*</span> screen1Text <span style="color: #666666">=</span> createSimpleText(renderer_in, <span style="color: #BA2121">&quot;fonts/retro/italic.ttf&quot;</span>, <span style="color: #666666">100</span>, <span style="color: #BA2121">&quot;screen 1&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>);
+        screen1Text<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> screen1Text<span style="color: #666666">-&gt;</span>getW() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
+
+        ArcadeTexture<span style="color: #666666">*</span> screen2Text <span style="color: #666666">=</span> createSimpleText(renderer_in, <span style="color: #BA2121">&quot;fonts/retro/italic.ttf&quot;</span>, <span style="color: #666666">100</span>, <span style="color: #BA2121">&quot;screen 2&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>);
+        screen2Text<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> screen2Text<span style="color: #666666">-&gt;</span>getW() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
+
+        <span style="color: #408080; font-style: italic">// add the images and text to the screen after creating them</span>
+        screen1<span style="color: #666666">-&gt;</span>addTextureToScreen(screen1Background);
+        screen1<span style="color: #666666">-&gt;</span>addTextureToScreen(screen1Text);
+
+        screen2<span style="color: #666666">-&gt;</span>addTextureToScreen(screen2Background);
+        screen2<span style="color: #666666">-&gt;</span>addTextureToScreen(screen2Text);
+ 
+        <span style="color: #408080; font-style: italic">// make a text button to put on the screen1</span>
+        SimpleButton<span style="color: #666666">*</span> button1 <span style="color: #666666">=</span> createSimpleTextButton(renderer_in, <span style="color: #BA2121">&quot;fonts/pixel/classic.ttf&quot;</span>, <span style="color: #666666">30</span>, <span style="color: #BA2121">&quot;gotoscreen2&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>, <span style="color: #666666">0</span>);
+        button1<span style="color: #666666">-&gt;</span>setButtonPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> button1<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, screen1Text<span style="color: #666666">-&gt;</span>getY() <span style="color: #666666">+</span> screen1Text<span style="color: #666666">-&gt;</span>getH() <span style="color: #666666">+</span> <span style="color: #666666">50</span>);
+
+        <span style="color: #408080; font-style: italic">// give this button an action</span>
+        button1<span style="color: #666666">-&gt;</span>setButtonAction(createAction(MOVE_SCREENS, screen2));
+       
+        <span style="color: #408080; font-style: italic">// make a text button to put on the screen2</span>
+        SimpleButton<span style="color: #666666">*</span> button2 <span style="color: #666666">=</span> createSimpleTextButton(renderer_in, <span style="color: #BA2121">&quot;fonts/pixel/classic.ttf&quot;</span>, <span style="color: #666666">30</span>, <span style="color: #BA2121">&quot;gotoscreen1&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>, <span style="color: #666666">0</span>);
+        button2<span style="color: #666666">-&gt;</span>setButtonPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> button2<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, screen2Text<span style="color: #666666">-&gt;</span>getY() <span style="color: #666666">+</span> screen2Text<span style="color: #666666">-&gt;</span>getH() <span style="color: #666666">+</span> <span style="color: #666666">50</span>);
+       
+        <span style="color: #408080; font-style: italic">// give this button an action       </span>
+        button2<span style="color: #666666">-&gt;</span>setButtonAction(createAction(MOVE_SCREENS, screen1));
+
+        <span style="color: #408080; font-style: italic">// add the buttons to their screens</span>
+        screen1<span style="color: #666666">-&gt;</span>addButtonToScreen(button1);
+        screen2<span style="color: #666666">-&gt;</span>addButtonToScreen(button2);
+ 
+        <span style="color: #408080; font-style: italic">// add the screens to the node</span>
+        <span style="color: #008000; font-weight: bold">this</span><span style="color: #666666">-&gt;</span>addScreen(screen1);
+        <span style="color: #008000; font-weight: bold">this</span><span style="color: #666666">-&gt;</span>addScreen(screen2);
+
+        <span style="color: #408080; font-style: italic">// tell the node the current screen</span>
+        <span style="color: #008000; font-weight: bold">this</span><span style="color: #666666">-&gt;</span>setCurrentScreen(screen1);
+    }
+};
+</pre></div>
+
+<p>
+	<h5>Code for Main.cpp. Copy-paste this into your Main.cpp.</h5> Then type CTRL (CMDN on Mac) + SHIFT + B and run these tasks: "recompile arcadeSystem" then "run arcadeSystem".
+			<b>Note:</b> There might be some red squiggly lines saying your code has errors, try running the tasks anyways because VS code can be a bit delayed and not recognize some references.
+			<br></br>
+			<b>IMPORTANT: </b>Once you copy these files to your project and get them working, we need to add, commit, and push them with
+			git so that you can have a working version saved. This way when you make changes and additions you will be able to see and go back to the working
+			version when it breaks. See the picture at the bottom for how to do this.
+	<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// main.cpp</span>
+<span style="color: #BC7A00">#include &quot;SDL.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;SDL_mixer.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;SDL_ttf.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;SDL_image.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;Config.h&quot;</span>
+<span style="color: #BC7A00">#include &lt;stdio.h&gt;</span>
+<span style="color: #BC7A00">#include &quot;RootNode.h&quot;</span>
+
+<span style="color: #408080; font-style: italic">// declaring pointer to objects that main needs, initialize to null</span>
+<span style="color: #408080; font-style: italic">// these objects are created in main because they are needed for the outermost loop</span>
+SDL_Window<span style="color: #666666">*</span> arcadeSystemWindow <span style="color: #666666">=</span> nullptr;
+SDL_Renderer<span style="color: #666666">*</span> arcadeSystemRenderer <span style="color: #666666">=</span> nullptr;
+TTF_Font<span style="color: #666666">*</span> font <span style="color: #666666">=</span> nullptr;
+
+<span style="color: #408080; font-style: italic">// initialization function, initializes above objects and calls some SDL initialization functions</span>
+<span style="color: #B00040">bool</span> <span style="color: #0000FF">init</span>()
+{
+	<span style="color: #408080; font-style: italic">// Initialization flag</span>
+	<span style="color: #B00040">bool</span> success <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+
+	<span style="color: #408080; font-style: italic">// Initialize SDL</span>
+	<span style="color: #008000; font-weight: bold">if</span> (SDL_Init(SDL_INIT_VIDEO <span style="color: #666666">|</span> SDL_INIT_AUDIO) <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+	{
+		printf(<span style="color: #BA2121">&quot;SDL could not initialize! SDL Error: %s</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>, SDL_GetError());
+		success <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+	}
+	<span style="color: #008000; font-weight: bold">else</span>
+	{
+		<span style="color: #408080; font-style: italic">// Create window in the center of the screen</span>
+		arcadeSystemWindow <span style="color: #666666">=</span> SDL_CreateWindow(<span style="color: #BA2121">&quot;Arcade System&quot;</span>, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth, windowHeight, SDL_WINDOW_SHOWN);
+		<span style="color: #008000; font-weight: bold">if</span> (arcadeSystemWindow <span style="color: #666666">==</span> <span style="color: #008000">NULL</span>)	
+		{
+			printf(<span style="color: #BA2121">&quot;Window could not be created! SDL Error: %s</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>, SDL_GetError());
+			success <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+		}
+		<span style="color: #008000; font-weight: bold">else</span>
+		{
+			<span style="color: #408080; font-style: italic">// initialize renderer, set the background as white for the wwindow, sync the renderer with the monitor refresh rate</span>
+			arcadeSystemRenderer <span style="color: #666666">=</span> SDL_CreateRenderer(arcadeSystemWindow, <span style="color: #666666">-1</span>, SDL_RENDERER_ACCELERATED <span style="color: #666666">|</span> SDL_RENDERER_PRESENTVSYNC);
+			SDL_SetRenderDrawColor(arcadeSystemRenderer, <span style="color: #666666">0xFF</span>, <span style="color: #666666">0xFF</span>, <span style="color: #666666">0xFF</span>, <span style="color: #666666">0xFF</span>);
+		}
+		<span style="color: #408080; font-style: italic">// Initialize SDL_mixer</span>
+		<span style="color: #008000; font-weight: bold">if</span> (Mix_OpenAudio(<span style="color: #666666">44100</span>, MIX_DEFAULT_FORMAT, <span style="color: #666666">2</span>, <span style="color: #666666">2048</span>) <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+		{
+			printf(<span style="color: #BA2121">&quot;SDL_mixer could not initialize! SDL_mixer Error: %s</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>, Mix_GetError());
+			success <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+		}
+		<span style="color: #408080; font-style: italic">// initialize true type font </span>
+		<span style="color: #008000; font-weight: bold">if</span> (TTF_Init() <span style="color: #666666">==</span> <span style="color: #666666">-1</span>)
+		{
+			printf(<span style="color: #BA2121">&quot;SDL_ttf could not initialize! SDL_ttf Error: %s</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>, TTF_GetError());
+			success <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+		}
+
+	}
+	<span style="color: #008000; font-weight: bold">return</span> success;
+}
+
+<span style="color: #B00040">int</span> <span style="color: #0000FF">main</span>(<span style="color: #B00040">int</span> argc, <span style="color: #B00040">char</span><span style="color: #666666">*</span> argv[])
+{	
+	<span style="color: #408080; font-style: italic">// first call initialization</span>
+	<span style="color: #008000; font-weight: bold">if</span> (<span style="color: #666666">!</span>init())
+	{
+		printf(<span style="color: #BA2121">&quot;Failed to initialize!</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>);
+	}
+	<span style="color: #408080; font-style: italic">// if initializes successfully then continue</span>
+	<span style="color: #008000; font-weight: bold">else</span>
+	{
+		<span style="color: #B00040">bool</span> quit <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+		RootNode currentNode(arcadeSystemRenderer, nullptr);
+		<span style="color: #008000; font-weight: bold">while</span> (<span style="color: #666666">!</span>quit)
+		{	
+			<span style="color: #408080; font-style: italic">// handle events on queue until empty</span>
+			SDL_Event e;
+			<span style="color: #008000; font-weight: bold">while</span> (SDL_PollEvent(<span style="color: #666666">&amp;</span>e) <span style="color: #666666">!=</span> <span style="color: #666666">0</span>)
+			{
+				currentNode.update(<span style="color: #666666">&amp;</span>e);
+				<span style="color: #408080; font-style: italic">// user requests quit by clicking window X</span>
+				<span style="color: #008000; font-weight: bold">if</span> (e.type <span style="color: #666666">==</span> SDL_QUIT)
+				{
+					quit <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+				}
+			}
+			currentNode.update(nullptr);
+			currentNode.render(arcadeSystemRenderer);
+			SDL_RenderPresent(arcadeSystemRenderer);
+		}
+	}
+	
+	<span style="color: #008000; font-weight: bold">return</span> <span style="color: #666666">0</span>;
+}
+</pre></div>
+
+<h5>When running you should see this screen and be able to flip to the next screen using the button.</h5>
+<div class = "row">
+		<img src="images/s1.jpg"  style="float: right; width: 49%; margin-right: 1%; margin-top: 1%; margin-bottom: 2%;">
+		<img src="images/s2.jpg"  style="float: right; width: 49%; margin-right: 1%; margin-top: 1%; margin-bottom: 2%;">
+</div>
+
+<h4>How to add, commit, and push using git</h4>
+Type theses commands when you get your code working.
+<code>git add .</code> then <code>git commit -m"working version</code> then <code>git push origin master</code> You should see these additions in your GitHub account.
+<img src="images/useGit.png"  style="float: right; width: 100%; margin-right: 1%; margin-top: 1%; margin-bottom: 2%;">
+
+<h4>Dissecting the code</h4>
+<h5>Main.cpp</h5>
+All C++ programs start their execution from the method "main()" so let's start from the file Main.cpp
+where the function "main" sits.<br></br>
+<h5>This is the first chunk of code we see in the file Main.cpp</h5>
+
+	<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// main.cpp</span>
+<span style="color: #BC7A00">#include &quot;SDL.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;SDL_mixer.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;SDL_ttf.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;SDL_image.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;Config.h&quot;</span>
+<span style="color: #BC7A00">#include &lt;stdio.h&gt;</span>
+<span style="color: #BC7A00">#include &quot;RootNode.h&quot;</span>
+</pre></div>
+
+In C++ "#include" is a special command that basically copy-pastes or "includes" a file into our code. The reason
+we need to include these files is so that we can use functions and variables that they contain. If we did not include them,
+then we would get errors because otherwise how would we know about these functions and variables? Our program is unaware of them unless
+we include these files.<br></br>
+<h5>This next chunk of code is an initialization function that we don't have to worry about</h5>
+This code just calls some functions that SDL provides us to create a window, a renderer, and make sure that our resources are working.
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// declaring pointer to objects that main needs, initialize to null</span>
+	<span style="color: #408080; font-style: italic">// these objects are created in main because they are needed for the outermost loop</span>
+	SDL_Window<span style="color: #666666">*</span> arcadeSystemWindow <span style="color: #666666">=</span> nullptr;
+	SDL_Renderer<span style="color: #666666">*</span> arcadeSystemRenderer <span style="color: #666666">=</span> nullptr;
+	TTF_Font<span style="color: #666666">*</span> font <span style="color: #666666">=</span> nullptr;
+	
+	<span style="color: #408080; font-style: italic">// initialization function, initializes above objects and calls some SDL initialization functions</span>
+	<span style="color: #B00040">bool</span> <span style="color: #0000FF">init</span>()
+	{
+		<span style="color: #408080; font-style: italic">// Initialization flag</span>
+		<span style="color: #B00040">bool</span> success <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+	
+		<span style="color: #408080; font-style: italic">// Initialize SDL</span>
+		<span style="color: #008000; font-weight: bold">if</span> (SDL_Init(SDL_INIT_VIDEO <span style="color: #666666">|</span> SDL_INIT_AUDIO) <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+		{
+			printf(<span style="color: #BA2121">&quot;SDL could not initialize! SDL Error: %s</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>, SDL_GetError());
+			success <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+		}
+		<span style="color: #008000; font-weight: bold">else</span>
+		{
+			<span style="color: #408080; font-style: italic">// Create window in the center of the screen</span>
+			arcadeSystemWindow <span style="color: #666666">=</span> SDL_CreateWindow(<span style="color: #BA2121">&quot;Arcade System&quot;</span>, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth, windowHeight, SDL_WINDOW_SHOWN);
+			<span style="color: #008000; font-weight: bold">if</span> (arcadeSystemWindow <span style="color: #666666">==</span> <span style="color: #008000">NULL</span>)	
+			{
+				printf(<span style="color: #BA2121">&quot;Window could not be created! SDL Error: %s</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>, SDL_GetError());
+				success <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+			}
+			<span style="color: #008000; font-weight: bold">else</span>
+			{
+				<span style="color: #408080; font-style: italic">// initialize renderer, set the background as white for the wwindow, sync the renderer with the monitor refresh rate</span>
+				arcadeSystemRenderer <span style="color: #666666">=</span> SDL_CreateRenderer(arcadeSystemWindow, <span style="color: #666666">-1</span>, SDL_RENDERER_ACCELERATED <span style="color: #666666">|</span> SDL_RENDERER_PRESENTVSYNC);
+				SDL_SetRenderDrawColor(arcadeSystemRenderer, <span style="color: #666666">0xFF</span>, <span style="color: #666666">0xFF</span>, <span style="color: #666666">0xFF</span>, <span style="color: #666666">0xFF</span>);
+			}
+			<span style="color: #408080; font-style: italic">// Initialize SDL_mixer</span>
+			<span style="color: #008000; font-weight: bold">if</span> (Mix_OpenAudio(<span style="color: #666666">44100</span>, MIX_DEFAULT_FORMAT, <span style="color: #666666">2</span>, <span style="color: #666666">2048</span>) <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+			{
+				printf(<span style="color: #BA2121">&quot;SDL_mixer could not initialize! SDL_mixer Error: %s</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>, Mix_GetError());
+				success <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+			}
+			<span style="color: #408080; font-style: italic">// initialize true type font </span>
+			<span style="color: #008000; font-weight: bold">if</span> (TTF_Init() <span style="color: #666666">==</span> <span style="color: #666666">-1</span>)
+			{
+				printf(<span style="color: #BA2121">&quot;SDL_ttf could not initialize! SDL_ttf Error: %s</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>, TTF_GetError());
+				success <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+			}
+	
+		}
+		<span style="color: #008000; font-weight: bold">return</span> success;
+	}
+	</pre></div>
+	<br></br>
+	<h5>This final chunk of code is what we care about and is where all the action happens</h5>
+	<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #B00040">int</span> <span style="color: #0000FF">main</span>(<span style="color: #B00040">int</span> argc, <span style="color: #B00040">char</span><span style="color: #666666">*</span> argv[])
+{	
+	<span style="color: #408080; font-style: italic">// first call initialization</span>
+	<span style="color: #008000; font-weight: bold">if</span> (<span style="color: #666666">!</span>init())
+	{
+		printf(<span style="color: #BA2121">&quot;Failed to initialize!</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>);
+	}
+	<span style="color: #408080; font-style: italic">// if initializes successfully then continue</span>
+	<span style="color: #008000; font-weight: bold">else</span>
+	{
+		<span style="color: #B00040">bool</span> quit <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+		RootNode currentNode(arcadeSystemRenderer, nullptr);
+		<span style="color: #008000; font-weight: bold">while</span> (<span style="color: #666666">!</span>quit)
+		{	
+			<span style="color: #408080; font-style: italic">// handle events on queue until empty</span>
+			SDL_Event e;
+			<span style="color: #008000; font-weight: bold">while</span> (SDL_PollEvent(<span style="color: #666666">&amp;</span>e) <span style="color: #666666">!=</span> <span style="color: #666666">0</span>)
+			{
+				currentNode.update(<span style="color: #666666">&amp;</span>e);
+				<span style="color: #408080; font-style: italic">// user requests quit by clicking window X</span>
+				<span style="color: #008000; font-weight: bold">if</span> (e.type <span style="color: #666666">==</span> SDL_QUIT)
+				{
+					quit <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+				}
+			}
+			currentNode.update(nullptr);
+			currentNode.render(arcadeSystemRenderer);
+			SDL_RenderPresent(arcadeSystemRenderer);
+		}
+	}
+	
+	<span style="color: #008000; font-weight: bold">return</span> <span style="color: #666666">0</span>;
+}
+</pre></div>
+
+<br><br>
+First we call the initialization function which returns true or false. The "!" is the negation operator and gives us
+the opposite of the value to the right of it. So here if the function init() returns false the value becomes true and we enter the if statement.
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// first call initialization</span>
+	<span style="color: #008000; font-weight: bold">if</span> (<span style="color: #666666">!</span>init())
+	{
+		printf(<span style="color: #BA2121">&quot;Failed to initialize!</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>);
+	}
+</pre></div>
+<br><br>
+If the function returns true then the value becomes false and we skip over the if statement and enter this else statement.
+This is our GUI loop. This chunk of code is the essence of our program. Before entering the loop we do two things, 1. create a variable
+to store the state of our program (is it running or did we quit) and 2. We create the first node called currentNode.
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008000; font-weight: bold">else</span>
+	{
+		<span style="color: #B00040">bool</span> quit <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+		RootNode <span style="color: #0000FF">currentNode</span>(arcadeSystemRenderer, nullptr);
+		<span style="color: #008000; font-weight: bold">while</span> (<span style="color: #666666">!</span>quit)
+		{	
+			<span style="color: #408080; font-style: italic">// handle events on queue until empty</span>
+			SDL_Event e;
+			<span style="color: #008000; font-weight: bold">while</span> (SDL_PollEvent(<span style="color: #666666">&amp;</span>e) <span style="color: #666666">!=</span> <span style="color: #666666">0</span>)
+			{
+				currentNode.update(<span style="color: #666666">&amp;</span>e);
+				<span style="color: #408080; font-style: italic">// user requests quit by clicking window X</span>
+				<span style="color: #008000; font-weight: bold">if</span> (e.type <span style="color: #666666">==</span> SDL_QUIT)
+				{
+					quit <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+				}
+			}
+			currentNode.update(nullptr);
+			currentNode.render(arcadeSystemRenderer);
+			SDL_RenderPresent(arcadeSystemRenderer);
+		}
+	}
+</pre></div>
+Then we say while the value of quit is true (!quit means opposite of false) do the following:
+<ol>
+	<li>Create an event object to store the latest event that happens</li>
+	<li>While events (mouse clicks, keystrokes) are still happening handle those events. We handle an event by 
+		passing it to the current node in this case it is the RootNode and telling it to update by calling its update function with the latest event.
+		This update function will update the current screen which will check to see if a button is hovered on or clicked on. Next we want to check if the lastest event was to quit (this happens by closing the window).
+	</li>
+	<li>Once all events are processed we exit the inner while loop. We then call update for the current node again
+		so that if no events happen, it will still update (this will be more useful later when we have games).
+	</li>
+	<li>
+		Finally, we render the currentNode which will render the current screen which will render all the images, texts, and buttons it has.
+		RenderPresent is the final step and is what actually prints to the screen.
+	</li>
+</ol>
+This series of events runs over and over again about 60 times per second which is about the average refresh rate of your computer's screen.
+
+<br></br>
+	<h5>RootNode.h</h5>
+	This file is where our menu system is implemented.
+
+	<h5>This first chunk has the same purpose as in Main.cpp, we need these files to build the components of our menu</h5>
+	<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// RootNode </span>
+ 
+<span style="color: #408080; font-style: italic">// include the files we need</span>
+<span style="color: #BC7A00">#include &quot;Node.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;Config.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;MenuScreen.h&quot; </span>
+<span style="color: #BC7A00">#include &quot;SimpleButton.h&quot; </span>
+</pre></div>
+
+<br></br>
+<h5>This next chunk is how we begin defining a new Node</h5>
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">RootNode</span> <span style="color: #666666">:</span> <span style="color: #008000; font-weight: bold">public</span> Node <span style="color: #408080; font-style: italic">// publicly inherits from Node</span>
+	{
+		<span style="color: #A0A000">public:</span>
+			<span style="color: #408080; font-style: italic">// Constructor                                            // initializer list</span>
+			RootNode(SDL_Renderer<span style="color: #666666">*</span> renderer_in, Node<span style="color: #666666">*</span> parentNode_in)<span style="color: #666666">:</span> Node(renderer_in, parentNode_in)
+			{
+		</pre></div>
+First we create a new class and publicly inherit (this allows us to access all of nodes functions) from the Node class.
+Next, we define the public section of our class and create the constructor. The constructor is a special
+function that has the same name as our class and no return type. Whenever we create an object of this class the constructor gets called. So
+in main when we created the root node with <code>RootNode currentNode(arcadeSystemRenderer, nullptr);</code>, this constructor was called which
+will initialize the node. Don't worry about the "initializer list", it is just saying we want to set this node's renderer and parent node to the values passed in.
+<h5> Everything inside the curly braces of the constructor will be executed as follows</h5>		
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// first create screens for the node</span>
+	MenuScreen<span style="color: #666666">*</span> screen1 <span style="color: #666666">=</span> createMenuScreen();
+	MenuScreen<span style="color: #666666">*</span> screen2 <span style="color: #666666">=</span> createMenuScreen();
+</pre></div>
+First we create two menuScreen objects called "screen1" and "screen2" with the <code>createMenuScreen() function</code>. This function returns what is called a "pointer" to 
+the menuScreens. A pointer is just a variable we can use to access these objects. If you want to know more about pointers read <a href = "https://gist.github.com/ericandrewlewis/720c374c29bbafadedc9" target = "blank">this</a>.
+If you are curious as to why we are using pointers to the objects instead of the objects themselves first read <a href = "https://www.geeksforgeeks.org/stack-vs-heap-memory-allocation/" target = "blank">this</a>. After
+reading about pointers and stack vs heap you should some insight into how our C++ program is stored in memory. The reason I have pointers to objects is because
+I am creating these objects on the heap so I can only access them through pointers. The details of why I have these objects on the heap is beyond the scope of this project but 
+if you are curious you can ask me through email or my office hour. 
+
+<b>This is a lot of information so don't worry if it is confusing. You mainly need to worry about how to use the methods, not so much why.</b>
+
+<br></br>
+<h5>creating images and text to put on the screen</h5>
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// create images and text to put on the screen using an ArcadeTexture object</span>
+	ArcadeTexture<span style="color: #666666">*</span> screen1Background <span style="color: #666666">=</span> createImage(renderer_in, <span style="color: #BA2121">&quot;rootNodeImages/rootNodeScreenBackground.png&quot;</span>, <span style="color: #008000">true</span>);
+	ArcadeTexture<span style="color: #666666">*</span> screen2Background <span style="color: #666666">=</span> createImage(renderer_in, <span style="color: #BA2121">&quot;rootNodeImages/rootNodeScreenBackground.png&quot;</span>, <span style="color: #008000">true</span>);
+
+	ArcadeTexture<span style="color: #666666">*</span> screen1Text <span style="color: #666666">=</span> createSimpleText(renderer_in, <span style="color: #BA2121">&quot;fonts/retro/italic.ttf&quot;</span>, <span style="color: #666666">100</span>, <span style="color: #BA2121">&quot;screen 1&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>);
+	screen1Text<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> screen1Text<span style="color: #666666">-&gt;</span>getW() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
+
+	ArcadeTexture<span style="color: #666666">*</span> screen2Text <span style="color: #666666">=</span> createSimpleText(renderer_in, <span style="color: #BA2121">&quot;fonts/retro/italic.ttf&quot;</span>, <span style="color: #666666">100</span>, <span style="color: #BA2121">&quot;screen 2&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>);
+	screen2Text<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> screen2Text<span style="color: #666666">-&gt;</span>getW() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
+</pre></div>
+Next we create two images and two pieces of text we want to put on our screens using the "createImage()" and "createSimpleText()" methods. Any time
+you want to create an image or text use these methods as shown and change the parameters to what you want.
+The parameters for create image  and createSimpleText are
+
+<br> <code>createSimpleText(<i>renderer</i>, <i>file path to image</i>, <i>true or false if want image to fill the screen</i>)</code>
+<br> <code>createImage(<i>renderer</i>, <i>file path to font</i>, <i>font size</i>,<i>text to display</i>, <i>font color R value, G value, B value</i>)</code>
+<br></br>
+We also need to set the x,y position of the text, the images automatically have their position set because they fill the screen.
+
+<h5>Now we need to add these images and text to the according screen</h5>
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// add the images and text to the screen after creating them</span>
+	screen1<span style="color: #666666">-&gt;</span>addTextureToScreen(screen1Background);
+	screen1<span style="color: #666666">-&gt;</span>addTextureToScreen(screen1Text);
+
+	screen2<span style="color: #666666">-&gt;</span>addTextureToScreen(screen2Background);
+	screen2<span style="color: #666666">-&gt;</span>addTextureToScreen(screen2Text);
+</pre></div>
+<br>
+<h5>Next we will create buttons. Buttons are just images or text that have an action associated with them</h5>
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// make a text button to put on the screen1</span>
+	SimpleButton<span style="color: #666666">*</span> button1 <span style="color: #666666">=</span> createSimpleTextButton(renderer_in, <span style="color: #BA2121">&quot;fonts/pixel/classic.ttf&quot;</span>, <span style="color: #666666">30</span>, <span style="color: #BA2121">&quot;gotoscreen2&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>, <span style="color: #666666">0</span>);
+	button1<span style="color: #666666">-&gt;</span>setButtonPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> button1<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, screen1Text<span style="color: #666666">-&gt;</span>getY() <span style="color: #666666">+</span> screen1Text<span style="color: #666666">-&gt;</span>getH() <span style="color: #666666">+</span> <span style="color: #666666">50</span>);
+
+	<span style="color: #408080; font-style: italic">// make a text button to put on the screen1</span>
+	SimpleButton<span style="color: #666666">*</span> button2 <span style="color: #666666">=</span> createSimpleTextButton(renderer_in, <span style="color: #BA2121">&quot;fonts/pixel/classic.ttf&quot;</span>, <span style="color: #666666">30</span>, <span style="color: #BA2121">&quot;gotoscreen1&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>, <span style="color: #666666">0</span>);
+	button2<span style="color: #666666">-&gt;</span>setButtonPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> button2<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, screen2Text<span style="color: #666666">-&gt;</span>getY() <span style="color: #666666">+</span> screen2Text<span style="color: #666666">-&gt;</span>getH() <span style="color: #666666">+</span> <span style="color: #666666">50</span>);
+</pre></div>
+You might notice that creating a text button is exactly like creating text. The only difference
+is that is a button object and we need to give it an action which we will see below.
+
+<h5>Now we will add actions to the buttons.</h5>
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"> <span style="color: #408080; font-style: italic">// give this button an action</span>
+	button1<span style="color: #666666">-&gt;</span>setButtonAction(createAction(MOVE_SCREENS, screen2));
+       
+	<span style="color: #408080; font-style: italic">// give this button an action       </span>
+	button2<span style="color: #666666">-&gt;</span>setButtonAction(createAction(MOVE_SCREENS, screen1));
+</pre></div>
+I did a bit of shorthand here. I called a method inside of the parameter for setButtonAction. Basically,
+createAction() will get called and return an action object pointer which is what gets passed in as the parameter to setButtonAction.
+<br></br> A little explanation about button actions: an action is composed of two things the <b>action type</b> and <b>action parameter</b>.
+The action type is exactly what is sounds like, it is the action you want to do such as CHANGE_SCREENS. I have already predefined a set of
+actions for us. You can see them under GUI_files->Action.h. The action parameter is what we actually use to complete the action. So for the case
+of MOVE_SCREENS, the action parameter is the screen (pointer to the screen object). Don't worry about the details,
+just know that this is how you create and set a button action.
+
+<br></br> <h5>The final step is to add the buttons to the screens and add the screens to the node</h5>
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// add the buttons to their screens</span>
+	screen1<span style="color: #666666">-&gt;</span>addButtonToScreen(button1);
+	screen2<span style="color: #666666">-&gt;</span>addButtonToScreen(button2);
+
+	<span style="color: #408080; font-style: italic">// add the screens to the node</span>
+	<span style="color: #008000; font-weight: bold">this</span><span style="color: #666666">-&gt;</span>addScreen(screen1);
+	<span style="color: #008000; font-weight: bold">this</span><span style="color: #666666">-&gt;</span>addScreen(screen2);
+
+	<span style="color: #408080; font-style: italic">// tell the node the current screen</span>
+	<span style="color: #008000; font-weight: bold">this</span><span style="color: #666666">-&gt;</span>setCurrentScreen(screen1);
+}
+};
+</pre></div>
+Here adding buttons is similar to adding images and text to the screen. Once our screens have everything we want,
+we need to add them to the node. The way we do that is with the special keyword <b>this</b>. In C++ the this keyword is
+a pointer to the object we are currently in. So this->addScreen means we are adding a screen to the current object which is the RootNode. Remember,
+we are still inside the constructor of the RootNode. Finally, we have to set the current screen so that our node know which screen to default to.
+
+<hr>
+ That's how we create nodes. This was a basic node. To see the full menu which is more complex click <a href = "https://github.com/geffencooper/bareMenuFiles" target = "blank">here</a>
+
+<h5>Once you get this code working, try changing and messing with it. See what happens. It's really difficult to understand
+	how something works just by reading it, the best way to learn is to try it yourself. Gradually, things will start to make more
+	sense and you will be able to customize your menu system however you want which is the most fun part!
+</h5>
+
+</p>
+
+	</p>
 </p>
 				<!-- Footer -->
 					<footer id="footer">
