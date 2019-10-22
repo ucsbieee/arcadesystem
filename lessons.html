@@ -1185,7 +1185,7 @@ is that is a button object and we need to give it an action which we will see be
 I did a bit of shorthand here. I called a method inside of the parameter for setButtonAction. Basically,
 createAction() will get called and return an action object pointer which is what gets passed in as the parameter to setButtonAction.
 <br></br> A little explanation about button actions: an action is composed of two things the <b>action type</b> and <b>action parameter</b>.
-The action type is exactly what is sounds like, it is the action you want to do such as CHANGE_SCREENS. I have already predefined a set of
+The action type is exactly what is sounds like, it is the action you want to do such as MOVE_SCREENS. I have already predefined a set of
 actions for us. You can see them under GUI_files->Action.h. The action parameter is what we actually use to complete the action. So for the case
 of MOVE_SCREENS, the action parameter is the screen (pointer to the screen object). Don't worry about the details,
 just know that this is how you create and set a button action.
