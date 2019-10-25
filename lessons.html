@@ -1217,6 +1217,105 @@ we are still inside the constructor of the RootNode. Finally, we have to set the
 	sense and you will be able to customize your menu system however you want which is the most fun part!
 </h5>
 
+<hr>
+
+<h4> Lesson 3 Starter Code</h4>
+<p>For lesson 3 you need your Main.cpp to look like this: </p>
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// main.cpp</span>
+<span style="color: #BC7A00">#include &quot;SDL.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;SDL_mixer.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;SDL_ttf.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;SDL_image.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;Config.h&quot;</span>
+<span style="color: #BC7A00">#include &lt;stdio.h&gt;</span>
+<span style="color: #BC7A00">#include &quot;GameNode.h&quot;</span>
+
+<span style="color: #408080; font-style: italic">// declaring pointer to objects that main needs, initialize to null</span>
+<span style="color: #408080; font-style: italic">// these objects are created in main because they are needed for the outermost loop</span>
+SDL_Window<span style="color: #666666">*</span> arcadeSystemWindow <span style="color: #666666">=</span> nullptr;
+SDL_Renderer<span style="color: #666666">*</span> arcadeSystemRenderer <span style="color: #666666">=</span> nullptr;
+TTF_Font<span style="color: #666666">*</span> font <span style="color: #666666">=</span> nullptr;
+
+<span style="color: #408080; font-style: italic">// initialization function, initializes above objects and calls some SDL initialization functions</span>
+<span style="color: #B00040">bool</span> <span style="color: #0000FF">init</span>()
+{
+	<span style="color: #408080; font-style: italic">// Initialization flag</span>
+	<span style="color: #B00040">bool</span> success <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+
+	<span style="color: #408080; font-style: italic">// Initialize SDL</span>
+	<span style="color: #008000; font-weight: bold">if</span> (SDL_Init(SDL_INIT_VIDEO <span style="color: #666666">|</span> SDL_INIT_AUDIO) <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+	{
+		printf(<span style="color: #BA2121">&quot;SDL could not initialize! SDL Error: %s</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>, SDL_GetError());
+		success <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+	}
+	<span style="color: #008000; font-weight: bold">else</span>
+	{
+		<span style="color: #408080; font-style: italic">// Create window in the center of the screen</span>
+		arcadeSystemWindow <span style="color: #666666">=</span> SDL_CreateWindow(<span style="color: #BA2121">&quot;Arcade System&quot;</span>, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth, windowHeight, SDL_WINDOW_SHOWN);
+		<span style="color: #008000; font-weight: bold">if</span> (arcadeSystemWindow <span style="color: #666666">==</span> <span style="color: #008000">NULL</span>)	
+		{
+			printf(<span style="color: #BA2121">&quot;Window could not be created! SDL Error: %s</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>, SDL_GetError());
+			success <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+		}
+		<span style="color: #008000; font-weight: bold">else</span>
+		{
+			<span style="color: #408080; font-style: italic">// initialize renderer, set the background as white for the wwindow, sync the renderer with the monitor refresh rate</span>
+			arcadeSystemRenderer <span style="color: #666666">=</span> SDL_CreateRenderer(arcadeSystemWindow, <span style="color: #666666">-1</span>, SDL_RENDERER_ACCELERATED <span style="color: #666666">|</span> SDL_RENDERER_PRESENTVSYNC);
+			SDL_SetRenderDrawColor(arcadeSystemRenderer, <span style="color: #666666">0xFF</span>, <span style="color: #666666">0xFF</span>, <span style="color: #666666">0xFF</span>, <span style="color: #666666">0xFF</span>);
+		}
+		<span style="color: #408080; font-style: italic">// Initialize SDL_mixer</span>
+		<span style="color: #008000; font-weight: bold">if</span> (Mix_OpenAudio(<span style="color: #666666">44100</span>, MIX_DEFAULT_FORMAT, <span style="color: #666666">2</span>, <span style="color: #666666">2048</span>) <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+		{
+			printf(<span style="color: #BA2121">&quot;SDL_mixer could not initialize! SDL_mixer Error: %s</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>, Mix_GetError());
+			success <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+		}
+		<span style="color: #408080; font-style: italic">// initialize true type font </span>
+		<span style="color: #008000; font-weight: bold">if</span> (TTF_Init() <span style="color: #666666">==</span> <span style="color: #666666">-1</span>)
+		{
+			printf(<span style="color: #BA2121">&quot;SDL_ttf could not initialize! SDL_ttf Error: %s</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>, TTF_GetError());
+			success <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+		}
+
+	}
+	<span style="color: #008000; font-weight: bold">return</span> success;
+}
+
+<span style="color: #B00040">int</span> <span style="color: #0000FF">main</span>(<span style="color: #B00040">int</span> argc, <span style="color: #B00040">char</span><span style="color: #666666">*</span> argv[])
+{	
+	<span style="color: #408080; font-style: italic">// first call initialization</span>
+	<span style="color: #008000; font-weight: bold">if</span> (<span style="color: #666666">!</span>init())
+	{
+		printf(<span style="color: #BA2121">&quot;Failed to initialize!</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>);
+	}
+	<span style="color: #408080; font-style: italic">// if initializes successfully then continue</span>
+	<span style="color: #008000; font-weight: bold">else</span>
+	{
+		<span style="color: #B00040">bool</span> quit <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+		GameNode currentNode(arcadeSystemRenderer, nullptr);
+		<span style="color: #008000; font-weight: bold">while</span> (<span style="color: #666666">!</span>quit)
+		{	
+			<span style="color: #408080; font-style: italic">// handle events on queue until empty</span>
+			SDL_Event e;
+			<span style="color: #008000; font-weight: bold">while</span> (SDL_PollEvent(<span style="color: #666666">&amp;</span>e) <span style="color: #666666">!=</span> <span style="color: #666666">0</span>)
+			{
+				currentNode.update(<span style="color: #666666">&amp;</span>e);
+				<span style="color: #408080; font-style: italic">// user requests quit by clicking window X</span>
+				<span style="color: #008000; font-weight: bold">if</span> (e.type <span style="color: #666666">==</span> SDL_QUIT)
+				{
+					quit <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+				}
+			}
+			currentNode.update(nullptr);
+			currentNode.render(arcadeSystemRenderer);
+			SDL_RenderPresent(arcadeSystemRenderer);
+		}
+	}
+	
+	<span style="color: #008000; font-weight: bold">return</span> <span style="color: #666666">0</span>;
+}
+</pre></div>
+
+
 </p>
 
 	</p>
