@@ -51,6 +51,9 @@
 									<li>
 										<a href="#Lesson2">Lesson 2</a>
 									</li>
+									<li>
+										<a href="#Lesson3">Lesson 3</a>
+									</li>
 								</ul>
 								<p><b>Introduction:</b> Welcome to the lessons page of the Virtual Arcade System Software Project! This poject
 										is a great opportunity to apply object oriented programming in C++. If you are a beginner, don't worry! These lessons 
@@ -1219,8 +1222,551 @@ we are still inside the constructor of the RootNode. Finally, we have to set the
 
 <hr>
 
-<h4> Lesson 3 Starter Code</h4>
-<p>For lesson 3 you need your Main.cpp to look like this: </p>
+<a name="Lesson3"></a>
+<h2>Lesson 3: Animation and Game Design</h2>
+<p>
+	Lessons 0-2 were mainly setup, design, and building the structure of our Arcade.
+	With this foundation we can now expand and integrate more exciting things like animation
+	and game design. In this lesson we will create a very simple "game" of a ball bouncing on the screen. 
+
+	<IMG SRC="images/animation.gif" style="float: right; width: 50%; margin-right: 1%; margin-top: 1%; margin-bottom: 2%;">
+	<h4>Animation Introduction</h4>
+	Before animating anything, let's do a simple overview of how animation works. Animation is
+	essentially an optical illusion. As seen in the gif here, animation is just a rapid sequence
+	of still images that mimic continuous motion. The reason for this illusion has to do with a
+	concept called persistance of vision which you can read about <a href = "https://ameliarobinsonmedia.wordpress.com/2015/01/27/persistence-of-vision/" target = "blank">here</a>. Essentially, our eyes can only
+	process a certain amount of images per second and anything higher than that is observed as continous.
+	
+	
+	<br></br>
+	This is exactly what we will be doing in our program (sequence of still images). If you recall, our
+	GUI loop run 60 times per second and each time it runs (each frame) we render some image to the screen.
+	Every succcessive frame we move the image slightly by some amount of pixels and at 60 frames per second
+	this is observed as continuous motion.
+	<br></br>
+	<br></br>
+
+	<h4>Game Design Introduction</h4>
+	So now that we have a rough idea of how animation works, let's look at how a simple game works.
+
+	<ul>
+		<li>
+			In general a game is just a succession of events and interactions with some end goal.	
+		</li>
+		<li>
+			An event in our game will be any form of user input as well as the movement of "game objects". Interactions include
+			collisions and any other logic or "states" that are defined by our game. For example, if a game object enters
+			a certain region of the screen then we might want it to do something or for something to happen.
+		</li>
+		<IMG SRC="images/events.png" style="float: right; width: 100%; margin-right: 1%; margin-top: 1%; margin-bottom: 2%;">
+		<li>
+			So overall we have game objects that are part of our game and can move or stay still. Each object has
+			its own update method that changes its state from frame to frame. This typically will just be movement but can 
+			be whatever you want it to be. Based on these updates, certain states will result in the game. For example,
+			when a ball game object updates, it will change position. Based on this change of position certain states can occur
+			like collision with the wall or other objects which must be recognized and handled by our game's logic. This sequence of update then game logic is seen
+			in the image above of a simple game object.
+		</li>
+	</ul>
+
+	<h5>Steps to implement our game</h5>
+	<ol>
+		<li>
+			The first step is to define game objects which is anything you can interact with
+			such as obstacles, moving pieces, or the player. For our simple game the only game object will be the ball. 
+			To implement a game object in code we must create a class. I have
+			already created a generic class called Entity that provides essential attributes
+			and functions any game object has including <b><i>size, position, velocity, etc
+			</i></b> as well as update and render functions. To create game objects we will create a class
+			that inherits from Entity so that every game object will not only have all the essential methods and qualities 
+			already, but also they will be easy to interface with in a standardized way.
+		</li>
+		<li>
+			The next step is to define our game. This includes all the logic, including
+			colision detection, game states, and any other interactions we want to recognize. The generic outline
+			for a game has already been implemented in a class called GameScreen. If you recall we have a generic screen
+			class and under screen we had MenuScreen which was a collection of buttons. A GameScreen is another
+			type of screen that implements a game. So to create a new game we will inherit from the GameScreen
+			class so that our game will already have the essential attributes and methods and also
+			have a standerdized interface. However, we will customize how these functions and attributes are
+			imlemented and used enabling us to create any simple game we want.
+		</li>
+		<li>
+			The final step is to create a new Node that will contain our game. If you recall from the menu system,
+			we created buttons which were part of screens which were bundled all into a node. This is the same thing;
+			we create game objects which are part of a GameScreen which along with other MenuScreens (like a pause screen)
+			are bundled into a node.
+		</li>
+	</ol>
+
+	<h4>Coding</h4>
+	<b>Important: </b>Before coding type "git pull upstream master" into the terminal as we did last lesson.
+	I made some changes that you must have to get the code to work.
+	<p>
+		Let's get into coding now that we have a high level understanding of how to implement
+		a game into the structure of our arcade.
+		<ol>
+			<li>
+				<h5>Defining the game object Ball</h5>
+				 The first thing we need to do is define the Ball class for our Ball object.
+				 In C++ classes are typically separated into .h files called header files
+				 and .cpp files which are c plus plus files. The header file will contain the class
+				 defintion with function protoypes and member variables whereas the cpp file
+				 will contain the function implementation. For an example of
+				 this read <a href = "http://www.cppforschool.com/tutorial/separate-header-and-implementation-files.html" target = "blank">this article</a>. 
+				 and <a href = "http://www.cplusplus.com/forum/articles/10627/">this article</a>. There are a few reasons we divide classes into headers and cpp files.
+				 <ul>
+					 <li>
+							The first reason is to divide the interface of our class from the implementation.
+				 This goes back to the concept of abstraction, users of the class don't need to be
+				 concerned with the details of implementation. The headers contain the class interface and the cpp contain the implementation.
+					 </li>
+					 <li>
+							The second reason is compile time. This is beyond the scope of the project but basically
+							imagine if all our code was in the same file. Every time we made a change we would have to recompile all of the code
+							which for larger projects can take several minutes. Using header and cpp files, we separate the implementation so that we 
+							only need to recompile the headers everytime which are much smaller. For example, we are using the SDL2 lirary which contains 
+							many files. Everytime we compile our code we don't recompile the entire SDL2 library, we just use the precompiled .cpp files 
+							and recompile the headers when we include them into our cpp files.
+					 </li>
+				 </ul>
+				 
+				 
+
+				 You might wonder why we didn't have .cpp files for Node classes. That is because the implementation
+				 of those classes are a special case that are a bit unorthodox. Typically you create a class so you can
+				 create objects of those classes to use. In the case of node classes we just wanted to 
+				 have a unit of organization so we bundled the initialization of the node into a class.
+				 The only thing we really implemented for that class was the constructor, and we only
+				 ever create one object of those classes so they are a special case.
+
+				 <br></br>
+				 So now let's create the file Ball.h and define the ball class as shown.
+				 <!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// Ball.h</span>
+
+<span style="color: #BC7A00">#ifndef BALL_H</span>
+<span style="color: #BC7A00">#define BALL_H</span>
+
+<span style="color: #BC7A00">#include &quot;Entity.h&quot;</span>
+
+<span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">Ball</span> <span style="color: #666666">:</span> <span style="color: #008000; font-weight: bold">public</span> Entity
+{
+    <span style="color: #A0A000">public:</span>
+        Ball();
+        <span style="color: #B00040">void</span> <span style="color: #0000FF">update</span>(SDL_Event<span style="color: #666666">*</span> event);
+};
+
+<span style="color: #BC7A00">#endif</span>
+</pre></div>
+
+At the top we specifiy the file name. Next we create what are called header guards which are a set of statements to prevent us
+from including a header file into another file more than once which is a problem because it can cause duplicate definitions. The header guards are
+the <b>#ifndef BALL_H #define BALL_H ... #endif </b>. This means, if you have not defined BALL_H then define it and include the code between the #ifndef and #endif. If it is defined then everything below the #ifndef will be ignored. 
+An example of multiple inclusion is let's say we have a header called functions.h that we #include in a lot of files including Main.cpp and object.h. Now
+let's say we include object.h into Main.cpp. Now Main.cpp has included functions.h twice, once directly, and once indirectly through objects.h.
+When we start having lots of files it is very difficult to keep track of these dependencies so we use header guards to prevent multiple inclusion. 				 
+<br></br>
+Next we have all our resources that we need to include at the top. All we need is "Entity.h" which includes everything else we need.
+Finally, we define the class Ball and publicly inherit from Entity so that we get all its functions and attributes.
+Inside the class we create the public section. (read about public vs private <a href ="https://www.geeksforgeeks.org/access-modifiers-in-c/" target = "blank">here</a>)
+The public section has the Ball constructor and the update method. The render method is already implemented in Entity.h. Note how these are just the function prototypes, no definitions.
+This class definition simply defines the interface.
+<br></br>
+<br></br>
+Create another file called "Ball.cpp"
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// Ball.cpp</span>
+
+	<span style="color: #BC7A00">#include &quot;Ball.h&quot;</span>
+
+	<span style="color: #408080; font-style: italic">// constructor</span>
+	Ball<span style="color: #666666">::</span>Ball()
+	{
+		setXPos(<span style="color: #666666">0</span>);
+		setYPos(<span style="color: #666666">0</span>);
+		setXVelocity(<span style="color: #666666">0</span>);
+		setYVelocity(<span style="color: #666666">0</span>);
+	}
+	
+	<span style="color: #B00040">void</span> Ball<span style="color: #666666">::</span>update(SDL_Event<span style="color: #666666">*</span> event)
+	{
+		<span style="color: #008000; font-weight: bold">if</span>(event <span style="color: #666666">==</span> nullptr)
+		{
+			setXPos(getXPos() <span style="color: #666666">+</span> getXVelocity());
+			setYPos(getYPos() <span style="color: #666666">+</span> getYVelocity());
+		}
+	}
+	</pre></div>
+	After defining the class, we implement the functions in the .cpp file. In order to do this
+	we must first include the header file as shown at the top so that we can access the class.
+	Then to implement a method of the class we have to use this syntax <b><i>class name :: method name</i></b>.
+	The "::" is the "scope resolution operator" and signifies that the method we are defining is part of the class
+	on the left of the operator. So Ball::Ball means we are defining a method Ball (constructor) for the class Ball.
+
+	<br></br>
+	The first function we define is the constructor. Everytime we create a ball object, this method is called.
+	Typically the constructor will initialize the member variables to some default value. Here we set all
+	the attributes of ball to zero by default but we can change these later on.
+	<br></br>
+	Next we define the update method which takes in an event. If you recall, in our GUI loop we call the update method twice, the first time
+	is if there is an event and the second time is with a nullptr just to update everything regardless.
+	We want to update our ball every frame so we check if the event is a nullptr before updating it. If we just updated it no matter what we
+	would get a "double update" (once when there is an event and once when there is no event) which will result
+	in unwanteed behavior. In the update function we just move the ball by adding to its x and y position. The amount we move the ball
+	is essentially the velocity. velocity = displacement/time and each frame is a certain amount of time so we are moving the ball
+	some distance every ~1/60 sec which gives us the velocity. If we have x velocity as 2 then we add 2 to the position every frame which means the
+	ball moves about 2 pixels every frame or ~ 120 pixels a second.
+			</li>
+			<li>
+				<h5>Defining the game</h5>
+				Create a new file called SimpleGame.h.
+				<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// SimpleGame.h</span>
+
+<span style="color: #BC7A00">#ifndef SIMPLE_GAME_H</span>
+<span style="color: #BC7A00">#define SIMPLE_GAME_H</span>
+
+<span style="color: #BC7A00">#include &quot;GameScreen.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;Ball.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;Config.h&quot;</span>
+
+<span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">SimpleGame</span> <span style="color: #666666">:</span> <span style="color: #008000; font-weight: bold">public</span> GameScreen
+{
+    <span style="color: #A0A000">public:</span>
+        SimpleGame();
+        Action <span style="color: #0000FF">update</span>(SDL_Event<span style="color: #666666">*</span> event);
+        <span style="color: #B00040">void</span> <span style="color: #0000FF">logic</span>();
+
+        <span style="color: #B00040">void</span> <span style="color: #0000FF">newGame</span>();
+        <span style="color: #408080; font-style: italic">//void checkCollision();</span>
+
+        <span style="color: #B00040">void</span> <span style="color: #0000FF">setBall</span>(Ball<span style="color: #666666">*</span> ball_in) {ball <span style="color: #666666">=</span> ball_in;}
+        Ball<span style="color: #666666">*</span> <span style="color: #0000FF">getBall</span>() {<span style="color: #008000; font-weight: bold">return</span> ball;}
+    <span style="color: #A0A000">private:</span>
+        Ball<span style="color: #666666">*</span> ball;
+};
+
+<span style="color: #BC7A00">#endif</span>
+</pre></div>
+As we did with Ball.h we have the file name at the top, the header guards, then the resources to include.
+Next we define the class and publicly inherit from GameScreen so that we get all the essentiall attributes and functions.
+<br></br>
+In the private section you will see we add one attribute to this game, a ball. That is the only game object for this game.
+In the public section we provide the methods that we will define to create a game.
+<ul>
+	<li>
+		SimpleGame() = constructor
+	</li>
+	<li>
+		update() = the events, rules, logic of our game
+	</li>
+	<li>
+		logic() = called by the update method
+	</li>
+	<li>
+		newGame() = resets the game
+	</li>
+	<li>
+		getBall() and setBall() = accessor and mutator
+	</li>
+</ul>
+There are more methods inherited from GameScreen that we have but just can't see unless you look at GameScreen.h
+<br></br>
+Now create a file called SimpleGame.cpp to implement the methods of the SimpleGame class
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// SimpleGame.cpp</span>
+
+	<span style="color: #BC7A00">#include &quot;SimpleGame.h&quot;</span>
+
+	SimpleGame<span style="color: #666666">::</span>SimpleGame()
+	{
+		<span style="color: #408080; font-style: italic">//</span>
+	}
+	
+	<span style="color: #408080; font-style: italic">// game logic</span>
+	Action SimpleGame<span style="color: #666666">::</span>update(SDL_Event<span style="color: #666666">*</span> event)
+	{
+		<span style="color: #408080; font-style: italic">// check if new game</span>
+		<span style="color: #008000; font-weight: bold">if</span>(getIsNewGame())
+		{
+			newGame();
+		}
+	
+		<span style="color: #408080; font-style: italic">// create an action object</span>
+		Action newAction <span style="color: #666666">=</span> {DO_NOTHING, nullptr};
+	
+		<span style="color: #408080; font-style: italic">// update all the game objects</span>
+		<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities()<span style="color: #666666">-&gt;</span>size(); i<span style="color: #666666">++</span>)
+		{
+			(<span style="color: #666666">*</span>getMovingEntities())[i]<span style="color: #666666">-&gt;</span>update(event);
+		}
+	
+		<span style="color: #408080; font-style: italic">// execute game logic</span>
+		logic();
+	
+		<span style="color: #408080; font-style: italic">// if the game state is false, end the game</span>
+		<span style="color: #008000; font-weight: bold">if</span>(getgameState() <span style="color: #666666">==</span> <span style="color: #008000">false</span>)
+		{
+			setisNewGame(<span style="color: #008000">true</span>);
+			setGameState(<span style="color: #008000">true</span>);
+			getBall()<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">0</span>);
+			getBall()<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">0</span>);
+	
+			newAction <span style="color: #666666">=</span> {MOVE_SCREENS, getGameOverScreen()};
+		}
+	
+		<span style="color: #008000; font-weight: bold">if</span>(event)
+		{
+			<span style="color: #008000; font-weight: bold">if</span>((<span style="color: #666666">*</span>event).key.keysym.sym <span style="color: #666666">==</span> SDLK_q)
+			{
+				setisNewGame(<span style="color: #008000">true</span>);
+				newAction <span style="color: #666666">=</span> {MOVE_NODES, getParentNode()};
+				<span style="color: #008000; font-weight: bold">return</span> newAction;
+			}
+	
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span>((<span style="color: #666666">*</span>event).key.keysym.sym <span style="color: #666666">==</span> SDLK_p)
+			{
+				newAction <span style="color: #666666">=</span> {MOVE_SCREENS, getPauseScreen()};
+				<span style="color: #008000; font-weight: bold">return</span> newAction;
+			}
+	
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span>((<span style="color: #666666">*</span>event).key.keysym.sym <span style="color: #666666">==</span> SDLK_n)
+			{
+				setGameState(<span style="color: #008000">true</span>);
+				setisNewGame(<span style="color: #008000">true</span>);
+			}
+	
+			<span style="color: #008000; font-weight: bold">return</span> newAction;
+		}
+	}
+	
+	<span style="color: #B00040">void</span> SimpleGame<span style="color: #666666">::</span>newGame()
+	{
+		setGameState(<span style="color: #008000">true</span>);
+		ball<span style="color: #666666">-&gt;</span>setXPos(<span style="color: #666666">0</span>);
+		ball<span style="color: #666666">-&gt;</span>setYPos(<span style="color: #666666">0</span>);
+		ball<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">2</span>);
+		ball<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">5</span>);
+		setisNewGame(<span style="color: #008000">false</span>);
+	}
+	
+	<span style="color: #B00040">void</span> SimpleGame<span style="color: #666666">::</span>logic()
+	{
+		<span style="color: #008000; font-weight: bold">if</span>(getBall()<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+		{
+			getBall()<span style="color: #666666">-&gt;</span>setXPos(<span style="color: #666666">0</span>);
+			getBall()<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(getBall()<span style="color: #666666">-&gt;</span>getXVelocity()));
+		}
+	
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span>(getBall()<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+		{
+			getBall()<span style="color: #666666">-&gt;</span>setYPos(<span style="color: #666666">0</span>);
+			getBall()<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(getBall()<span style="color: #666666">-&gt;</span>getYVelocity()));
+		}
+	
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span>(getBall()<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> getBall()<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&gt;</span> windowWidth)
+		{
+			getBall()<span style="color: #666666">-&gt;</span>setXPos(windowWidth <span style="color: #666666">-</span> getBall()<span style="color: #666666">-&gt;</span>getWidth());
+			getBall()<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(getBall()<span style="color: #666666">-&gt;</span>getXVelocity()));
+		}
+	
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span>(getBall()<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> getBall()<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&gt;</span> windowHeight)
+		{
+			getBall()<span style="color: #666666">-&gt;</span>setYPos(windowHeight <span style="color: #666666">-</span> getBall()<span style="color: #666666">-&gt;</span>getHeight());
+			getBall()<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(getBall()<span style="color: #666666">-&gt;</span>getYVelocity()));
+		}
+	}
+	</pre></div>
+	For now we will leave the constructor empty but let's break down the update method.
+	<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">Action SimpleGame<span style="color: #666666">::</span>update(SDL_Event<span style="color: #666666">*</span> event)
+{
+    <span style="color: #408080; font-style: italic">// check if new game</span>
+    <span style="color: #008000; font-weight: bold">if</span>(getIsNewGame())
+    {
+        newGame();
+    }
+
+    <span style="color: #408080; font-style: italic">// create an action object</span>
+    Action newAction <span style="color: #666666">=</span> {DO_NOTHING, nullptr};
+
+    <span style="color: #408080; font-style: italic">// update all the game objects</span>
+    <span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities()<span style="color: #666666">-&gt;</span>size(); i<span style="color: #666666">++</span>)
+    {
+        (<span style="color: #666666">*</span>getMovingEntities())[i]<span style="color: #666666">-&gt;</span>update(event);
+    }
+</pre></div>
+First let's look at the function signature, we have an Action as the return type and pass in an event as a 
+parameter. If you remember, in order to move in our menu system we need actions so if we want to leave the 
+game we need to return an action saying that.
+
+<br></br>The first thing we check every update is if it is a new game. We need to do this because
+there is no way to inherently know if this is the first time we have called update or the 500th time. We will define the
+newGame() method later on.
+<br></br>
+Next we create an "empty" action object that does nothing. We will return this if we want to stay in the game.
+<br></br>
+Next we call update on all the moving game objects. The syntax is a bit wonky but basically we have a vector (a list) of
+game objects called movingEntities which stores all the game objects that can move. In our game we only need to update the moving objects
+but in other games you may choose to update static objects as well. The function getMovingEntities() returns a pointer to the
+vector so we must dereference it before we can index it and call update for all its members.
+This basically moves all our game objects for this frame. 
+<br></br>
+<br></br>
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">    logic();
+
+    <span style="color: #408080; font-style: italic">// if the game state is false, end the game</span>
+    <span style="color: #008000; font-weight: bold">if</span>(getgameState() <span style="color: #666666">==</span> <span style="color: #008000">false</span>)
+    {
+        setisNewGame(<span style="color: #008000">true</span>);
+        setGameState(<span style="color: #008000">true</span>);
+        getBall()<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">0</span>);
+        getBall()<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">0</span>);
+
+        newAction <span style="color: #666666">=</span> {MOVE_SCREENS, getGameOverScreen()};
+    }
+</pre></div>
+After updating all the game objects we call the logic function to detect if any game states have been
+reached and to handle them accordingly. In this case our logic function is used for collision
+detection after the objects move each frame. We will define the logic function later on.
+<br></br>
+After the logic function gets called we check to see if the game is over because the logic function recognizes
+and handles states that end the game. If it is over we basically reset everthing and set the newAction to go to the gameOver screen.
+<br></br>
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008000; font-weight: bold">if</span>(event)
+    {
+        <span style="color: #008000; font-weight: bold">if</span>((<span style="color: #666666">*</span>event).key.keysym.sym <span style="color: #666666">==</span> SDLK_q)
+        {
+            setisNewGame(<span style="color: #008000">true</span>);
+            newAction <span style="color: #666666">=</span> {MOVE_NODES, getParentNode()};
+            <span style="color: #008000; font-weight: bold">return</span> newAction;
+        }
+
+        <span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span>((<span style="color: #666666">*</span>event).key.keysym.sym <span style="color: #666666">==</span> SDLK_p)
+        {
+            newAction <span style="color: #666666">=</span> {MOVE_SCREENS, getPauseScreen()};
+            <span style="color: #008000; font-weight: bold">return</span> newAction;
+        }
+
+        <span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span>((<span style="color: #666666">*</span>event).key.keysym.sym <span style="color: #666666">==</span> SDLK_n)
+        {
+            setGameState(<span style="color: #008000">true</span>);
+            setisNewGame(<span style="color: #008000">true</span>);
+        }
+
+        <span style="color: #008000; font-weight: bold">return</span> newAction;
+    }
+}
+</pre></div>
+This is the final part of the update method where we register user events for our game.
+Again the syntax is a bit wonky but this is how you detect a keystroke in SDL2. If it is a q
+then we quit the game, if it is a p then we pause the game, and if it is an n we restart the game.
+Finally at the end we return newAction at the end of the update function.
+
+<br></br>
+Next we have the newGame() method. It is intuitive and just resets everything.
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #B00040">void</span> SimpleGame<span style="color: #666666">::</span>newGame()
+	{
+		setGameState(<span style="color: #008000">true</span>);
+		ball<span style="color: #666666">-&gt;</span>setXPos(<span style="color: #666666">0</span>);
+		ball<span style="color: #666666">-&gt;</span>setYPos(<span style="color: #666666">0</span>);
+		ball<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">2</span>);
+		ball<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">5</span>);
+		setisNewGame(<span style="color: #008000">false</span>);
+	}	
+</pre></div>
+<br></br>
+Finally we have the logic method which in this case is collision detection.
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #B00040">void</span> SimpleGame<span style="color: #666666">::</span>logic()
+	{
+		<span style="color: #408080; font-style: italic">// ball hits left side of screen</span>
+		<span style="color: #008000; font-weight: bold">if</span>(getBall()<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+		{
+			getBall()<span style="color: #666666">-&gt;</span>setXPos(<span style="color: #666666">0</span>);
+			getBall()<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(getBall()<span style="color: #666666">-&gt;</span>getXVelocity()));
+		}
+	
+		<span style="color: #408080; font-style: italic">// ball hits top of screen</span>
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span>(getBall()<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+		{
+			getBall()<span style="color: #666666">-&gt;</span>setYPos(<span style="color: #666666">0</span>);
+			getBall()<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(getBall()<span style="color: #666666">-&gt;</span>getYVelocity()));
+		}
+	
+		<span style="color: #408080; font-style: italic">// ball hits right side of screen</span>
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span>(getBall()<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> getBall()<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&gt;</span> windowWidth)
+		{
+			getBall()<span style="color: #666666">-&gt;</span>setXPos(windowWidth <span style="color: #666666">-</span> getBall()<span style="color: #666666">-&gt;</span>getWidth());
+			getBall()<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(getBall()<span style="color: #666666">-&gt;</span>getXVelocity()));
+		}
+	
+		<span style="color: #408080; font-style: italic">// ball hits bottom of screen</span>
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span>(getBall()<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> getBall()<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&gt;</span> windowHeight)
+		{
+			getBall()<span style="color: #666666">-&gt;</span>setYPos(windowHeight <span style="color: #666666">-</span> getBall()<span style="color: #666666">-&gt;</span>getHeight());
+			getBall()<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(getBall()<span style="color: #666666">-&gt;</span>getYVelocity()));
+		}
+	}
+	</pre></div>
+	<IMG SRC="images/collision.png" style="float: right; width: 50%; margin-right: 1%; margin-top: 1%; margin-bottom: 2%;"> 
+
+Since there is only one game object the only collisions that occur are with the four sides of the	
+screen. Accordingly we have four if statements to check these four collision cases: left, top, right, bottom.
+<br></br>
+To understand what each of these
+if statements is checking, look at the image to the right. We see the ball represented as a black square moving from position 1 to position
+2 where the position is te red circle at the top left of each square. The screen is represented by the large black square with the coordinates shown.
+Notice how the Y axis is inverted and positive is down. This is how coordinates work for images. Also, position for a texture is the top left corner, not the center.
+<br></br>
+This image reflects the first if statement. When the ball moves to position 2 its x coordinate will be negative. We
+don't want to render the ball when it is off the screen so we set its x coordinate back to zero. Then to make a "collision effect" we invert the
+x velocity. This way the ball will look like it bounces off the left side of the screen. We do the same exact thing for the other three sides. However,
+notice that for the bottom and right we must account for the width and height of the ball because again the position of the ball is the top left corner.
+			</li>
+
+			<br></br><li>
+		
+	<h5>Creating a new node</h5>
+	Now that we have our game object and our game screen we need to integrate them into a new node. Create a file called "GameNode.h"
+	<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// GameNode.h</span>
+
+<span style="color: #BC7A00">#include &quot;Node.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;Config.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;SimpleGame.h&quot;</span>
+
+
+<span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">GameNode</span> <span style="color: #666666">:</span> <span style="color: #008000; font-weight: bold">public</span> Node
+{
+    <span style="color: #A0A000">public:</span> 
+        GameNode(SDL_Renderer<span style="color: #666666">*</span> renderer_in, Node<span style="color: #666666">*</span> parentNode_in)<span style="color: #666666">:</span> Node(renderer_in, parentNode_in)
+        {
+            SimpleGame<span style="color: #666666">*</span> game <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">new</span> SimpleGame;
+            <span style="color: #408080; font-style: italic">//game-&gt;addTextureToScreen(createImage(renderer_in, &quot;brickBreakerNodeImages/brickBreakerScreen.png&quot;, true));</span>
+
+            Ball<span style="color: #666666">*</span> ball <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">new</span> Ball;
+            ArcadeTexture<span style="color: #666666">*</span> ballTexture <span style="color: #666666">=</span> createImage(renderer_in, <span style="color: #BA2121">&quot;brickBreakerNodeImages/ballTexture.png&quot;</span>);
+
+            ball<span style="color: #666666">-&gt;</span>setGameObjectTexture(ballTexture);
+            ball<span style="color: #666666">-&gt;</span>setState(<span style="color: #008000">true</span>);
+
+            game<span style="color: #666666">-&gt;</span>addEntity(ball);
+            game<span style="color: #666666">-&gt;</span>addMovingEntity(ball);
+            game<span style="color: #666666">-&gt;</span>setBall(ball);
+
+            game<span style="color: #666666">-&gt;</span>setisNewGame(<span style="color: #008000">true</span>);
+            game<span style="color: #666666">-&gt;</span>setGameState(<span style="color: #008000">true</span>);
+
+            <span style="color: #008000; font-weight: bold">this</span><span style="color: #666666">-&gt;</span>addScreen(game);
+            <span style="color: #008000; font-weight: bold">this</span><span style="color: #666666">-&gt;</span>setCurrentScreen(game);
+        }
+};
+</pre></div>
+Notice that this process is almost identical to creating a new node from before. The only difference is that we must 
+initialize a GameScreen and Entity in slightly different ways as shown. Notice the line that is commented out. When you get your code working you 
+should notice something a bit weird. Try compiling and running your code with the line commented and uncommented
+and try to understand why that weird behavior happens. If you went to lecture you will know why. 
+	</li>
+		</ol>
+
+The last step is to edit our Main.cpp function to build this GameNode. The only thing that changed in the code
+below from the simple menu is that we include "GameNode.h" and create a GameNode object.
+
 <!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// main.cpp</span>
 <span style="color: #BC7A00">#include &quot;SDL.h&quot;</span>
 <span style="color: #BC7A00">#include &quot;SDL_mixer.h&quot;</span>
@@ -1314,12 +1860,28 @@ TTF_Font<span style="color: #666666">*</span> font <span style="color: #666666">
 	<span style="color: #008000; font-weight: bold">return</span> <span style="color: #666666">0</span>;
 }
 </pre></div>
+	</p>
+
+
+
+</p>
 <h5>link to code for lesson 3</h5>
 <p> https://github.com/geffencooper/lesson03_code </p>
+
+<h4> That is how you make a game in our arcade. While it seems like a lot just to make a
+	ball bounce on the screen it was less than 200 lines of code (about half of these are empty or comments).
+	This is the bulk of the code and from here you can easily add new objects and new logic.
+	I encourage everyone to mess around with this code once they get it working and see what you can make
+	just with this simple template. Please contact me if you are confused or need help.
+</h4>
+
+Also, don't forget to use the git commands from last lesson to keep track of your changes and save them to GitHub.
+<code>git add .</code> and <code>git commit -m "message"</code> and <code>git push origin master</code>
 </p>
 
 	</p>
 </p>
+
 				<!-- Footer -->
 					<footer id="footer">
 						
