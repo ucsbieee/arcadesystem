@@ -54,6 +54,9 @@
 									<li>
 										<a href="#Lesson3">Lesson 3</a>
 									</li>
+									<li>
+										<a href="#Lesson4">Lesson 4</a>
+									</li>
 								</ul>
 								<p><b>Introduction:</b> Welcome to the lessons page of the Virtual Arcade System Software Project! This poject
 										is a great opportunity to apply object oriented programming in C++. If you are a beginner, don't worry! These lessons 
@@ -1879,6 +1882,737 @@ Also, don't forget to use the git commands from last lesson to keep track of you
 <code>git add .</code> and <code>git commit -m "message"</code> and <code>git push origin master</code>
 </p>
 
+	</p>
+<hr>
+	<a name="Lesson4"></a>
+	<h2>Lesson 4: Animation and Game design Part 2</h2>
+	<p>
+		In this lesson we will continue where we left off last lesson and just keep adding to 
+		our simple game. We will be adding a few new features including user interaction and more screens.
+
+		<h4>User interaction</h4>
+		Right now our game is not really a game because there is no way for the user to interact
+		with anything, it is just an animation of a ball. To enable user interaction we will create another game object
+		that will respond to keystroke events. This game object will be a paddle that will be used to hit the ball.
+		<br></br>
+		Remember the three steps from last lesson. Whenever you want to add to the game you
+		<ol>
+			<li>
+				Create and define a game object
+			</li>
+			<li>
+				Redefine the game screen according to the game object
+			</li>
+			<li>
+				Redefine the node to link the game object and screen 
+			</li>
+		</ol>
+
+		<p>
+			<h5>1. Create and define a game object</h5>
+			To create a paddle game object we will create a new paddle class just
+			like we did with Ball.
+			<br></br>
+			First create the class in a new file called Paddle.h
+			<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// Paddle.h</span>
+
+<span style="color: #BC7A00">#ifndef PADDLE_H</span>
+<span style="color: #BC7A00">#define PADDLE_H</span>
+
+<span style="color: #BC7A00">#include &quot;Entity.h&quot;</span>
+
+<span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">Paddle</span> <span style="color: #666666">:</span> <span style="color: #008000; font-weight: bold">public</span> Entity
+{
+<span style="color: #A0A000">public:</span>
+	Paddle();
+	<span style="color: #B00040">void</span> <span style="color: #0000FF">update</span>(SDL_Event<span style="color: #666666">*</span> event);
+};
+
+<span style="color: #BC7A00">#endif</span>
+</pre></div>
+This file is almost identical to the Ball.h file so I will not go through this code. For an explanation,
+go back to lesson 3 and read through "Defining the Game Object Ball".
+
+<br></br>
+
+Next let's create the Paddle.cpp class and define the constructor and update method
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// Paddle.cpp</span>
+
+	<span style="color: #BC7A00">#include &quot;Paddle.h&quot;</span>
+
+	Paddle<span style="color: #666666">::</span>Paddle()
+	{
+		setXPos(<span style="color: #666666">0</span>);
+		setYPos(<span style="color: #666666">0</span>);
+		setXVelocity(<span style="color: #666666">0</span>);
+		setYVelocity(<span style="color: #666666">0</span>);
+	}
+	
+	<span style="color: #B00040">void</span> Paddle<span style="color: #666666">::</span>update(SDL_Event<span style="color: #666666">*</span> event)
+	{
+		<span style="color: #008000; font-weight: bold">if</span> ((event) <span style="color: #666666">&amp;&amp;</span> ((<span style="color: #666666">*</span>event).type <span style="color: #666666">==</span> SDL_KEYDOWN) <span style="color: #666666">&amp;&amp;</span> (<span style="color: #666666">*</span>event).key.repeat <span style="color: #666666">==</span> <span style="color: #666666">0</span>)
+		{
+			<span style="color: #008000; font-weight: bold">switch</span> ((<span style="color: #666666">*</span>event).key.keysym.sym)
+			{
+			<span style="color: #008000; font-weight: bold">case</span> SDLK_RIGHT:
+			{
+				printf(<span style="color: #BA2121">&quot;</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">RIGHT</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>);
+				setXVelocity(getXVelocity() <span style="color: #666666">+</span> <span style="color: #666666">8</span>);
+				<span style="color: #008000; font-weight: bold">break</span>;
+			}
+			<span style="color: #008000; font-weight: bold">case</span> SDLK_LEFT:
+			{
+				printf(<span style="color: #BA2121">&quot;</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">LEFT</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>);
+				setXVelocity(getXVelocity() <span style="color: #666666">-</span> <span style="color: #666666">8</span>);
+				<span style="color: #008000; font-weight: bold">break</span>;
+			}
+			}
+		}
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> ((event <span style="color: #666666">!=</span> nullptr) <span style="color: #666666">&amp;&amp;</span> (<span style="color: #666666">*</span>event).type <span style="color: #666666">==</span> SDL_KEYUP <span style="color: #666666">&amp;&amp;</span> (<span style="color: #666666">*</span>event).key.repeat <span style="color: #666666">==</span> <span style="color: #666666">0</span>)
+		{
+			<span style="color: #008000; font-weight: bold">switch</span> ((<span style="color: #666666">*</span>event).key.keysym.sym)
+			{
+			<span style="color: #008000; font-weight: bold">case</span> SDLK_RIGHT:
+			{
+				setXVelocity(getXVelocity()<span style="color: #666666">-8</span>);
+				<span style="color: #008000; font-weight: bold">break</span>;
+			}
+			<span style="color: #008000; font-weight: bold">case</span> SDLK_LEFT:
+			{
+				setXVelocity(getXVelocity()<span style="color: #666666">+8</span>);
+				<span style="color: #008000; font-weight: bold">break</span>;
+			}
+			}
+		}
+		<span style="color: #008000; font-weight: bold">if</span> (<span style="color: #666666">!</span>event)
+		{
+			setXPos(getXPos() <span style="color: #666666">+</span> getXVelocity());
+		}
+	}
+	</pre></div>
+	<br></br>
+	Everything before the update method is exactly the same as Ball.cpp so I will only
+	go into the how the update method for paddle works.
+	
+	<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #B00040">void</span> Paddle<span style="color: #666666">::</span>update(SDL_Event<span style="color: #666666">*</span> event)
+{
+	<span style="color: #008000; font-weight: bold">if</span> ((event) <span style="color: #666666">&amp;&amp;</span> ((<span style="color: #666666">*</span>event).type <span style="color: #666666">==</span> SDL_KEYDOWN) <span style="color: #666666">&amp;&amp;</span> (<span style="color: #666666">*</span>event).key.repeat <span style="color: #666666">==</span> <span style="color: #666666">0</span>)
+	{
+		<span style="color: #008000; font-weight: bold">switch</span> ((<span style="color: #666666">*</span>event).key.keysym.sym)
+		{
+		<span style="color: #008000; font-weight: bold">case</span> SDLK_RIGHT:
+		{
+			printf(<span style="color: #BA2121">&quot;</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">RIGHT</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>);
+			setXVelocity(getXVelocity() <span style="color: #666666">+</span> <span style="color: #666666">8</span>);
+			<span style="color: #008000; font-weight: bold">break</span>;
+		}
+		<span style="color: #008000; font-weight: bold">case</span> SDLK_LEFT:
+		{
+			printf(<span style="color: #BA2121">&quot;</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">LEFT</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>);
+			setXVelocity(getXVelocity() <span style="color: #666666">-</span> <span style="color: #666666">8</span>);
+			<span style="color: #008000; font-weight: bold">break</span>;
+		}
+		}
+	}
+</pre></div>
+This is the first part of the update method for Paddle. The first thing to notice is that
+we want the paddle to respond to the user pressing keys on the keyboard so we need to work with
+the SDL_Event like we did in lesson 3. 
+<br></br>
+In order to move the paddle we want the user to press the left and right arrow keys. You might think 
+that we should just increment and decrement the x position everytime they press left or right. However, we 
+don't want the user to have to repeatedly press the key to move the paddle, we want them to be able to just
+hold it to move. So what we will do is say <b>the first time</b> you press the right arrow key increment the x velocity and
+keep the velocity like that until you release the right arrow key. We also update the position of the paddle every frame
+so the paddle will move right until you release the key. (Same for left arrow key). The code is explained below.
+<br></br>
+The if statement looks confusing so let's break it down. It checks whether three statements are true using the "&&" operator.
+This operator just means "and" and says that everything around it must be true. So in order to enter the body of this if statement
+all three conditions must be true. The first condition is "event". Event here is a pointer so if it is not NULL (if there is an event) then it
+will be true. The second part is checking if the event type is a SDL_KEYDOWN which means did the user press down a the key. The third
+check is if key.repeat is 0 (0 in C++ is false). This just means is this the first time you pressed down on this key. So this is basically what 
+we said in the first paragraph, the first time you press the arrow key change the velocity. 	
+<br></br>
+This is second part which checks if you released the key
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008000; font-weight: bold">else</span> <span style="color: #0000FF">if</span> ((event) <span style="color: #666666">&amp;&amp;</span> (<span style="color: #666666">*</span>event).type <span style="color: #666666">==</span> SDL_KEYUP <span style="color: #666666">&amp;&amp;</span> (<span style="color: #666666">*</span>event).key.repeat <span style="color: #666666">==</span> <span style="color: #666666">0</span>)
+	{
+		<span style="color: #008000; font-weight: bold">switch</span> ((<span style="color: #666666">*</span>event).key.keysym.sym)
+		{
+		<span style="color: #008000; font-weight: bold">case</span> SDLK_RIGHT:
+		{
+			setXVelocity(getXVelocity()<span style="color: #666666">-8</span>);
+			<span style="color: #008000; font-weight: bold">break</span>;
+		}
+		<span style="color: #008000; font-weight: bold">case</span> SDLK_LEFT:
+		{
+			setXVelocity(getXVelocity()<span style="color: #666666">+8</span>);
+			<span style="color: #008000; font-weight: bold">break</span>;
+		}
+		}
+	}
+</pre></div>
+This time we check if this is the first time the key was released then change the x velocity in
+the opposite direction so that it goes back to zero. It is just the opposite of the first if statement.
+<br></br>
+This final part just updates the position of the paddle whenever there is no event.
+If you remember in the main function in our gui loop we call update whenever there is an event and update again with a nullptr
+to update game objects even when there are no events. 
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008000; font-weight: bold">if</span> (<span style="color: #666666">!</span>event)
+	{
+		setXPos(getXPos() <span style="color: #666666">+</span> getXVelocity());
+	}
+	</pre></div>
+	So overall we just want the paddle to move while we are holding down a key and to stop when we release the key.
+	<br></br>
+	<h5>2. Redefine the game screen according to the game object</h5>
+	Now that we defined the Paddle class we need make our game actually use a paddle game object.
+	<br></br>
+	First go into "SimpleGame.h" and add a few lines. First we need to #include "Paddle.h" so that we 
+	can use it. Second we need to add a Paddle object as an attribute to this game. Finally, we need to create an accessor and mutator
+	to allow us to access the Paddle game object. I put comments on the lines of code we added to this file.
+	<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// SimpleGame.h</span>
+
+<span style="color: #BC7A00">#ifndef SIMPLE_GAME_H</span>
+<span style="color: #BC7A00">#define SIMPLE_GAME_H</span>
+
+<span style="color: #BC7A00">#include &quot;GameScreen.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;Ball.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;Config.h&quot;</span>
+
+<span style="color: #408080; font-style: italic">// need to include the paddle class</span>
+<span style="color: #BC7A00">#include &quot;Paddle.h&quot;</span>
+
+<span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">SimpleGame</span> <span style="color: #666666">:</span> <span style="color: #008000; font-weight: bold">public</span> GameScreen
+{
+    <span style="color: #A0A000">public:</span>
+        SimpleGame();
+        Action <span style="color: #0000FF">update</span>(SDL_Event<span style="color: #666666">*</span> event);
+        <span style="color: #B00040">void</span> <span style="color: #0000FF">logic</span>();
+
+        <span style="color: #B00040">void</span> <span style="color: #0000FF">newGame</span>();
+
+        <span style="color: #B00040">void</span> <span style="color: #0000FF">setBall</span>(Ball<span style="color: #666666">*</span> ball_in) {ball <span style="color: #666666">=</span> ball_in;}
+        Ball<span style="color: #666666">*</span> <span style="color: #0000FF">getBall</span>() {<span style="color: #008000; font-weight: bold">return</span> ball;}
+        
+        <span style="color: #408080; font-style: italic">// accessor and mutator methods</span>
+        <span style="color: #B00040">void</span> <span style="color: #0000FF">setPaddle</span>(Paddle<span style="color: #666666">*</span> paddle_in) {paddle <span style="color: #666666">=</span> paddle_in;}
+        Paddle<span style="color: #666666">*</span> <span style="color: #0000FF">getPaddle</span>() {<span style="color: #008000; font-weight: bold">return</span> paddle;}
+    <span style="color: #A0A000">private:</span>
+        Ball<span style="color: #666666">*</span> ball;
+        <span style="color: #408080; font-style: italic">// add paddle as an attribute of the game</span>
+        Paddle<span style="color: #666666">*</span> paddle;
+};
+
+<span style="color: #BC7A00">#endif</span>
+</pre></div>
+Next let's add some stuff to the SimpleGame.cpp file so that our paddle can handle collisions.
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #B00040">void</span> SimpleGame<span style="color: #666666">::</span>newGame()
+	{
+		setGameState(<span style="color: #008000">true</span>);
+		ball<span style="color: #666666">-&gt;</span>setXPos(<span style="color: #666666">0</span>);
+		ball<span style="color: #666666">-&gt;</span>setYPos(<span style="color: #666666">0</span>);
+		ball<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">2</span>);
+		ball<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">5</span>);
+		paddle<span style="color: #666666">-&gt;</span>setXPos(<span style="color: #666666">0</span>);
+		paddle<span style="color: #666666">-&gt;</span>setYPos(windowHeight<span style="color: #666666">-</span>paddle<span style="color: #666666">-&gt;</span>getHeight());
+		paddle<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">0</span>);
+		setisNewGame(<span style="color: #008000">false</span>);
+	}
+	</pre></div>
+The first function we need to add to is the newGame function. Everytime we start a new game we want to set the paddle
+position and velocity as shown.
+<br></br>
+Now we need to change and add to the logic method so that the paddle has collision detecion.
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #B00040">void</span> SimpleGame<span style="color: #666666">::</span>logic()
+	{
+		<span style="color: #408080; font-style: italic">// ball hits left side of screen</span>
+		<span style="color: #008000; font-weight: bold">if</span>(getBall()<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+		{
+			getBall()<span style="color: #666666">-&gt;</span>setXPos(<span style="color: #666666">0</span>);
+			getBall()<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(getBall()<span style="color: #666666">-&gt;</span>getXVelocity()));
+		}
+	
+		<span style="color: #408080; font-style: italic">// ball hits top of screen</span>
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span>(getBall()<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+		{
+			getBall()<span style="color: #666666">-&gt;</span>setYPos(<span style="color: #666666">0</span>);
+			getBall()<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(getBall()<span style="color: #666666">-&gt;</span>getYVelocity()));
+		}
+	
+		<span style="color: #408080; font-style: italic">// ball hits right side of screen</span>
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span>(getBall()<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> getBall()<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&gt;</span> windowWidth)
+		{
+			getBall()<span style="color: #666666">-&gt;</span>setXPos(windowWidth <span style="color: #666666">-</span> getBall()<span style="color: #666666">-&gt;</span>getWidth());
+			getBall()<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(getBall()<span style="color: #666666">-&gt;</span>getXVelocity()));
+		}
+	
+		<span style="color: #408080; font-style: italic">// ball hits bottom of screen</span>
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span>(getBall()<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> getBall()<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&gt;</span> windowHeight)
+		{
+			<span style="color: #408080; font-style: italic">// getBall()-&gt;setYPos(windowHeight - getBall()-&gt;getHeight());</span>
+			<span style="color: #408080; font-style: italic">// getBall()-&gt;setYVelocity(-(getBall()-&gt;getYVelocity()));</span>
+			setGameState(<span style="color: #008000">false</span>);
+		}
+	
+		<span style="color: #408080; font-style: italic">// -----------------------------------------------------------</span>
+	
+		<span style="color: #408080; font-style: italic">// paddle collisions</span>
+		SDL_Rect ballRegion <span style="color: #666666">=</span> getBall()<span style="color: #666666">-&gt;</span>getGameObjectTexture()<span style="color: #666666">-&gt;</span>getImageDestination();
+		SDL_Rect paddleRegion <span style="color: #666666">=</span> getPaddle()<span style="color: #666666">-&gt;</span>getGameObjectTexture()<span style="color: #666666">-&gt;</span>getImageDestination();
+	
+		<span style="color: #008000; font-weight: bold">if</span> (SDL_HasIntersection(<span style="color: #666666">&amp;</span>ballRegion, <span style="color: #666666">&amp;</span>paddleRegion))
+		{
+			getBall()<span style="color: #666666">-&gt;</span>setYPos(<span style="color: #666666">480</span> <span style="color: #666666">-</span> getBall()<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">-</span> getPaddle()<span style="color: #666666">-&gt;</span>getHeight());
+			getBall()<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(getBall()<span style="color: #666666">-&gt;</span>getYVelocity()));
+	
+			<span style="color: #B00040">int</span> ratio <span style="color: #666666">=</span> (getBall()<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> getBall()<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>) <span style="color: #666666">-</span> (getPaddle()<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> getPaddle()<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>);
+			ball<span style="color: #666666">-&gt;</span>setXVelocity(ratio <span style="color: #666666">/</span> <span style="color: #666666">4</span>);
+		}
+	
+		<span style="color: #008000; font-weight: bold">if</span>(paddle<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+		{
+			paddle<span style="color: #666666">-&gt;</span>setXPos(<span style="color: #666666">0</span>);
+		}
+		<span style="color: #008000; font-weight: bold">if</span>(paddle <span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> paddle<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&gt;</span> windowWidth)
+		{
+			paddle<span style="color: #666666">-&gt;</span>setXPos(windowWidth<span style="color: #666666">-</span>paddle<span style="color: #666666">-&gt;</span>getWidth());
+		}
+	}
+	</pre></div>
+	The first change is we want our game to end when the ball hits the bottom of the screen like in brick breaker.
+	<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// ball hits bottom of screen</span>
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #0000FF">if</span>(getBall()<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> getBall()<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&gt;</span> windowHeight)
+		{
+			<span style="color: #408080; font-style: italic">// getBall()-&gt;setYPos(windowHeight - getBall()-&gt;getHeight());</span>
+			<span style="color: #408080; font-style: italic">// getBall()-&gt;setYVelocity(-(getBall()-&gt;getYVelocity()));</span>
+			setGameState(<span style="color: #008000">false</span>);
+		}
+	</pre></div>
+<br></br>
+Next we want to add paddle collision detection.
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// paddle collisions</span>
+    SDL_Rect ballRegion <span style="color: #666666">=</span> getBall()<span style="color: #666666">-&gt;</span>getGameObjectTexture()<span style="color: #666666">-&gt;</span>getImageDestination();
+	SDL_Rect paddleRegion <span style="color: #666666">=</span> getPaddle()<span style="color: #666666">-&gt;</span>getGameObjectTexture()<span style="color: #666666">-&gt;</span>getImageDestination();
+
+	<span style="color: #008000; font-weight: bold">if</span> (SDL_HasIntersection(<span style="color: #666666">&amp;</span>ballRegion, <span style="color: #666666">&amp;</span>paddleRegion))
+	{
+		getBall()<span style="color: #666666">-&gt;</span>setYPos(<span style="color: #666666">480</span> <span style="color: #666666">-</span> getBall()<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">-</span> getPaddle()<span style="color: #666666">-&gt;</span>getHeight());
+		getBall()<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(getBall()<span style="color: #666666">-&gt;</span>getYVelocity()));
+
+		<span style="color: #B00040">int</span> ratio <span style="color: #666666">=</span> (getBall()<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> getBall()<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>) <span style="color: #666666">-</span> (getPaddle()<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> getPaddle()<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>);
+		ball<span style="color: #666666">-&gt;</span>setXVelocity(ratio <span style="color: #666666">/</span> <span style="color: #666666">4</span>);
+	}
+
+    <span style="color: #008000; font-weight: bold">if</span>(paddle<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+    {
+        paddle<span style="color: #666666">-&gt;</span>setXPos(<span style="color: #666666">0</span>);
+    }
+    <span style="color: #008000; font-weight: bold">if</span>(paddle <span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> paddle<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&gt;</span> windowWidth)
+    {
+        paddle<span style="color: #666666">-&gt;</span>setXPos(windowWidth<span style="color: #666666">-</span>paddle<span style="color: #666666">-&gt;</span>getWidth());
+    }
+</pre></div>
+SDL2 provides a function called "SDL_HasIntersection" which will return a true/false if two rectangles overlap which is
+what collisions are. So first we need to create two rectangles that represent the regions of our ball and paddle
+and pass them into the SDL2 function. To get these regions we extract the rectangles from the paddle and ball game objects. Each game object
+has an ArcadeTexture (image) which has rectangle that can be accessed with "getImageDestination()" as shown in the first two lines.
+<br></br>
+We say if the ball and paddle collide then we want to set the ball position to the top of the paddle (so that it doesn't render inside the paddle)
+and reverse the y velocity just as we did when the ball hit the bottom of the window. We also want to change the x velocity. If you have ever played brick 
+breaker you will know that the ball doesn't just perfectly bounce off the paddle, it bounces more to the left or right based on where it hit the paddle. For example,
+if the ball hit the right corner of the paddle its x velocity will increase by a lot. This adds randomness to our game because otherwise the entire game
+would play out the same way every time if it just reflected off the paddle.
+<br></br>
+We change the x velocity accordingly by finding the distance the center of the ball is from the center of the paddle and calling it ratio. For example, if the ball hits the 
+center of the paddle this value will be 0. We then set the x velocity to this ratio divided by 4 (4 just happened to be a value that worked well and made the game have a nice feel to it).
+Finally we need to make sure the paddle can't move off of the screen so we set the position back to "0" or "screenWidth - paddle width" if it moves past these values
+so that it will never go off of the screen.
+<br></br>
+<h5>3. Redefine the node to link the game object and screen </h5>
+The final step is to actually create the paddle object and add it to the game through the GameNode where all the initialization happens.
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// GameNode.h</span>
+
+	<span style="color: #BC7A00">#include &quot;Node.h&quot;</span>
+	<span style="color: #BC7A00">#include &quot;Config.h&quot;</span>
+	<span style="color: #BC7A00">#include &quot;SimpleGame.h&quot;</span>
+	
+	
+	<span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">GameNode</span> <span style="color: #666666">:</span> <span style="color: #008000; font-weight: bold">public</span> Node
+	{
+		<span style="color: #A0A000">public:</span> 
+			GameNode(SDL_Renderer<span style="color: #666666">*</span> renderer_in, Node<span style="color: #666666">*</span> parentNode_in)<span style="color: #666666">:</span> Node(renderer_in, parentNode_in)
+			{
+				SimpleGame<span style="color: #666666">*</span> game <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">new</span> SimpleGame;
+				game<span style="color: #666666">-&gt;</span>addTextureToScreen(createImage(renderer_in, <span style="color: #BA2121">&quot;brickBreakerNodeImages/brickBreakerScreen.png&quot;</span>, <span style="color: #008000">true</span>));
+	
+				Ball<span style="color: #666666">*</span> ball <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">new</span> Ball;
+				ArcadeTexture<span style="color: #666666">*</span> ballTexture <span style="color: #666666">=</span> createImage(renderer_in, <span style="color: #BA2121">&quot;brickBreakerNodeImages/ballTexture.png&quot;</span>);
+	
+				ball<span style="color: #666666">-&gt;</span>setGameObjectTexture(ballTexture);
+				ball<span style="color: #666666">-&gt;</span>setState(<span style="color: #008000">true</span>);
+	
+				game<span style="color: #666666">-&gt;</span>addEntity(ball);
+				game<span style="color: #666666">-&gt;</span>addMovingEntity(ball);
+				game<span style="color: #666666">-&gt;</span>setBall(ball);
+	
+				Paddle<span style="color: #666666">*</span> paddle <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">new</span> Paddle;
+				ArcadeTexture<span style="color: #666666">*</span> paddleTexture <span style="color: #666666">=</span> createImage(renderer_in, <span style="color: #BA2121">&quot;brickBreakerNodeImages/paddleTexture.png&quot;</span>);
+				
+				paddle<span style="color: #666666">-&gt;</span>setState(<span style="color: #008000">true</span>);
+				paddle<span style="color: #666666">-&gt;</span>setGameObjectTexture(paddleTexture);
+				
+				game<span style="color: #666666">-&gt;</span>addEntity(paddle);
+				game<span style="color: #666666">-&gt;</span>addMovingEntity(paddle);
+				game<span style="color: #666666">-&gt;</span>setPaddle(paddle);
+	
+				game<span style="color: #666666">-&gt;</span>setisNewGame(<span style="color: #008000">true</span>);
+				game<span style="color: #666666">-&gt;</span>setGameState(<span style="color: #008000">true</span>);
+	
+				MenuScreen<span style="color: #666666">*</span> gameOverScreen <span style="color: #666666">=</span> createMenuScreen();
+				gameOverScreen<span style="color: #666666">-&gt;</span>addTextureToScreen(createImage(renderer_in, <span style="color: #BA2121">&quot;brickBreakerNodeImages/pauseScreenBackgroundTexture.png&quot;</span>, <span style="color: #008000">true</span>));
+				ArcadeTexture<span style="color: #666666">*</span> gameOverText <span style="color: #666666">=</span> createSimpleText(renderer_in, <span style="color: #BA2121">&quot;fonts/retro/italic.ttf&quot;</span>, <span style="color: #666666">100</span>, <span style="color: #BA2121">&quot;GAME OVER&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>);
+				gameOverText<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> gameOverText<span style="color: #666666">-&gt;</span>getW() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
+				gameOverScreen<span style="color: #666666">-&gt;</span>addTextureToScreen(gameOverText);
+	
+				SimpleButton<span style="color: #666666">*</span> mainMenuButton2 <span style="color: #666666">=</span> createSimpleTextButton(renderer_in, <span style="color: #BA2121">&quot;fonts/pixel/classic.ttf&quot;</span>, <span style="color: #666666">30</span>,<span style="color: #BA2121">&quot;GAME MENU&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>, <span style="color: #666666">0</span>);
+				mainMenuButton2<span style="color: #666666">-&gt;</span>setButtonPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> mainMenuButton2<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">200</span>);
+				mainMenuButton2<span style="color: #666666">-&gt;</span>setButtonAction(createAction(MOVE_NODES, getParentNode()));
+				gameOverScreen<span style="color: #666666">-&gt;</span>addButtonToScreen(mainMenuButton2);
+	
+				SimpleButton<span style="color: #666666">*</span> newGameButton <span style="color: #666666">=</span> createSimpleTextButton(renderer_in, <span style="color: #BA2121">&quot;fonts/pixel/classic.ttf&quot;</span>, <span style="color: #666666">30</span>, <span style="color: #BA2121">&quot;NEW GAME&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>, <span style="color: #666666">0</span>);
+				newGameButton<span style="color: #666666">-&gt;</span>setButtonPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> newGameButton<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">270</span>);
+				newGameButton<span style="color: #666666">-&gt;</span>setButtonAction(createAction(MOVE_SCREENS, game));
+				
+				gameOverScreen<span style="color: #666666">-&gt;</span>addButtonToScreen(newGameButton);
+				game<span style="color: #666666">-&gt;</span>setGameOverScreen(gameOverScreen);
+				
+	<span style="color: #408080; font-style: italic">//////////////////////////////////////////////////////////////////////////////</span>
+				MenuScreen<span style="color: #666666">*</span> pauseScreen <span style="color: #666666">=</span> createMenuScreen();
+				pauseScreen<span style="color: #666666">-&gt;</span>addTextureToScreen(createImage(renderer_in, <span style="color: #BA2121">&quot;brickBreakerNodeImages/pauseScreenBackgroundTexture.png&quot;</span>));
+				ArcadeTexture<span style="color: #666666">*</span> pauseText <span style="color: #666666">=</span> createSimpleText(renderer_in, <span style="color: #BA2121">&quot;fonts/retro/italic.ttf&quot;</span>, <span style="color: #666666">100</span>,<span style="color: #BA2121">&quot;PAUSE&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>);
+				pauseText<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> pauseText<span style="color: #666666">-&gt;</span>getW() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
+				pauseScreen<span style="color: #666666">-&gt;</span>addTextureToScreen(pauseText);
+	
+	
+				SimpleButton<span style="color: #666666">*</span> resumeButton <span style="color: #666666">=</span> createSimpleTextButton(renderer_in, <span style="color: #BA2121">&quot;fonts/pixel/classic.ttf&quot;</span>, <span style="color: #666666">30</span>,<span style="color: #BA2121">&quot;RESUME&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>, <span style="color: #666666">0</span>);
+				resumeButton<span style="color: #666666">-&gt;</span>setButtonPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> resumeButton<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">270</span>);
+				resumeButton<span style="color: #666666">-&gt;</span>setButtonAction(createAction(MOVE_SCREENS, game));
+			   
+				pauseScreen<span style="color: #666666">-&gt;</span>addButtonToScreen(resumeButton);
+				game<span style="color: #666666">-&gt;</span>setPauseScreen(pauseScreen);
+				
+	
+				<span style="color: #008000; font-weight: bold">this</span><span style="color: #666666">-&gt;</span>addScreen(game);
+				<span style="color: #008000; font-weight: bold">this</span><span style="color: #666666">-&gt;</span>addScreen(pauseScreen);
+				<span style="color: #008000; font-weight: bold">this</span><span style="color: #666666">-&gt;</span>addScreen(gameOverScreen);
+	
+				<span style="color: #008000; font-weight: bold">this</span><span style="color: #666666">-&gt;</span>setCurrentScreen(game);
+			}
+	
+			<span style="color: #B00040">void</span> enter()
+			{
+				setCurrentScreen((<span style="color: #666666">*</span>getScreenList())[<span style="color: #666666">0</span>]);
+			}
+	};
+	</pre></div>
+<br></br>
+The first addition is here where we create and initialize the paddle object and add it to the screen. This is the same process
+as we went through for ball so I won't explain it again.
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">            Paddle<span style="color: #666666">*</span> paddle <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">new</span> Paddle;
+	ArcadeTexture<span style="color: #666666">*</span> paddleTexture <span style="color: #666666">=</span> createImage(renderer_in, <span style="color: #BA2121">&quot;brickBreakerNodeImages/paddleTexture.png&quot;</span>);
+            
+	paddle<span style="color: #666666">-&gt;</span>setState(<span style="color: #008000">true</span>);
+	paddle<span style="color: #666666">-&gt;</span>setGameObjectTexture(paddleTexture);
+	
+	game<span style="color: #666666">-&gt;</span>addEntity(paddle);
+	game<span style="color: #666666">-&gt;</span>addMovingEntity(paddle);
+	game<span style="color: #666666">-&gt;</span>setPaddle(paddle);
+</pre></div>
+
+<br></br>
+Next we want to add another screen to this node so that when our game ends we get a game over screen.
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">            MenuScreen<span style="color: #666666">*</span> gameOverScreen <span style="color: #666666">=</span> createMenuScreen();
+	gameOverScreen<span style="color: #666666">-&gt;</span>addTextureToScreen(createImage(renderer_in, <span style="color: #BA2121">&quot;brickBreakerNodeImages/pauseScreenBackgroundTexture.png&quot;</span>, <span style="color: #008000">true</span>));
+	ArcadeTexture<span style="color: #666666">*</span> gameOverText <span style="color: #666666">=</span> createSimpleText(renderer_in, <span style="color: #BA2121">&quot;fonts/retro/italic.ttf&quot;</span>, <span style="color: #666666">100</span>, <span style="color: #BA2121">&quot;GAME OVER&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>);
+	gameOverText<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> gameOverText<span style="color: #666666">-&gt;</span>getW() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
+	gameOverScreen<span style="color: #666666">-&gt;</span>addTextureToScreen(gameOverText);
+
+	SimpleButton<span style="color: #666666">*</span> mainMenuButton2 <span style="color: #666666">=</span> createSimpleTextButton(renderer_in, <span style="color: #BA2121">&quot;fonts/pixel/classic.ttf&quot;</span>, <span style="color: #666666">30</span>,<span style="color: #BA2121">&quot;GAME MENU&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>, <span style="color: #666666">0</span>);
+	mainMenuButton2<span style="color: #666666">-&gt;</span>setButtonPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> mainMenuButton2<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">200</span>);
+	mainMenuButton2<span style="color: #666666">-&gt;</span>setButtonAction(createAction(MOVE_NODES, getParentNode()));
+	gameOverScreen<span style="color: #666666">-&gt;</span>addButtonToScreen(mainMenuButton2);
+
+	SimpleButton<span style="color: #666666">*</span> newGameButton <span style="color: #666666">=</span> createSimpleTextButton(renderer_in, <span style="color: #BA2121">&quot;fonts/pixel/classic.ttf&quot;</span>, <span style="color: #666666">30</span>, <span style="color: #BA2121">&quot;NEW GAME&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>, <span style="color: #666666">0</span>);
+	newGameButton<span style="color: #666666">-&gt;</span>setButtonPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> newGameButton<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">270</span>);
+	newGameButton<span style="color: #666666">-&gt;</span>setButtonAction(createAction(MOVE_SCREENS, game));
+	
+	gameOverScreen<span style="color: #666666">-&gt;</span>addButtonToScreen(newGameButton);
+	game<span style="color: #666666">-&gt;</span>setGameOverScreen(gameOverScreen);
+</pre></div>
+The process for making this screen is layed out in lesson 2 when we created our menu system so I will not go into detail.
+Basically we create the screen, create images and text that we want on that screen, and add the images and text to the screen.
+Then we create buttons for the screen, set the position of the buttons, create and set actions for those buttons, then add the buttons to the screen.
+Finally we add the screen to the node. 
+<br></br>
+<b>Important: </b>There is one new thing we must do which is actually add this screen to the game with "setGameOverScreen". It may seem
+weird that a game screen has a menu screen as an attribute but every game screen should have a game over screen and a pause screen. 
+<br></br>
+We also want to create a pause screen. This will be very similar to the game over screen
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">            MenuScreen<span style="color: #666666">*</span> pauseScreen <span style="color: #666666">=</span> createMenuScreen();
+	pauseScreen<span style="color: #666666">-&gt;</span>addTextureToScreen(createImage(renderer_in, <span style="color: #BA2121">&quot;brickBreakerNodeImages/pauseScreenBackgroundTexture.png&quot;</span>));
+	ArcadeTexture<span style="color: #666666">*</span> pauseText <span style="color: #666666">=</span> createSimpleText(renderer_in, <span style="color: #BA2121">&quot;fonts/retro/italic.ttf&quot;</span>, <span style="color: #666666">100</span>,<span style="color: #BA2121">&quot;PAUSE&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>);
+	pauseText<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> pauseText<span style="color: #666666">-&gt;</span>getW() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
+	pauseScreen<span style="color: #666666">-&gt;</span>addTextureToScreen(pauseText);
+
+
+	SimpleButton<span style="color: #666666">*</span> resumeButton <span style="color: #666666">=</span> createSimpleTextButton(renderer_in, <span style="color: #BA2121">&quot;fonts/pixel/classic.ttf&quot;</span>, <span style="color: #666666">30</span>,<span style="color: #BA2121">&quot;RESUME&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>, <span style="color: #666666">0</span>);
+	resumeButton<span style="color: #666666">-&gt;</span>setButtonPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> resumeButton<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">270</span>);
+	resumeButton<span style="color: #666666">-&gt;</span>setButtonAction(createAction(MOVE_SCREENS, game));
+   
+	pauseScreen<span style="color: #666666">-&gt;</span>addButtonToScreen(resumeButton);
+	game<span style="color: #666666">-&gt;</span>setPauseScreen(pauseScreen);
+</pre></div>
+<br></br> Make sure to add these screens to the node.
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008000; font-weight: bold">this</span><span style="color: #666666">-&gt;</span>addScreen(game);
+	<span style="color: #008000; font-weight: bold">this</span><span style="color: #666666">-&gt;</span>addScreen(pauseScreen);
+	<span style="color: #008000; font-weight: bold">this</span><span style="color: #666666">-&gt;</span>addScreen(gameOverScreen);
+	</pre></div>	
+<b>Important: </b>You must make sure that you add the game screen to the node first	because everytime
+we enter the node we want this screen.
+
+<br></br>
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #B00040">void</span> <span style="color: #0000FF">enter</span>()
+{
+		setCurrentScreen((<span style="color: #666666">*</span>getScreenList())[<span style="color: #666666">0</span>]);
+}
+</pre></div>
+We want to enter the game screen everytime we enter the node so we define the function "enterNode"
+that will get called whenever we enter this node. It basically jsut sets the current screen to the first screen we added to the node as we did before.
+<br></br>
+Next let's create a basic root node that will allow us to go to this game from a menu screen. You should already have a root node so just change the code to this:
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// RootNode </span>
+ 
+	<span style="color: #408080; font-style: italic">// include the files we need</span>
+	<span style="color: #BC7A00">#include &quot;Node.h&quot;</span>
+	<span style="color: #BC7A00">#include &quot;Config.h&quot;</span>
+	<span style="color: #BC7A00">#include &quot;MenuScreen.h&quot; </span>
+	<span style="color: #BC7A00">#include &quot;SimpleButton.h&quot; </span>
+	<span style="color: #BC7A00">#include &quot;GameNode.h&quot;</span>
+	 
+	<span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">RootNode</span> <span style="color: #666666">:</span> <span style="color: #008000; font-weight: bold">public</span> Node <span style="color: #408080; font-style: italic">// publicly inherits from Node</span>
+	{
+	<span style="color: #A0A000">private:</span>
+	GameNode<span style="color: #666666">*</span> gameNode;
+	
+	<span style="color: #A0A000">public:</span>
+		<span style="color: #408080; font-style: italic">// Constructor                                            // initializer list</span>
+		RootNode(SDL_Renderer<span style="color: #666666">*</span> renderer_in, Node<span style="color: #666666">*</span> parentNode_in)<span style="color: #666666">:</span> Node(renderer_in, parentNode_in)
+		{
+			gameNode <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">new</span> GameNode(getRenderer(), <span style="color: #008000; font-weight: bold">this</span>);
+			children.push_back(gameNode);
+			<span style="color: #408080; font-style: italic">// first create screens for the node</span>
+			MenuScreen<span style="color: #666666">*</span> screen1 <span style="color: #666666">=</span> createMenuScreen();
+	 
+			<span style="color: #408080; font-style: italic">// create images and text to put on the screen using an ArcadeTexture object</span>
+			ArcadeTexture<span style="color: #666666">*</span> screen1Background <span style="color: #666666">=</span> createImage(renderer_in, <span style="color: #BA2121">&quot;rootNodeImages/rootNodeScreenBackground.png&quot;</span>, <span style="color: #008000">true</span>);
+	
+			ArcadeTexture<span style="color: #666666">*</span> screen1Text <span style="color: #666666">=</span> createSimpleText(renderer_in, <span style="color: #BA2121">&quot;fonts/retro/italic.ttf&quot;</span>, <span style="color: #666666">100</span>, <span style="color: #BA2121">&quot;MAIN MENU&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>);
+			screen1Text<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> screen1Text<span style="color: #666666">-&gt;</span>getW() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
+	
+			<span style="color: #408080; font-style: italic">// add the images and text to the screen after creating them</span>
+			screen1<span style="color: #666666">-&gt;</span>addTextureToScreen(screen1Background);
+			screen1<span style="color: #666666">-&gt;</span>addTextureToScreen(screen1Text);
+	 
+			<span style="color: #408080; font-style: italic">// make a text button to put on the screen1</span>
+			SimpleButton<span style="color: #666666">*</span> button1 <span style="color: #666666">=</span> createSimpleTextButton(renderer_in, <span style="color: #BA2121">&quot;fonts/pixel/classic.ttf&quot;</span>, <span style="color: #666666">30</span>, <span style="color: #BA2121">&quot;PLAY SIMPLE GAME&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>, <span style="color: #666666">0</span>);
+			button1<span style="color: #666666">-&gt;</span>setButtonPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> button1<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, screen1Text<span style="color: #666666">-&gt;</span>getY() <span style="color: #666666">+</span> screen1Text<span style="color: #666666">-&gt;</span>getH() <span style="color: #666666">+</span> <span style="color: #666666">50</span>);
+	
+			<span style="color: #408080; font-style: italic">// give this button an action</span>
+			button1<span style="color: #666666">-&gt;</span>setButtonAction(createAction(MOVE_NODES, gameNode));
+		   
+			<span style="color: #408080; font-style: italic">// add the buttons to their screens</span>
+			screen1<span style="color: #666666">-&gt;</span>addButtonToScreen(button1);
+	 
+			<span style="color: #408080; font-style: italic">// add the screens to the node</span>
+			<span style="color: #008000; font-weight: bold">this</span><span style="color: #666666">-&gt;</span>addScreen(screen1);
+	
+			<span style="color: #408080; font-style: italic">// tell the node the current screen</span>
+			<span style="color: #008000; font-weight: bold">this</span><span style="color: #666666">-&gt;</span>setCurrentScreen(screen1);
+		}
+	};
+	</pre></div>
+This is a simple Root Node with one screen and one button to go to the gameNode. Notice a few new things. We must #include "GameNode.h"
+at the top so that we can access it. Next we need to add a pointer to a GameNode as an attribute of this node because it is the child node
+and parents have their children nodes as attributes. Finally we create the gameNode in the first line of the constructor 
+and add it as a child with the children.push_back(gameNode);. This basically adds the gameNode to
+the list of children nodes that Root Node has. That is it for Root node.
+<br></br>
+The final thing we need to do is change some things in main.
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// main.cpp</span>
+	<span style="color: #BC7A00">#include &quot;SDL.h&quot;</span>
+	<span style="color: #BC7A00">#include &quot;SDL_mixer.h&quot;</span>
+	<span style="color: #BC7A00">#include &quot;SDL_ttf.h&quot;</span>
+	<span style="color: #BC7A00">#include &quot;SDL_image.h&quot;</span>
+	<span style="color: #BC7A00">#include &quot;Config.h&quot;</span>
+	<span style="color: #BC7A00">#include &lt;stdio.h&gt;</span>
+	<span style="color: #BC7A00">#include &quot;RootNode.h&quot;</span>
+	
+	<span style="color: #408080; font-style: italic">// declaring pointer to objects that main needs, initialize to null</span>
+	<span style="color: #408080; font-style: italic">// these objects are created in main because they are needed for the outermost loop</span>
+	SDL_Window<span style="color: #666666">*</span> arcadeSystemWindow <span style="color: #666666">=</span> nullptr;
+	SDL_Renderer<span style="color: #666666">*</span> arcadeSystemRenderer <span style="color: #666666">=</span> nullptr;
+	TTF_Font<span style="color: #666666">*</span> font <span style="color: #666666">=</span> nullptr;
+	
+	<span style="color: #408080; font-style: italic">// initialization function, initializes above objects and calls some SDL initialization functions</span>
+	<span style="color: #B00040">bool</span> <span style="color: #0000FF">init</span>()
+	{
+		<span style="color: #408080; font-style: italic">// Initialization flag</span>
+		<span style="color: #B00040">bool</span> success <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+	
+		<span style="color: #408080; font-style: italic">// Initialize SDL</span>
+		<span style="color: #008000; font-weight: bold">if</span> (SDL_Init(SDL_INIT_VIDEO <span style="color: #666666">|</span> SDL_INIT_AUDIO) <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+		{
+			printf(<span style="color: #BA2121">&quot;SDL could not initialize! SDL Error: %s</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>, SDL_GetError());
+			success <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+		}
+		<span style="color: #008000; font-weight: bold">else</span>
+		{
+			<span style="color: #408080; font-style: italic">// Create window in the center of the screen</span>
+			arcadeSystemWindow <span style="color: #666666">=</span> SDL_CreateWindow(<span style="color: #BA2121">&quot;Arcade System&quot;</span>, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, windowWidth, windowHeight, SDL_WINDOW_SHOWN);
+			<span style="color: #008000; font-weight: bold">if</span> (arcadeSystemWindow <span style="color: #666666">==</span> <span style="color: #008000">NULL</span>)	
+			{
+				printf(<span style="color: #BA2121">&quot;Window could not be created! SDL Error: %s</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>, SDL_GetError());
+				success <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+			}
+			<span style="color: #008000; font-weight: bold">else</span>
+			{
+				<span style="color: #408080; font-style: italic">// initialize renderer, set the background as white for the wwindow, sync the renderer with the monitor refresh rate</span>
+				arcadeSystemRenderer <span style="color: #666666">=</span> SDL_CreateRenderer(arcadeSystemWindow, <span style="color: #666666">-1</span>, SDL_RENDERER_ACCELERATED <span style="color: #666666">|</span> SDL_RENDERER_PRESENTVSYNC);
+				SDL_SetRenderDrawColor(arcadeSystemRenderer, <span style="color: #666666">0xFF</span>, <span style="color: #666666">0xFF</span>, <span style="color: #666666">0xFF</span>, <span style="color: #666666">0xFF</span>);
+			}
+			<span style="color: #408080; font-style: italic">// Initialize SDL_mixer</span>
+			<span style="color: #008000; font-weight: bold">if</span> (Mix_OpenAudio(<span style="color: #666666">44100</span>, MIX_DEFAULT_FORMAT, <span style="color: #666666">2</span>, <span style="color: #666666">2048</span>) <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+			{
+				printf(<span style="color: #BA2121">&quot;SDL_mixer could not initialize! SDL_mixer Error: %s</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>, Mix_GetError());
+				success <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+			}
+			<span style="color: #408080; font-style: italic">// initialize true type font </span>
+			<span style="color: #008000; font-weight: bold">if</span> (TTF_Init() <span style="color: #666666">==</span> <span style="color: #666666">-1</span>)
+			{
+				printf(<span style="color: #BA2121">&quot;SDL_ttf could not initialize! SDL_ttf Error: %s</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>, TTF_GetError());
+				success <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+			}
+	
+		}
+		<span style="color: #008000; font-weight: bold">return</span> success;
+	}
+	
+	<span style="color: #B00040">int</span> <span style="color: #0000FF">main</span>(<span style="color: #B00040">int</span> argc, <span style="color: #B00040">char</span><span style="color: #666666">*</span> argv[])
+	{	
+		<span style="color: #408080; font-style: italic">// first call initialization</span>
+		<span style="color: #008000; font-weight: bold">if</span> (<span style="color: #666666">!</span>init())
+		{
+			printf(<span style="color: #BA2121">&quot;Failed to initialize!</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>);
+		}
+		<span style="color: #408080; font-style: italic">// if initializes successfully then continue</span>
+		<span style="color: #008000; font-weight: bold">else</span>
+		{
+			<span style="color: #B00040">bool</span> quit <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+			RootNode rootNode(arcadeSystemRenderer, nullptr);
+			Node<span style="color: #666666">*</span> currentNode <span style="color: #666666">=</span> <span style="color: #666666">&amp;</span>rootNode;
+			<span style="color: #008000; font-weight: bold">while</span> (<span style="color: #666666">!</span>quit)
+			{	
+				<span style="color: #408080; font-style: italic">// handle events on queue until empty</span>
+				SDL_Event e;
+				<span style="color: #008000; font-weight: bold">while</span> (SDL_PollEvent(<span style="color: #666666">&amp;</span>e) <span style="color: #666666">!=</span> <span style="color: #666666">0</span>)
+				{
+					Action newAction <span style="color: #666666">=</span> currentNode<span style="color: #666666">-&gt;</span>update(<span style="color: #666666">&amp;</span>e);
+					<span style="color: #408080; font-style: italic">// user requests quit by clicking window X</span>
+					<span style="color: #008000; font-weight: bold">if</span> (e.type <span style="color: #666666">==</span> SDL_QUIT)
+					{
+						quit <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+					}
+	
+					<span style="color: #008000; font-weight: bold">if</span>(newAction.actionName <span style="color: #666666">==</span> MOVE_NODES)
+					{
+						currentNode<span style="color: #666666">-&gt;</span>exitNode();
+						currentNode <span style="color: #666666">=</span> (Node<span style="color: #666666">*</span>)(newAction.actionParameter);
+						currentNode<span style="color: #666666">-&gt;</span>enter();
+					}
+				}
+				currentNode<span style="color: #666666">-&gt;</span>update(nullptr);
+				currentNode<span style="color: #666666">-&gt;</span>render(arcadeSystemRenderer);
+				SDL_RenderPresent(arcadeSystemRenderer);
+			}
+		}
+		
+		<span style="color: #008000; font-weight: bold">return</span> <span style="color: #666666">0</span>;
+	}
+	</pre></div>
+First we make sure the #include "RootNode.h" at the top.
+Then we change some things in the main function:
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #B00040">int</span> <span style="color: #0000FF">main</span>(<span style="color: #B00040">int</span> argc, <span style="color: #B00040">char</span><span style="color: #666666">*</span> argv[])
+	{	
+		<span style="color: #408080; font-style: italic">// first call initialization</span>
+		<span style="color: #008000; font-weight: bold">if</span> (<span style="color: #666666">!</span>init())
+		{
+			printf(<span style="color: #BA2121">&quot;Failed to initialize!</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>);
+		}
+		<span style="color: #408080; font-style: italic">// if initializes successfully then continue</span>
+		<span style="color: #008000; font-weight: bold">else</span>
+		{
+			<span style="color: #B00040">bool</span> quit <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+			RootNode rootNode(arcadeSystemRenderer, nullptr); <span style="color: #408080; font-style: italic">// create a RootNode object</span>
+			Node<span style="color: #666666">*</span> currentNode <span style="color: #666666">=</span> <span style="color: #666666">&amp;</span>rootNode; <span style="color: #408080; font-style: italic">// set the current node pointer to the address of the rootNode</span>
+			<span style="color: #008000; font-weight: bold">while</span> (<span style="color: #666666">!</span>quit)
+			{	
+				<span style="color: #408080; font-style: italic">// handle events on queue until empty</span>
+				SDL_Event e;
+				<span style="color: #008000; font-weight: bold">while</span> (SDL_PollEvent(<span style="color: #666666">&amp;</span>e) <span style="color: #666666">!=</span> <span style="color: #666666">0</span>)
+				{
+					Action newAction <span style="color: #666666">=</span> currentNode<span style="color: #666666">-&gt;</span>update(<span style="color: #666666">&amp;</span>e); <span style="color: #408080; font-style: italic">// store the action that is returned by the currentNode&#39;s update</span>
+					<span style="color: #408080; font-style: italic">// user requests quit by clicking window X</span>
+					<span style="color: #008000; font-weight: bold">if</span> (e.type <span style="color: #666666">==</span> SDL_QUIT)
+					{
+						quit <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+					}
+	
+	<span style="color: #408080; font-style: italic">// check if the action is to move node</span>
+				<span style="color: #008000; font-weight: bold">if</span>(newAction.actionName <span style="color: #666666">==</span> MOVE_NODES)
+					{
+						currentNode<span style="color: #666666">-&gt;</span>exitNode();
+						currentNode <span style="color: #666666">=</span> (Node<span style="color: #666666">*</span>)(newAction.actionParameter);
+						currentNode<span style="color: #666666">-&gt;</span>enter();
+					}
+				}
+				currentNode<span style="color: #666666">-&gt;</span>update(nullptr);
+				currentNode<span style="color: #666666">-&gt;</span>render(arcadeSystemRenderer);
+				SDL_RenderPresent(arcadeSystemRenderer);
+			}
+		}
+		
+		<span style="color: #008000; font-weight: bold">return</span> <span style="color: #666666">0</span>;
+	}
+	</pre></div>
+	
+The first thing we need to change is that we need to create a RootNode oject instead of a GameNode object.
+Then we make the currentNode a pointer to this rootNode object.	Then in the gui loop we store the action that is returned 
+by currentNode's update. Then we check if this action is to change nodes or not. If it is we exit the current node,
+set the currentNode to the parameter of the action returned and enter that node. Also, because currentNode is pointer we must change
+all the "." to "->". This was the final step. All the code for these file is posted at this link:
+<br></br>
+https://github.com/geffencooper/lesson_04_code
+
+<br></br>
+<br></br>
+<h4>Don't worry if the new stuff we put in main doesn't make sense. That is just how you change nodes. Before we only had
+one node so we didn't need to do anything in main but now we have multipl nodes. For the final
+version of the project I will provide the main function so you don't need to worry about it. All you need to do
+or change is the nodes themselves and customize them however you want.</h4>
+
+
+
+		</p>
 	</p>
 </p>
 
