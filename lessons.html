@@ -43,21 +43,25 @@
 								</header>
 								<ul>
 									<li>
-										<a href="#Lesson0">Lesson 0</a>
+										<a href="#Lesson0"><b>Lesson 0</b>: Environment Setup</a>
 									</li>
 									<li>
-										<a href="#Lesson1">Lesson 1</a>
+										<a href="#Lesson1"><b>Lesson 1</b>: Introducing the Menu System/Designing a GUI</a>
 									</li>
 									<li>
-										<a href="#Lesson2">Lesson 2</a>
+										<a href="#Lesson2"><b>Lesson 2</b>: Using Git and Implementing the Menu System</a>
 									</li>
 									<li>
-										<a href="#Lesson3">Lesson 3</a>
+										<a href="#Lesson3"><b>Lesson 3</b>: Animation and Game Design</a>
 									</li>
 									<li>
-										<a href="#Lesson4">Lesson 4</a>
+										<a href="#Lesson4"><b>Lesson 4</b>: Animation and Game Design Part 2</a>
+									</li>
+									<li>
+										<a href="#Lesson5"><b>Lesson 5</b>: Finishing the Game</a>
 									</li>
 								</ul>
+								<hr>
 								<p><b>Introduction:</b> Welcome to the lessons page of the Virtual Arcade System Software Project! This poject
 										is a great opportunity to apply object oriented programming in C++. If you are a beginner, don't worry! These lessons 
 										will help guide you through the process of building this project.
@@ -2614,11 +2618,838 @@ or change is the nodes themselves and customize them however you want.</h4>
 
 		</p>
 	</p>
-	Code for final lesson<br></br>
+	<hr>
+	<a name="Lesson5"></a>
+	<h2>Lesson 5: Finishing the Arcade</h2>
+	<P>
+		Last lesson we added the paddle to our game and created a simple "main menu"
+		screen to transition into the game. So as of now we have two nodes in our arcade,
+		the RootNode and the GameNode. In this final lesson we will be finishing the game by adding bricks
+		and then adding a few more nodes to complete the arcade system.
+
+		<h5> Finishing the game</h5>
+		To finish the game we will be adding bricks and programming the collision detection for the bricks.
+
+		<br></br>
+		First we need to create the Brick class in order to add brick game objects
+		<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #BC7A00">#ifndef BRICK_H</span>
+<span style="color: #BC7A00">#define BRICK_H</span>
+<span style="color: #BC7A00">#include &quot;Entity.h&quot;</span>
+<span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">Brick</span> <span style="color: #666666">:</span> <span style="color: #008000; font-weight: bold">public</span> Entity
+{
+<span style="color: #A0A000">public:</span>
+	Brick();
+	<span style="color: #B00040">void</span> <span style="color: #0000FF">update</span>(SDL_Event<span style="color: #666666">*</span> event);
+};
+<span style="color: #BC7A00">#endif</span>
+</pre></div>
+The process for creating this class is exactly the same as before. In fact, this is the simplest
+game object you can make because as seen below, the contructor and update method
+are actually empty because bricks don't move.
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #BC7A00">#include &quot;Brick.h&quot;</span>
+
+Brick<span style="color: #666666">::</span>Brick(){}
+<span style="color: #B00040">void</span> Brick<span style="color: #666666">::</span>update(SDL_Event<span style="color: #666666">*</span> event) {}
+</pre></div>
+The only thing the brick does is sit on the screen and get checked for collisions with the ball
+which will be handled by the GameScreen.
+<br></br>
+If you remember from the past two lessons, the next step when adding functionality to a game after adding
+a game object is to edit the logic in the GameScreen. Below all we change is add <i>#include "Brick.h"</i> to the SimpleGame.h file 
+so that we can use bricks in our game. Unlike before we will not have bricks as member variables of
+the SimpleGame class. You can create a 2D array of bricks if you wish but I decided to keep
+it simple and not have bricks be member variables of the class because they are already stored in the list of entities.
+
+
+
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// SimpleGame.h</span>
+
+	<span style="color: #BC7A00">#ifndef SIMPLE_GAME_H</span>
+	<span style="color: #BC7A00">#define SIMPLE_GAME_H</span>
+	
+	<span style="color: #BC7A00">#include &quot;GameScreen.h&quot;</span>
+	<span style="color: #BC7A00">#include &quot;Ball.h&quot;</span>
+	<span style="color: #BC7A00">#include &quot;Paddle.h&quot;</span>
+	<span style="color: #BC7A00">#include &quot;Brick.h&quot;</span>
+	<span style="color: #BC7A00">#include &quot;Config.h&quot;</span>
+	
+	<span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">SimpleGame</span> <span style="color: #666666">:</span> <span style="color: #008000; font-weight: bold">public</span> GameScreen
+	{
+		<span style="color: #A0A000">public:</span>
+			SimpleGame();
+			Action <span style="color: #0000FF">update</span>(SDL_Event<span style="color: #666666">*</span> event);
+			<span style="color: #B00040">void</span> <span style="color: #0000FF">logic</span>();
+	
+			<span style="color: #B00040">void</span> <span style="color: #0000FF">newGame</span>();
+	
+			<span style="color: #B00040">void</span> <span style="color: #0000FF">setBall</span>(Ball<span style="color: #666666">*</span> ball_in) {ball <span style="color: #666666">=</span> ball_in;}
+			Ball<span style="color: #666666">*</span> <span style="color: #0000FF">getBall</span>() {<span style="color: #008000; font-weight: bold">return</span> ball;}
+	
+			<span style="color: #B00040">void</span> <span style="color: #0000FF">setPaddle</span>(Paddle<span style="color: #666666">*</span> paddle_in) {paddle <span style="color: #666666">=</span> paddle_in;}
+			Paddle<span style="color: #666666">*</span> <span style="color: #0000FF">getPaddle</span>() {<span style="color: #008000; font-weight: bold">return</span> paddle;}
+	
+		<span style="color: #A0A000">private:</span>
+			Ball<span style="color: #666666">*</span> ball;
+			Paddle<span style="color: #666666">*</span> paddle;
+	};
+	
+	<span style="color: #BC7A00">#endif</span>
+	</pre></div>
+	
+<br></br>
+The big change in this lesson is adding collision detection in the logic method of SimpleGame.cpp.
+You can see a little more below we have about 200 lines of code just for the collision detection for bricks. 
+
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">
+	<span style="color: #B00040">bool</span> <span style="color: #0000FF">ccw</span>(point A, point B, point C)
+	{
+		<span style="color: #008000; font-weight: bold">return</span> ((B.y <span style="color: #666666">-</span> A.y) <span style="color: #666666">*</span> (C.x <span style="color: #666666">-</span> B.x) <span style="color: #666666">-</span> (A.x <span style="color: #666666">-</span> B.x) <span style="color: #666666">*</span> (B.y <span style="color: #666666">-</span> C.y)) <span style="color: #666666">&gt;</span> <span style="color: #666666">0</span>;
+	}
+	
+	<span style="color: #B00040">bool</span> <span style="color: #0000FF">intersect</span>(point A, point B, point C, point D)
+	{
+		<span style="color: #008000; font-weight: bold">return</span> ccw(A, C, D) <span style="color: #666666">!=</span> ccw(B, C, D) <span style="color: #666666">&amp;&amp;</span> ccw(A, B, C) <span style="color: #666666">!=</span> ccw(A, B, D);
+	}
+	</pre></div>
+	
+	
+These are two helper functions I created that we will need for the collision detection. One checks
+if three points are oriented counterclockwise or not and the other uses that information to determine
+if two lines (given the endpoints of those lines "AB" and "CD") intersect. I will not go into detail but I put
+an image below of two cases. I reccommend you try hand executing the code from intersect to see how it works.
+You don't need to hand execute CCW because you can just see if three points are oriented counter clockwise given their 
+order. If you are curious, the way CCW works is it takes the cross product of the vectors formed by BA and BC. If it
+is positive then it is counter clockwise and if it is negative it is clockwise. If you draw it you will see how
+this is just an implementation of the right hand rule.
+
+<img src="images/intersect.png" alt="" style="float: left; width: 100%; margin-right: 1%;">
+
+<br></br>
+This next part is where the collision detection happens. This code is inside the SimpleGame::logic 
+function right after the paddle collision detection. See the explanation below.
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// code inserted at the bottom of SimpleGame::logic </span>
+
+	<span style="color: #B00040">int</span> maxCollisionArea <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
+	<span style="color: #B00040">int</span> maxIndex <span style="color: #666666">=</span> <span style="color: #666666">-1</span>;
+	<span style="color: #B00040">int</span> w_max <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
+	<span style="color: #B00040">int</span> h_max <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
+	<span style="color: #B00040">int</span> j;
+	<span style="color: #B00040">int</span> numFalse <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
+
+	<span style="color: #408080; font-style: italic">// find the brick with the largest collision area</span>
+	<span style="color: #008000; font-weight: bold">for</span> (j <span style="color: #666666">=</span> <span style="color: #666666">2</span>; j <span style="color: #666666">&lt;</span> getEntities()<span style="color: #666666">-&gt;</span>size(); j<span style="color: #666666">++</span>)
+	{
+        <span style="color: #408080; font-style: italic">// if collided then state should be false, keep track so know when game over</span>
+		<span style="color: #008000; font-weight: bold">if</span> ((<span style="color: #666666">*</span>getEntities())[j]<span style="color: #666666">-&gt;</span>getState() <span style="color: #666666">==</span> <span style="color: #008000">false</span>)
+		{
+			numFalse <span style="color: #666666">+=</span> <span style="color: #666666">1</span>;
+			<span style="color: #008000; font-weight: bold">continue</span>;
+		}
+
+		SDL_Rect ballRegion <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getGameObjectTexture()<span style="color: #666666">-&gt;</span>getImageDestination();
+		SDL_Rect brickRegion <span style="color: #666666">=</span> (<span style="color: #666666">*</span>getEntities())[j]<span style="color: #666666">-&gt;</span>getGameObjectTexture()<span style="color: #666666">-&gt;</span>getImageDestination();
+
+		<span style="color: #008000; font-weight: bold">if</span> (SDL_HasIntersection(<span style="color: #666666">&amp;</span>ballRegion, <span style="color: #666666">&amp;</span>brickRegion))
+		{
+			SDL_Rect collisionRect;
+			SDL_IntersectRect(<span style="color: #666666">&amp;</span>ballRegion, <span style="color: #666666">&amp;</span>brickRegion, <span style="color: #666666">&amp;</span>collisionRect);
+			<span style="color: #B00040">int</span> w <span style="color: #666666">=</span> collisionRect.w;
+			<span style="color: #B00040">int</span> h <span style="color: #666666">=</span> collisionRect.h;
+			<span style="color: #008000; font-weight: bold">if</span> (h <span style="color: #666666">*</span> w <span style="color: #666666">&gt;</span> maxCollisionArea)
+			{
+				maxCollisionArea <span style="color: #666666">=</span> h <span style="color: #666666">*</span> w;
+				maxIndex <span style="color: #666666">=</span> j;
+				w_max <span style="color: #666666">=</span> w;
+				h_max <span style="color: #666666">=</span> h;
+			}
+
+		}
+	}
+	j <span style="color: #666666">=</span> maxIndex;
+
+    <span style="color: #408080; font-style: italic">// if set ball position</span>
+	<span style="color: #B00040">bool</span> hasMoved <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+
+	<span style="color: #408080; font-style: italic">// for that brick with the largest collision area do the following:</span>
+	<span style="color: #008000; font-weight: bold">if</span> (j <span style="color: #666666">&gt;=</span> <span style="color: #666666">2</span>)
+	{
+        Brick<span style="color: #666666">*</span> currentBrick <span style="color: #666666">=</span> (Brick<span style="color: #666666">*</span>)(<span style="color: #666666">*</span>getEntities())[j];
+		<span style="color: #408080; font-style: italic">// first find the corner of the ball that collided</span>
+		<span style="color: #B00040">int</span> xCorner <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
+		<span style="color: #B00040">int</span> yCorner <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
+		currentBrick<span style="color: #666666">-&gt;</span>setState(<span style="color: #008000">false</span>);
+
+		<span style="color: #408080; font-style: italic">//BRC:  </span>
+		<span style="color: #008000; font-weight: bold">if</span> (ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 1. ball left side is to the left of the brick left side</span>
+			ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&amp;&amp;</span>  <span style="color: #408080; font-style: italic">// 2. ball right side is to the right of the brick left side</span>
+			ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 3. ball top side is above brick top side,</span>
+			ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos()) <span style="color: #408080; font-style: italic">// 4. ball bottom side is below the brick top side</span>
+		{
+			xCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth();
+			yCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight();
+		}
+
+		<span style="color: #408080; font-style: italic">//TRC:</span>
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 1. ball left side is to the left of the brick left side</span>
+			ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&amp;&amp;</span>  <span style="color: #408080; font-style: italic">// 2. ball right side is to the right of the brick left side</span>
+			ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 3. ball top side is above the brick bottom side</span>
+			ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight()) <span style="color: #408080; font-style: italic">// 4. ball bottom side is below brick bottom side</span>
+		{
+			xCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth();
+			yCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getYPos();
+		}
+
+		<span style="color: #408080; font-style: italic">// BLC:</span>
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 1. ball left side is to the left of the brick right side</span>
+			ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 2. ball right side is to the right of the brick right side</span>
+			ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 3. ball top side is above brick top side,</span>
+			ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos()) <span style="color: #408080; font-style: italic">// 4. ball bottom side is below the brick top side</span>
+		{
+			xCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getXPos();
+			yCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight();
+		}
+
+		<span style="color: #408080; font-style: italic">// TLC:</span>
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 1. ball left side is to the left of the brick right side</span>
+			ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 2. ball right side is to the right of the brick right side</span>
+			ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 3. ball top side is above the brick bottom side</span>
+			ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight()) <span style="color: #408080; font-style: italic">// 4. ball bottom side is below brick bottom side</span>
+		{
+			xCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getXPos();
+			yCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getYPos();
+		}
+		<span style="color: #408080; font-style: italic">//---------------------------</span>
+
+		<span style="color: #408080; font-style: italic">// if two corners collide then one of the following is true</span>
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// ball right side right of brick left side</span>
+			ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos()) <span style="color: #408080; font-style: italic">// ball left side left of brick left side</span>
+		{
+			ball<span style="color: #666666">-&gt;</span>setXPos(ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">-</span> w_max);
+			ball<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getXVelocity()));
+			hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+		}
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// ball right side right of brick right side</span>
+			ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth()) <span style="color: #408080; font-style: italic">// ball left side left of brick right side</span>
+		{
+			ball<span style="color: #666666">-&gt;</span>setXPos(ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> w_max);
+			ball<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getXVelocity()));
+			hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+		}
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// ball bottom side is below brick top side</span>
+			ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos()) <span style="color: #408080; font-style: italic">// ball top side above brick top side</span>
+		{
+			ball<span style="color: #666666">-&gt;</span>setYPos(ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">-</span> h_max);
+			ball<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getYVelocity()));
+			hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+		}
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// ball bottom side is below brick bottom side</span>
+			ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight()) <span style="color: #408080; font-style: italic">// ball top side is above brick bottom side</span>
+		{
+			ball<span style="color: #666666">-&gt;</span>setYPos(ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> h_max);
+			ball<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getYVelocity()));
+			hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+		}
+
+        <span style="color: #408080; font-style: italic">// prior position</span>
+		<span style="color: #B00040">int</span> xPosTemp <span style="color: #666666">=</span> xCorner <span style="color: #666666">-</span> ball<span style="color: #666666">-&gt;</span>getXVelocity();
+		<span style="color: #B00040">int</span> yPosTemp <span style="color: #666666">=</span> yCorner <span style="color: #666666">-</span> ball<span style="color: #666666">-&gt;</span>getYVelocity();
+
+        <span style="color: #408080; font-style: italic">// is right on the line</span>
+		<span style="color: #008000; font-weight: bold">if</span> (yPosTemp <span style="color: #666666">==</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #666666">!</span>hasMoved)
+		{
+			ball<span style="color: #666666">-&gt;</span>setYPos(ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">-</span> h_max);
+			ball<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getYVelocity()));
+			hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+		}
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (yPosTemp <span style="color: #666666">==</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&amp;&amp;</span> <span style="color: #666666">!</span>hasMoved)
+		{
+			printf(<span style="color: #BA2121">&quot;on the line: </span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>);
+			ball<span style="color: #666666">-&gt;</span>setYPos(ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> h_max);
+			ball<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getYVelocity()));
+			hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+		}
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (xPosTemp <span style="color: #666666">==</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&amp;&amp;</span> <span style="color: #666666">!</span>hasMoved)
+		{
+			printf(<span style="color: #BA2121">&quot;on the line: </span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>);
+			ball<span style="color: #666666">-&gt;</span>setXPos(ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> w_max);
+			ball<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getXVelocity()));
+			hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+		}
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (xPosTemp <span style="color: #666666">==</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #666666">!</span>hasMoved)
+		{
+			printf(<span style="color: #BA2121">&quot;on the line: </span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>);
+			ball<span style="color: #666666">-&gt;</span>setXPos(ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">-</span> w_max);
+			ball<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getXVelocity()));
+			hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+		}
+
+		point ball_init <span style="color: #666666">=</span> { xPosTemp, yPosTemp };
+		point ball_final <span style="color: #666666">=</span> { xCorner, yCorner };
+
+		point R_TLC <span style="color: #666666">=</span> { currentBrick<span style="color: #666666">-&gt;</span>getXPos(), currentBrick<span style="color: #666666">-&gt;</span>getYPos() };
+		point R_TRC <span style="color: #666666">=</span> { currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth(), currentBrick<span style="color: #666666">-&gt;</span>getYPos() };
+		point R_BLC <span style="color: #666666">=</span> { currentBrick<span style="color: #666666">-&gt;</span>getXPos(), currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight() };
+		point R_BRC <span style="color: #666666">=</span> { currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth(), currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight() };
+
+		<span style="color: #408080; font-style: italic">// intersects top</span>
+		<span style="color: #008000; font-weight: bold">if</span> (<span style="color: #666666">!</span>hasMoved <span style="color: #666666">&amp;&amp;</span> intersect(ball_init, ball_final, R_TLC, R_TRC))
+		{
+			ball<span style="color: #666666">-&gt;</span>setYPos(ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">-</span> h_max);
+			ball<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getYVelocity()));
+		}
+
+		<span style="color: #408080; font-style: italic">// intersects bottom</span>
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (<span style="color: #666666">!</span>hasMoved <span style="color: #666666">&amp;&amp;</span> intersect(ball_init, ball_final, R_BLC, R_BRC))
+		{
+			ball<span style="color: #666666">-&gt;</span>setYPos(ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> h_max);
+			ball<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getYVelocity()));
+		}
+
+		<span style="color: #408080; font-style: italic">// intersects left</span>
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (<span style="color: #666666">!</span>hasMoved <span style="color: #666666">&amp;&amp;</span> intersect(ball_init, ball_final, R_TLC, R_BLC))
+		{
+			ball<span style="color: #666666">-&gt;</span>setXPos(ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">-</span> w_max);
+			ball<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getXVelocity()));
+		}
+
+		<span style="color: #408080; font-style: italic">// intersects right</span>
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (<span style="color: #666666">!</span>hasMoved <span style="color: #666666">&amp;&amp;</span> intersect(ball_init, ball_final, R_TRC, R_BRC))
+		{
+			ball<span style="color: #666666">-&gt;</span>setXPos(ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> w_max);
+			ball<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getXVelocity()));
+		}
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (h_max <span style="color: #666666">==</span> w_max)
+		{
+			ball<span style="color: #666666">-&gt;</span>setXPos(ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">-</span> ball<span style="color: #666666">-&gt;</span>getXVelocity());
+			ball<span style="color: #666666">-&gt;</span>setYPos(ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">-</span> ball<span style="color: #666666">-&gt;</span>getYVelocity());
+			ball<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getXVelocity()));
+			ball<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getYVelocity()));
+		}
+	}
+</pre></div>
+Below I will dissect what all this code means but know that this code is not very
+efficient and probably redundant but it works very well for our purposes. One difficult aspect of
+collision detection is making sure you catch all the edge cases. You might wonder why collisions for balls
+and bricks are more complicated than before with the paddle or he walls. It is because the ball can not only intersect
+on every side of the brick but also because the ball can intersect with multiple bricks.
+<br></br> 
+Another important thing to note is that our collision detection will only work for relatively low speeds which for this example is the 
+max dimension of our moving entity (max dimension of the ball is 15 pixels so max speed is 15 pixels per frame).
+The reason for this is so that we can actually detect the intersection of rectangles and avoid the weird case of having our
+ball go completely inside of our brick which would happen at speeds higher than our max dimension. Also, speeds
+that high are very difficult to see and react to so it is not really limiting our game anyways.
+<br></br>
+
+<h5>High level logic of the code</h5>
+Before jumping into the code it will be helpful to understand what it is supposed to do.
+The strategy is essentially the same as before, if the ball collides with the right or left side
+of something then reposition it and invert the x velocity and if the ball collides with the top or bottom side
+of something then reposition it and invert the y velocity. So why does it take 200 lines of code then? It is because of edge cases.
+Most of the time only a small portion of the collision detection will need to be executed but every once in
+a while the collision will be an edge case and if we don't account for it the animation will appear "glitchy."
+<ol>
+	<li>
+		<b>Determine which brick the ball collided with</b>: To do this we will just iterate through every single
+		brick and check if the ball ArcadeTexture intersects with it. This is inefficient but very simple
+		to implement and works well. One edge case we need to account for is if we collide with multiple bricks. For simplicity,
+		we will say we only want to collide with one brick even if we collide with two. If you want you can add code to handle collisions with multiple bricks. <br></br>
+	</li>
+	<li>
+		<b>Determine which side of the brick the ball collided with</b>: This part is the same idea as before where we adjust the X and Y position and
+		velocity accordingly based on where we collide (top, bottom, left, right) except it is not trivial to actually find where the ball collides with the brick.
+		This is what most of the code is. Essentially we need to find which corner of the ball collides with the brick and then trace a vector from one frame
+		earlier to see which side of the brick it intersects with. There are a few edge cases we must account for as well. <br></br>
+	</li>
+	<li>
+		<b>Handle the collision Accordingly</b>: Once we find the correct collision side we can handle the
+		collision like we did before, by adjusting the position and inverting the velocity.
+	</li>
+</ol> 
+
+<p>
+	See this image below for an example of why the collision detection is not trivial. In this diagram, the red rectangle is the brick
+	and the black square is the ball. The grey squares represent the ball one frame earlier.
+	<br></br> 
+	A naive collision detection method is <i>to compare the collision width and height (height and width of the yellow rectangle). If the collision width is bigger than the collision height
+	then it is a "vertical collision" and if the collision height is bigger than the collision width it is a "horizontal collision".</i> The problem with this
+	approach is that it doesn't account for collisions like the edge case seen below. It will work for the "simple case" shown below because if you recall our ball will never move
+	faster than its max dimension so it makes sense to say that the collision width should be larger for vertical collisions and the collision
+	height should be larger for horizontal collisions (take a second to think about what this statement means and how it is relavent to max speed).
+
+	<br></br> 
+	The edge case seen below happens quite often and requires a more involved method than the "naive method" I described above. What makes
+	the edge case shown tricky is that given only the present state of the ball (the black square), it is impossible to know if it came from the bottom or the right.
+	We must use the prior state (the grey square) of the ball one frame earlier to see how it moved to the current position. I will get into specifics below but that
+	is where the bulk of the code is.
+	<img src="images/brickCollision.png" alt="" style="float: left; width: 100%; margin-right: 1%;">
+	<br></br> 
+	<b>The corresponding code for step one:</b>
+	<br></br> 
+	We want to iterate through all the bricks which we will see later are entities 2-50 and find the one with the largest collision area (the yellow rectangle). This
+	brick will be the one we collide with. In the case where the ball collides with multiple rectangles and the collision areas are equal, the first one we detect will just
+	be the brick we collide with. Again we use the SDL functions for detecting collisions between two rectangles we we must extract from each ArcadeTexture.
+	Once we iterate through all the rectangles we set j to the index of the brick with the max collision area.
+	<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">
+		<span style="color: #B00040">int</span> maxCollisionArea <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
+		<span style="color: #B00040">int</span> maxIndex <span style="color: #666666">=</span> <span style="color: #666666">-1</span>;
+		<span style="color: #B00040">int</span> w_max <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
+		<span style="color: #B00040">int</span> h_max <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
+		<span style="color: #B00040">int</span> j;
+		<span style="color: #B00040">int</span> numFalse <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
+	
+		<span style="color: #408080; font-style: italic">// find the brick with the largest collision area</span>
+		<span style="color: #008000; font-weight: bold">for</span> (j <span style="color: #666666">=</span> <span style="color: #666666">2</span>; j <span style="color: #666666">&lt;</span> getEntities()<span style="color: #666666">-&gt;</span>size(); j<span style="color: #666666">++</span>)
+		{
+			<span style="color: #408080; font-style: italic">// if collided then state should be false, keep track so know when game over</span>
+			<span style="color: #008000; font-weight: bold">if</span> ((<span style="color: #666666">*</span>getEntities())[j]<span style="color: #666666">-&gt;</span>getState() <span style="color: #666666">==</span> <span style="color: #008000">false</span>)
+			{
+				numFalse <span style="color: #666666">+=</span> <span style="color: #666666">1</span>;
+				<span style="color: #008000; font-weight: bold">continue</span>;
+			}
+	
+			SDL_Rect ballRegion <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getGameObjectTexture()<span style="color: #666666">-&gt;</span>getImageDestination();
+			SDL_Rect brickRegion <span style="color: #666666">=</span> (<span style="color: #666666">*</span>getEntities())[j]<span style="color: #666666">-&gt;</span>getGameObjectTexture()<span style="color: #666666">-&gt;</span>getImageDestination();
+	
+			<span style="color: #008000; font-weight: bold">if</span> (SDL_HasIntersection(<span style="color: #666666">&amp;</span>ballRegion, <span style="color: #666666">&amp;</span>brickRegion))
+			{
+				SDL_Rect collisionRect;
+				SDL_IntersectRect(<span style="color: #666666">&amp;</span>ballRegion, <span style="color: #666666">&amp;</span>brickRegion, <span style="color: #666666">&amp;</span>collisionRect);
+				<span style="color: #B00040">int</span> w <span style="color: #666666">=</span> collisionRect.w;
+				<span style="color: #B00040">int</span> h <span style="color: #666666">=</span> collisionRect.h;
+				<span style="color: #008000; font-weight: bold">if</span> (h <span style="color: #666666">*</span> w <span style="color: #666666">&gt;</span> maxCollisionArea)
+				{
+					maxCollisionArea <span style="color: #666666">=</span> h <span style="color: #666666">*</span> w;
+					maxIndex <span style="color: #666666">=</span> j;
+					w_max <span style="color: #666666">=</span> w;
+					h_max <span style="color: #666666">=</span> h;
+				}
+	
+			}
+		}
+		j <span style="color: #666666">=</span> maxIndex;
+	</pre></div>
+	<br></br> 
+	<b>The corresponding code for step two and three:</b>
+	<br></br> 
+	<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">        <span style="color: #408080; font-style: italic">// if have adjusted ball position</span>
+		<span style="color: #B00040">bool</span> hasMoved <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+
+		<span style="color: #408080; font-style: italic">// for that brick with the largest collision area do the following:</span>
+		<span style="color: #008000; font-weight: bold">if</span> (j <span style="color: #666666">&gt;=</span> <span style="color: #666666">2</span>)
+		{
+					Brick<span style="color: #666666">*</span> currentBrick <span style="color: #666666">=</span> (Brick<span style="color: #666666">*</span>)(<span style="color: #666666">*</span>getEntities())[j];
+			<span style="color: #408080; font-style: italic">// first find the corner of the ball that collided</span>
+			<span style="color: #B00040">int</span> xCorner <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
+			<span style="color: #B00040">int</span> yCorner <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
+			currentBrick<span style="color: #666666">-&gt;</span>setState(<span style="color: #008000">false</span>);
+	
+			<span style="color: #408080; font-style: italic">// Ball bottom right corner:  </span>
+			<span style="color: #008000; font-weight: bold">if</span> (ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 1. ball left side is to the left of the brick left side</span>
+				ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&amp;&amp;</span>  <span style="color: #408080; font-style: italic">// 2. ball right side is to the right of the brick left side</span>
+				ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 3. ball top side is above brick top side,</span>
+				ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos()) <span style="color: #408080; font-style: italic">// 4. ball bottom side is below the brick top side</span>
+			{
+				xCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth();
+				yCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight();
+			}
+	
+			<span style="color: #408080; font-style: italic">// Ball top right corner:</span>
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 1. ball left side is to the left of the brick left side</span>
+				ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&amp;&amp;</span>  <span style="color: #408080; font-style: italic">// 2. ball right side is to the right of the brick left side</span>
+				ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 3. ball top side is above the brick bottom side</span>
+				ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight()) <span style="color: #408080; font-style: italic">// 4. ball bottom side is below brick bottom side</span>
+			{
+				xCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth();
+				yCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getYPos();
+			}
+	
+			<span style="color: #408080; font-style: italic">// Ball bottom left corner:</span>
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 1. ball left side is to the left of the brick right side</span>
+				ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 2. ball right side is to the right of the brick right side</span>
+				ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 3. ball top side is above brick top side,</span>
+				ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos()) <span style="color: #408080; font-style: italic">// 4. ball bottom side is below the brick top side</span>
+			{
+				xCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getXPos();
+				yCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight();
+			}
+	
+			<span style="color: #408080; font-style: italic">// Ball top left corner:</span>
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 1. ball left side is to the left of the brick right side</span>
+				ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 2. ball right side is to the right of the brick right side</span>
+				ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 3. ball top side is above the brick bottom side</span>
+				ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight()) <span style="color: #408080; font-style: italic">// 4. ball bottom side is below brick bottom side</span>
+			{
+				xCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getXPos();
+				yCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getYPos();
+			}
+			<span style="color: #408080; font-style: italic">//---------------------------</span>
+	
+			<span style="color: #408080; font-style: italic">// if two corners collide then one of the following is true</span>
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// ball right side right of brick left side</span>
+				ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos()) <span style="color: #408080; font-style: italic">// ball left side left of brick left side</span>
+			{
+				ball<span style="color: #666666">-&gt;</span>setXPos(ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">-</span> w_max);
+				ball<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getXVelocity()));
+				hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+			}
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// ball right side right of brick right side</span>
+				ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth()) <span style="color: #408080; font-style: italic">// ball left side left of brick right side</span>
+			{
+				ball<span style="color: #666666">-&gt;</span>setXPos(ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> w_max);
+				ball<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getXVelocity()));
+				hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+			}
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// ball bottom side is below brick top side</span>
+				ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos()) <span style="color: #408080; font-style: italic">// ball top side above brick top side</span>
+			{
+				ball<span style="color: #666666">-&gt;</span>setYPos(ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">-</span> h_max);
+				ball<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getYVelocity()));
+				hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+			}
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// ball bottom side is below brick bottom side</span>
+				ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight()) <span style="color: #408080; font-style: italic">// ball top side is above brick bottom side</span>
+			{
+				ball<span style="color: #666666">-&gt;</span>setYPos(ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> h_max);
+				ball<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getYVelocity()));
+				hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+			}
+	
+			<span style="color: #408080; font-style: italic">// prior position</span>
+			<span style="color: #B00040">int</span> xPosTemp <span style="color: #666666">=</span> xCorner <span style="color: #666666">-</span> ball<span style="color: #666666">-&gt;</span>getXVelocity();
+			<span style="color: #B00040">int</span> yPosTemp <span style="color: #666666">=</span> yCorner <span style="color: #666666">-</span> ball<span style="color: #666666">-&gt;</span>getYVelocity();
+	
+			<span style="color: #408080; font-style: italic">// is right on the line</span>
+			<span style="color: #008000; font-weight: bold">if</span> (yPosTemp <span style="color: #666666">==</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #666666">!</span>hasMoved)
+			{
+				ball<span style="color: #666666">-&gt;</span>setYPos(ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">-</span> h_max);
+				ball<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getYVelocity()));
+				hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+			}
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (yPosTemp <span style="color: #666666">==</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&amp;&amp;</span> <span style="color: #666666">!</span>hasMoved)
+			{
+				printf(<span style="color: #BA2121">&quot;on the line: </span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>);
+				ball<span style="color: #666666">-&gt;</span>setYPos(ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> h_max);
+				ball<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getYVelocity()));
+				hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+			}
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (xPosTemp <span style="color: #666666">==</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&amp;&amp;</span> <span style="color: #666666">!</span>hasMoved)
+			{
+				printf(<span style="color: #BA2121">&quot;on the line: </span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>);
+				ball<span style="color: #666666">-&gt;</span>setXPos(ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> w_max);
+				ball<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getXVelocity()));
+				hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+			}
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (xPosTemp <span style="color: #666666">==</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #666666">!</span>hasMoved)
+			{
+				printf(<span style="color: #BA2121">&quot;on the line: </span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>);
+				ball<span style="color: #666666">-&gt;</span>setXPos(ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">-</span> w_max);
+				ball<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getXVelocity()));
+				hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+			}
+	
+			point ball_init <span style="color: #666666">=</span> { xPosTemp, yPosTemp };
+			point ball_final <span style="color: #666666">=</span> { xCorner, yCorner };
+	
+			point R_TLC <span style="color: #666666">=</span> { currentBrick<span style="color: #666666">-&gt;</span>getXPos(), currentBrick<span style="color: #666666">-&gt;</span>getYPos() };
+			point R_TRC <span style="color: #666666">=</span> { currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth(), currentBrick<span style="color: #666666">-&gt;</span>getYPos() };
+			point R_BLC <span style="color: #666666">=</span> { currentBrick<span style="color: #666666">-&gt;</span>getXPos(), currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight() };
+			point R_BRC <span style="color: #666666">=</span> { currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth(), currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight() };
+	
+			<span style="color: #408080; font-style: italic">// intersects top</span>
+			<span style="color: #008000; font-weight: bold">if</span> (<span style="color: #666666">!</span>hasMoved <span style="color: #666666">&amp;&amp;</span> intersect(ball_init, ball_final, R_TLC, R_TRC))
+			{
+				ball<span style="color: #666666">-&gt;</span>setYPos(ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">-</span> h_max);
+				ball<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getYVelocity()));
+			}
+	
+			<span style="color: #408080; font-style: italic">// intersects bottom</span>
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (<span style="color: #666666">!</span>hasMoved <span style="color: #666666">&amp;&amp;</span> intersect(ball_init, ball_final, R_BLC, R_BRC))
+			{
+				ball<span style="color: #666666">-&gt;</span>setYPos(ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> h_max);
+				ball<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getYVelocity()));
+			}
+	
+			<span style="color: #408080; font-style: italic">// intersects left</span>
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (<span style="color: #666666">!</span>hasMoved <span style="color: #666666">&amp;&amp;</span> intersect(ball_init, ball_final, R_TLC, R_BLC))
+			{
+				ball<span style="color: #666666">-&gt;</span>setXPos(ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">-</span> w_max);
+				ball<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getXVelocity()));
+			}
+	
+			<span style="color: #408080; font-style: italic">// intersects right</span>
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (<span style="color: #666666">!</span>hasMoved <span style="color: #666666">&amp;&amp;</span> intersect(ball_init, ball_final, R_TRC, R_BRC))
+			{
+				ball<span style="color: #666666">-&gt;</span>setXPos(ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> w_max);
+				ball<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getXVelocity()));
+			}
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (h_max <span style="color: #666666">==</span> w_max)
+			{
+				ball<span style="color: #666666">-&gt;</span>setXPos(ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">-</span> ball<span style="color: #666666">-&gt;</span>getXVelocity());
+				ball<span style="color: #666666">-&gt;</span>setYPos(ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">-</span> ball<span style="color: #666666">-&gt;</span>getYVelocity());
+				ball<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getXVelocity()));
+				ball<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getYVelocity()));
+			}
+	</pre></div>
+	<br></br> 
+	This is a lot of code so let's break it down. If you remember, we need to step one frame back and check how the ball collided with the brick. The first step then is to figure out which corner of the ball
+	collided with the brick so we can track the ball's movement from the prior frame accordingly.
+	<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">                <span style="color: #408080; font-style: italic">// if have adjusted ball position</span>
+		<span style="color: #B00040">bool</span> hasMoved <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+
+		<span style="color: #408080; font-style: italic">// for that brick with the largest collision area do the following:</span>
+		<span style="color: #008000; font-weight: bold">if</span> (j <span style="color: #666666">&gt;=</span> <span style="color: #666666">2</span>)
+		{
+			Brick<span style="color: #666666">*</span> currentBrick <span style="color: #666666">=</span> (Brick<span style="color: #666666">*</span>)(<span style="color: #666666">*</span>getEntities())[j];
+			<span style="color: #408080; font-style: italic">// first find the corner of the ball that collided</span>
+			<span style="color: #B00040">int</span> xCorner <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
+			<span style="color: #B00040">int</span> yCorner <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
+			currentBrick<span style="color: #666666">-&gt;</span>setState(<span style="color: #008000">false</span>);
+</pre></div>
+First we create a boolean to store the state of whether we have handled our collision yet. Once we handle the collision
+we don't want to execute any other collision checks. Next we check if the index of the brick we collided with is greater than or equal to 2.
+If we don't collide with any bricks, j will be negative and this whole part will be skipped over. Otherwise, if there is a collision and we do
+enter this if statement, we store the collision brick into a variable for conveniance, create variables to store the corner of the ball that collides with
+the brick, and set the state of the collision brick to false so it will disapear from the screen when rendering.
+<br></br>
+Next we try to find which corner of the ball collides with the brick:
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">                        
+<span style="color: #408080; font-style: italic">// Ball bottom right corner:  </span>
+<span style="color: #008000; font-weight: bold">if</span> (ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 1. ball left side is to the left of the brick left side</span>
+	ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&amp;&amp;</span>  <span style="color: #408080; font-style: italic">// 2. ball right side is to the right of the brick left side</span>
+	ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 3. ball top side is above brick top side,</span>
+	ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos()) <span style="color: #408080; font-style: italic">// 4. ball bottom side is below the brick top side</span>
+{
+	xCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth();
+	yCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight();
+}
+
+<span style="color: #408080; font-style: italic">// Ball top right corner:</span>
+<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 1. ball left side is to the left of the brick left side</span>
+	ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&amp;&amp;</span>  <span style="color: #408080; font-style: italic">// 2. ball right side is to the right of the brick left side</span>
+	ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 3. ball top side is above the brick bottom side</span>
+	ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight()) <span style="color: #408080; font-style: italic">// 4. ball bottom side is below brick bottom side</span>
+{
+	xCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth();
+	yCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getYPos();
+}
+
+<span style="color: #408080; font-style: italic">// Ball bottom left corner:</span>
+<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 1. ball left side is to the left of the brick right side</span>
+	ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 2. ball right side is to the right of the brick right side</span>
+	ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 3. ball top side is above brick top side,</span>
+	ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos()) <span style="color: #408080; font-style: italic">// 4. ball bottom side is below the brick top side</span>
+{
+	xCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getXPos();
+	yCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight();
+}
+
+<span style="color: #408080; font-style: italic">// Ball top left corner:</span>
+<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 1. ball left side is to the left of the brick right side</span>
+	ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 2. ball right side is to the right of the brick right side</span>
+	ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// 3. ball top side is above the brick bottom side</span>
+	ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight()) <span style="color: #408080; font-style: italic">// 4. ball bottom side is below brick bottom side</span>
+{
+	xCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getXPos();
+	yCorner <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getYPos();
+}
+</pre></div>
+First we check the ball's bottom right corner. The only way that ONLY the ball's bottom right corner (not multiple corners) can collide with the brick is if 
+four things are true. (This is noted in the code comments as well)
+<ul>
+	<li>
+			ball left side is to the left of the brick left side
+	</li>
+	<li>
+			ball right side is to the right of the brick left side
+	</li>
+	<li>
+			ball top side is above brick top side
+	</li>
+	<li>
+			ball bottom side is below the brick top side
+	</li>
+</ul>
+This is clearly shown in the image below as well. The green arrows are just showing how each ball side is oriented relative to brick sides.
+<img src="images/cornerCollision.png" alt="" style="float: left; width: 100%; margin-right: 1%;">
+<br></br>
+
+This process is exactly the same for the other three corners of the ball so I will not go into detail. A lot of this code is just repetetive checking 
+so if you understand the logic of each section then you will understand all of it. Once we find the corner, we set assign that corner to the variables 
+xCorner and yCorner.
+
+<br></br>
+There is an edge case however for finding the corners which is if multiple corners of the ball collide. However, this
+edge case is actually makes the process much simpler because we can directly determine the side of the brick that the ball collides with which is what we are looking for. 
+If none of the four cases above are true then we know two corners must have collided (take some time to think about why). This is shown below:
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// if two corners collide then one of the following is true</span>
+	<span style="color: #408080; font-style: italic">// Ball right side collides</span>
+	<span style="color: #008000; font-weight: bold">else</span> <span style="color: #0000FF">if</span> (ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// ball right side right of brick left side</span>
+		ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos()) <span style="color: #408080; font-style: italic">// ball left side left of brick left side</span>
+	{
+		ball<span style="color: #666666">-&gt;</span>setXPos(ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">-</span> w_max);
+		ball<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getXVelocity()));
+		hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+	}
+	<span style="color: #408080; font-style: italic">// ball left side collides</span>
+	<span style="color: #008000; font-weight: bold">else</span> <span style="color: #0000FF">if</span> (ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// ball right side right of brick right side</span>
+		ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth()) <span style="color: #408080; font-style: italic">// ball left side left of brick right side</span>
+	{
+		ball<span style="color: #666666">-&gt;</span>setXPos(ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> w_max);
+		ball<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getXVelocity()));
+		hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+	}
+	<span style="color: #408080; font-style: italic">// ball bottom side collides</span>
+	<span style="color: #008000; font-weight: bold">else</span> <span style="color: #0000FF">if</span> (ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// ball bottom side is below brick top side</span>
+		ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos()) <span style="color: #408080; font-style: italic">// ball top side above brick top side</span>
+	{
+		ball<span style="color: #666666">-&gt;</span>setYPos(ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">-</span> h_max);
+		ball<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getYVelocity()));
+		hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+	}
+	<span style="color: #408080; font-style: italic">// ball top side collides</span>
+	<span style="color: #008000; font-weight: bold">else</span> <span style="color: #0000FF">if</span> (ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> ball<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&gt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&amp;&amp;</span> <span style="color: #408080; font-style: italic">// ball bottom side is below brick bottom side</span>
+		ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&lt;</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight()) <span style="color: #408080; font-style: italic">// ball top side is above brick bottom side</span>
+	{
+		ball<span style="color: #666666">-&gt;</span>setYPos(ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> h_max);
+		ball<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getYVelocity()));
+		hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+	}
+	</pre></div>
+	
+If no single corner collides, then two corners must have collided. If the bottom two corners collide as shown in the image, then the ball must have collided
+with the top side of the brick and from there we know how to handle the collision as shown in the code. We do the same for the other 
+three sides so I won't explain them all. Overall it is a lot of code but very redundant and you only need to understand how one of the cases work to understand them all.
+<img src="images/cornerCase.png" alt="" style="float: left; width: 100%; margin-right: 1%;">
+
+<br></br>
+If two corner collide we can set the collisionState hasMoved to true and we are done but if only one corner collided we
+need to move onto the next step which is to track the corner from one frame prior and create a vector and check which side of the brick this vector intersects with.
+So as shown below we find the position of the collision corner one frame prior. However, there is an edge case we must account for. If we go one frame back and the x or y coordinate of the corner
+is exactly on the line of the brick then we won't be able to detect an intersection. However, we will be able to determine which side of the brick
+the ball collided based on this as shown below in the code and the image. If the corner in the prior frame is on the left
+of the brick then it collided with the left side of the brick and we can adjust the position and velocity accordingly. We check this for all four cases.
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// is right on the top line</span>
+	<span style="color: #008000; font-weight: bold">if</span> (yPosTemp <span style="color: #666666">==</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #666666">!</span>hasMoved)
+	{
+		ball<span style="color: #666666">-&gt;</span>setYPos(ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">-</span> h_max);
+		ball<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getYVelocity()));
+		hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+	}
+<span style="color: #408080; font-style: italic">// is right on the bottom line</span>
+	<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (yPosTemp <span style="color: #666666">==</span> currentBrick<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">&amp;&amp;</span> <span style="color: #666666">!</span>hasMoved)
+	{
+		printf(<span style="color: #BA2121">&quot;on the line: </span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>);
+		ball<span style="color: #666666">-&gt;</span>setYPos(ball<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> h_max);
+		ball<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getYVelocity()));
+		hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+	}
+<span style="color: #408080; font-style: italic">// is right on the right line</span>
+	<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (xPosTemp <span style="color: #666666">==</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> currentBrick<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">&amp;&amp;</span> <span style="color: #666666">!</span>hasMoved)
+	{
+		printf(<span style="color: #BA2121">&quot;on the line: </span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>);
+		ball<span style="color: #666666">-&gt;</span>setXPos(ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> w_max);
+		ball<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getXVelocity()));
+		hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+<span style="color: #408080; font-style: italic">// is right on the left line</span>
+	<span style="color: #008000; font-weight: bold">else</span> <span style="color: #0000FF">if</span> (xPosTemp <span style="color: #666666">==</span> currentBrick<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">&amp;&amp;</span> <span style="color: #666666">!</span>hasMoved)
+	{
+		printf(<span style="color: #BA2121">&quot;on the line: </span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>);
+		ball<span style="color: #666666">-&gt;</span>setXPos(ball<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">-</span> w_max);
+		ball<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">-</span>(ball<span style="color: #666666">-&gt;</span>getXVelocity()));
+		hasMoved <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+	}
+</pre></div>
+
+<img src="images/cornerCase2.png" alt="" style="float: left; width: 100%; margin-right: 1%;">
+</p>
+<br></br>
+Finally we can actually check how the ball intersected with the brick according to the vector tracking the collision corner
+from the prior frame. In the code below we use the helper function intersect from the beginning of the lesson to 
+check if the line formed by each side of the brick intersect with the line formed by the collision corner from the prior frame and current frame.
+We can see this more clearly in the image. We check if CD intersects with AB where AB will be each side of the brick
+in each case. Based on which case is true we can find which side of the brick intersects with the ball.
+However there is one final edge case which is if the intersection width and height are exactly the same so the ball
+exactly hits the corner of the brick. This is shown at the bottom. That is it. It is a lot of code but
+quite redundant and not too difficult to understand if you draw it out.
+<img src="images/intersection.png" alt="" style="float: left; width: 100%; margin-right: 1%;">
+
+<br></br>
+This is all the code for SimpleGame::logic. The next thing we need to do is actually create the bricks in the GameNode.h file as shown below. 
+We basically just make ArcadeTextures and brick entities. We can see this below.
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008000; font-weight: bold">for</span> (<span style="color: #B00040">int</span> row <span style="color: #666666">=</span> <span style="color: #666666">0</span>; row <span style="color: #666666">&lt;</span> <span style="color: #666666">5</span>; row<span style="color: #666666">++</span>)
+	{
+		<span style="color: #008000; font-weight: bold">for</span> (<span style="color: #B00040">int</span> col <span style="color: #666666">=</span> <span style="color: #666666">0</span>; col <span style="color: #666666">&lt;</span> <span style="color: #666666">10</span>; col<span style="color: #666666">++</span>)
+		{
+			<span style="color: #008000; font-weight: bold">if</span> (row <span style="color: #666666">==</span> <span style="color: #666666">0</span>)
+			{
+				Brick<span style="color: #666666">*</span> newYellowBrick <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">new</span> Brick;
+				ArcadeTexture<span style="color: #666666">*</span> yellowBrickTexture <span style="color: #666666">=</span> createImage(renderer_in, <span style="color: #BA2121">&quot;brickBreakerNodeImages/yellowBrickTexture.png&quot;</span>);
+				yellowBrickTexture<span style="color: #666666">-&gt;</span>setPosition(<span style="color: #666666">70</span> <span style="color: #666666">+</span> col <span style="color: #666666">*</span> <span style="color: #666666">50</span>, <span style="color: #666666">50</span> <span style="color: #666666">+</span> row <span style="color: #666666">*</span> <span style="color: #666666">20</span>);
+				newYellowBrick<span style="color: #666666">-&gt;</span>setGameObjectTexture(yellowBrickTexture);
+				game<span style="color: #666666">-&gt;</span>addEntity(newYellowBrick);
+			}
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (row <span style="color: #666666">==</span> <span style="color: #666666">1</span>)
+			{
+				Brick<span style="color: #666666">*</span> newBlueBrick <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">new</span> Brick;
+				ArcadeTexture<span style="color: #666666">*</span> blueBrickTexture <span style="color: #666666">=</span> createImage(renderer_in, <span style="color: #BA2121">&quot;brickBreakerNodeImages/blueBrickTexture.png&quot;</span>);
+				blueBrickTexture<span style="color: #666666">-&gt;</span>setPosition(<span style="color: #666666">70</span> <span style="color: #666666">+</span> col <span style="color: #666666">*</span> <span style="color: #666666">50</span>, <span style="color: #666666">50</span> <span style="color: #666666">+</span> row <span style="color: #666666">*</span> <span style="color: #666666">20</span>);
+				newBlueBrick<span style="color: #666666">-&gt;</span>setGameObjectTexture(blueBrickTexture);
+				game<span style="color: #666666">-&gt;</span>addEntity(newBlueBrick);
+			}
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (row <span style="color: #666666">==</span> <span style="color: #666666">2</span>)
+			{
+				Brick<span style="color: #666666">*</span> newRedBrick <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">new</span> Brick;
+				ArcadeTexture<span style="color: #666666">*</span> redBrickTexture <span style="color: #666666">=</span> createImage(renderer_in, <span style="color: #BA2121">&quot;brickBreakerNodeImages/redBrickTexture.png&quot;</span>);
+				redBrickTexture<span style="color: #666666">-&gt;</span>setPosition(<span style="color: #666666">70</span> <span style="color: #666666">+</span> col <span style="color: #666666">*</span> <span style="color: #666666">50</span>, <span style="color: #666666">50</span> <span style="color: #666666">+</span> row <span style="color: #666666">*</span> <span style="color: #666666">20</span>);
+				newRedBrick<span style="color: #666666">-&gt;</span>setGameObjectTexture(redBrickTexture);
+				game<span style="color: #666666">-&gt;</span>addEntity(newRedBrick);
+			}
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (row <span style="color: #666666">==</span> <span style="color: #666666">3</span>)
+			{
+				Brick<span style="color: #666666">*</span> newGreenBrick <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">new</span> Brick;
+				ArcadeTexture<span style="color: #666666">*</span> greenBrickTexture <span style="color: #666666">=</span> createImage(renderer_in, <span style="color: #BA2121">&quot;brickBreakerNodeImages/greenBrickTexture.png&quot;</span>);
+				greenBrickTexture<span style="color: #666666">-&gt;</span>setPosition(<span style="color: #666666">70</span> <span style="color: #666666">+</span> col <span style="color: #666666">*</span> <span style="color: #666666">50</span>, <span style="color: #666666">50</span> <span style="color: #666666">+</span> row <span style="color: #666666">*</span> <span style="color: #666666">20</span>);
+				newGreenBrick<span style="color: #666666">-&gt;</span>setGameObjectTexture(greenBrickTexture);
+				game<span style="color: #666666">-&gt;</span>addEntity(newGreenBrick);
+			}
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span> (row <span style="color: #666666">==</span> <span style="color: #666666">4</span>)
+			{
+				Brick<span style="color: #666666">*</span> newYellowBrick <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">new</span> Brick;
+				ArcadeTexture<span style="color: #666666">*</span> yellowBrickTexture <span style="color: #666666">=</span> createImage(renderer_in, <span style="color: #BA2121">&quot;brickBreakerNodeImages/yellowBrickTexture.png&quot;</span>);
+				yellowBrickTexture<span style="color: #666666">-&gt;</span>setPosition(<span style="color: #666666">70</span> <span style="color: #666666">+</span> col <span style="color: #666666">*</span> <span style="color: #666666">50</span>, <span style="color: #666666">50</span> <span style="color: #666666">+</span> row <span style="color: #666666">*</span> <span style="color: #666666">20</span>);
+				newYellowBrick<span style="color: #666666">-&gt;</span>setGameObjectTexture(yellowBrickTexture);
+				game<span style="color: #666666">-&gt;</span>addEntity(newYellowBrick);
+			}
+		}
+	}
+</pre></div>
+We are finally done with the game programming and we can connect it with the menu system by adding some more nodes. We have already gone
+over this in prior lessons so I will not go over it. The entire code for the final project is in the GitHub repos at the bottom.
+
+<br></br>
+<h5>That is it for this project. We started by designing and implementing a menu system and learned how to use Git.
+	After that we learned about game design and animation and implemented a game with collision detection. Finally,
+	we connected the game with the menu through our GameNode.
+</h5>
+<hr>
+<h5>
+	To learn more about how to create your own games and how to expand this project and customize it, take a look at the documentation center in the
+	coming weeks. I will post templates for how to create new nodes, screens, and games to provide you with a starting point.
+	This was a lot of information and code condensed into 5 lessons so don't worry if it is confusing. The best way to understand it
+	is to start simple and play with the parameters of working code and see how it changes.
+</h5>
+
+</p>
+
+	Code for final lesson.<br></br>
 	https://github.com/geffencooper/final_lesson
 	<br></br>
 	Code for full menu system<br></br>
 	https://github.com/geffencooper/bareMenuFiles
+	<br></br>
+	Code for full project<br></br>
+	I will update this soon but all the code you need is in the two repos above and the repos
+	from the two lessons before on game design and animation which have the paddle and ball classes.
 
 </p>
 
