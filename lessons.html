@@ -358,7 +358,7 @@ Before getting into the design, watch this video for a demo of what the Arcade S
 <p>
 	<h4>Intro</h4>
 	For this project, the goal is to provide you with something which you can expand on so we will be building 
-	a "base" version of the Arcade System with a simple menu system, one game (brick breaker), and some music. At the end,
+	a "base" version of the Arcade System with a simple menu system, one game (brick breaker  or tetris), and some music. At the end,
 	you will have the knowledge and opportunity to customize your Arcade by building your own games and adding your own images and music.
 </p>
 
@@ -445,8 +445,8 @@ and behaviors we associated with these parts and bundle them up into units which
 						We can take a real life object and describe its behaviors and attributes so that we can implement it as a construct in our program
 				</li>
 				<li>
-						Or we can take some high level abstract design and split it up into bundles of behaviors and attributes and form objects
-						These are just two ways you can think about objects
+						Or we can take some high level abstract design and split it up into bundles of behaviors and attributes and form objects.
+						This is a more generic approach that is useful when designing classes that don't resemble tangible, real life objects.
 				</li>
 			</ol>
 			
@@ -455,38 +455,46 @@ and behaviors we associated with these parts and bundle them up into units which
 <h4> Defining the Node, Screen, and Button Classes</h4>
 <p>
 	I highly reccomend looking through "Button.h", "Screen.h", and "Node.h" in the GUI_files->headers folder inside our project folder. These files define
-	a generic Button, Screen, and Node class. In summary:
+	a generic Button, Screen, and Node class. Remember, a class is a blueprint that describes an object. A short summary of
+	the classes (the attributes/member variables and behaviors/functions) is shown below:
 </br> 
 <ul>
 	<li>
 		<b>Button Attributes: </b> width, height, x position, y position
 	</br>
-	<b>Button Methods: </b> Accessors, mutators, update, render </br>
+	<b>Button Functions: </b> Accessors, mutators, update, render </br>
 	<a href="https://oop.tech-academy.co.uk/accessors-mutators/" target="blank">What are accessors and mutators</a>
 	</li>
 	<li>
 			<b>Screen Attributes: </b> list of ArcadeTexture objects
 		</br>
-		<b>Screen Methods: </b> Accessors, mutators, update, render </br>
+		<b>Screen Functions: </b> Accessors, mutators, update, render </br>
 		</li>
 		<li>
 				<b>Node Attributes: </b> currentScreen object, list of screen objects, parent node object, renderer object
 			</br>
-			<b>Node Methods: </b> Accessors, mutators, update, render </br>
+			<b>Node Functions: </b> Accessors, mutators, update, render </br>
 			</li>
 </ul>
-You are probably wondering what an Arcade Texture object is and what update and render do. I will get into that below.
+An ArcadeTexture object is basically just an image or text that we want to put on the screen. I made a class called ArcadeTexture to simplify
+the process of doing this.
+You are probably wondering what update and render do. I will get into that below.
 </br>But before I do it is important to note how "generic" these classes are and by that I mean I only defined the most basic 
 and general attributes and methods that a button, screen, or node should have without getting too specific. </br>
-<h4>Inheritance</h4>This gives us the 
+</br><h4>Inheritance</h4>Being generic gives us the 
 flexibility to create different types of buttons or screens or nodes that share the same general attributes but behave in a specific way through
-<b>inheritance</b>. For a good explanation of inheritance in C++ read <a href="https://www.geeksforgeeks.org/inheritance-in-c/" target = "blank">this article</a>
+<b>inheritance</b>. For a good explanation of inheritance in C++ read <a href="https://www.geeksforgeeks.org/inheritance-in-c/" target = "blank">this article</a>. For example,
+we want to create different types of buttons and by using inheritance we don't
+need to redefine all the button attributes and functions every time we make a new type of button. We can define a generic
+button that contains the attributes and functions all buttons should have and then define a new button
+that <b>inherits</b> from this generic class, giving it all these attributes and functions by default.
 </br></br> So what I have done is inherited from the button class to create two different buttons (SimpleButton and OptionsButton) and inherited
 from the screen class to create two different screens (MenuScreen and GameScreen). You can see these in the GUI_files->headers folder.
 </br></br>
 <h4> Understanding the GUI loop</h4>
-So before we can start using the button, screen, and node objects to build our menu system we first have to understand how a GUI loop works.
-A GUI loop is just a series of three steps that our program follows:
+So before we can start using the button, screen, and node objects to build our menu system we first have to understand how our program
+runs using what I call a GUI loop (very similar to a game loop). This is where the "update" and "render" functions from above come in.
+A GUI loop is just a series of three steps that our program follows (when I say GUI I basically mean the program):
 <ol>
 	<li>
 		<b>Handle Input</b>: First we want our GUI to track any user events such as mouse movement or keystrokes. We want our
@@ -504,50 +512,38 @@ A GUI loop is just a series of three steps that our program follows:
 This loop repeats over and over again 60 times per second for the entirety of our program.
 
 To understand how this loop works in the context of our program take a look at this simplified main function which is where every C++ program begins.
-<pre><code>
-		int main(int argc, char* argv[])
-		{   
-			// initialize resources we need like the window
-			if (!init())
+<!-- HTML generated using hilite.me --><div style="background: #ffffff; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">
+	<span style="color: #888888">// we want to run the gui loop until the user quits</span>
+	<span style="color: #333399; font-weight: bold">bool</span> quit <span style="color: #333333">=</span> <span style="color: #007020">false</span>;
+
+	<span style="color: #888888">// here we create the first node for our menu system</span>
+	RootNode <span style="color: #0066BB; font-weight: bold">currentNode</span>(arcadeSystemRenderer, nullptr);
+	
+	<span style="color: #888888">// ---------------THE GUI LOOP</span>
+	<span style="color: #008800; font-weight: bold">while</span> (<span style="color: #333333">!</span>quit)
+	{   
+		<span style="color: #888888">// handle all user events until there are none left</span>
+		SDL_Event e;
+		<span style="color: #008800; font-weight: bold">while</span> (SDL_PollEvent(<span style="color: #333333">&amp;</span>e) <span style="color: #333333">!=</span> <span style="color: #0000DD; font-weight: bold">0</span>)
+		{
+			<span style="color: #888888">// update the current node </span>
+			currentNode.update(<span style="color: #333333">&amp;</span>e);
+			<span style="color: #888888">// user requests quit by clicking window X</span>
+			<span style="color: #008800; font-weight: bold">if</span> (e.type <span style="color: #333333">==</span> SDL_QUIT)
 			{
-				printf("Failed to initialize!\n");
+			quit <span style="color: #333333">=</span> <span style="color: #007020">true</span>;
 			}
-			// if initializes successfully then continue
-			else
-			{
-				// we want to run the gui loop until the user quits
-				bool quit = false;
-
-				// here we create the first node for our menu system
-				RootNode currentNode(arcadeSystemRenderer, nullptr);
-
-				// ---------------THE GUI LOOP
-				while (!quit)
-				{   
-					// handle all user events until there are none left
-					SDL_Event e;
-					while (SDL_PollEvent(&e) != 0)
-					{
-						// update the current node 
-						currentNode.update(&e);
-
-						// user requests quit by clicking window X
-						if (e.type == SDL_QUIT)
-						{
-							quit = true;
-						}
-					}
-					currentNode.update(nullptr);
-					// render the current node
-					currentNode.render(arcadeSystemRenderer);
-					SDL_RenderPresent(arcadeSystemRenderer);
-				}
-			}
-		
-</code></pre>
+		}
+		currentNode.update(nullptr);
+		<span style="color: #888888">// render the current node</span>
+		currentNode.render(arcadeSystemRenderer);
+		SDL_RenderPresent(arcadeSystemRenderer);
+	}
+	</pre></div>
+	
 
 <p>
-	The GUI works like this
+	The GUI works like this:
 	<ol>
 		<li>
 			Before going into the loop, create the first node in the menu system.
@@ -569,10 +565,37 @@ To understand how this loop works in the context of our program take a look at t
 			Finally we render the node to the screen. Node will render the current screen, which will render all its ArcadeTexture objects and all its buttons.
 		</li>
 	</ol>
+	</br>
+	More generally, we have some tree structure that has nodes, screens, and buttons.
+	At any moment when our program is running we will be somewhere in the tree, specifically 
+	at the "current screen" in the "current node". For example, when the program starts out 
+	we define the current node to be the root and the current screen to be some screen in the 
+	root node's screen list. Below we see that by the red oval which is circling the root node denoted 
+	by the black box which only has one screen.
 
-	An ArcadeTexture object is basically just an image or text that we want to put on the screen. I made a class called ArcadeTexture to simplify
-	the process of doing this.
-
+	<img src="images/finalTree.png" style="float: right; width: 100%; margin-left: 1%; margin-bottom:2%">
+</br>
+	Remember that for the entire program we constantly handle events,
+	update, and render. So if no events occur, then we just update and render the same
+	screen over and over again which is why it appears that nothing is happening. Once an event
+	occurs we handle it at different tiers: the main function, the node level, the screen level, or 
+	at the button level. We always check and receive events at the main function. 
+<br></br>
+	From there we pass the event down
+	the node -> screen -> button hierarchy calling node's update function, which calls screen's update, which calls button's update.
+	The button will then attempt to handle the event and return an "action" to the screen. Based on this action, the screen will
+	attempt to update accordingly and then return the action to the node. Based on the action, the node will attempt to
+	update accordingly and then return the action to the main function which will attempt to update accordingly.
+	<br></br>
+	Let's take a look at an example of this cycle. Let's say the user clicks the mouse on a button to move nodes. This click event will pass
+	to the node, then screen, then button. The button handle the event by checking if the click happened on a button. If so
+	it will return an action associated with that button, in this case to move to some other node. This action returns to the screen.
+	The screen cannot handle moving nodes so it returns the action to the node. The node cannot handle this action either so it returns
+	to the main function which updates the current node to whatever the action specified. Now when we update and render
+	we will update this new node and its starting screen.
+	
+	
+	</br></br>
 	<h4>conclusion</h4>
 	That was a lot of information so don't worry if a lot of it didn't make sense. Next class we will be going over
 	how to actually use these objects to create a menu system. </br></br><b>One important concept to remember is abstraction, it is not
@@ -755,7 +778,7 @@ visual studio code as we have done before and type <code>git pull upstream maste
 	<h4>Step 1: Creating a new node</h4>
 	The first step to implementing the menu system is creating a new node. If you recall our menu system is a tree of nodes.
 	To do this create a new file called "RootNode.h" in the source directory of the project. Do this by right-clicking source and 
-	then clicking new file as sown in the image.
+	then clicking new file as shown in the image.
 
 	<br></br>	<br></br>
 	<h5>This is the code for a basic rootNode that flips between two screens when you click a button.</h5>
@@ -786,10 +809,10 @@ visual studio code as we have done before and type <code>git pull upstream maste
         ArcadeTexture<span style="color: #666666">*</span> screen2Background <span style="color: #666666">=</span> createImage(renderer_in, <span style="color: #BA2121">&quot;rootNodeImages/rootNodeScreenBackground.png&quot;</span>, <span style="color: #008000">true</span>);
 
         ArcadeTexture<span style="color: #666666">*</span> screen1Text <span style="color: #666666">=</span> createSimpleText(renderer_in, <span style="color: #BA2121">&quot;fonts/retro/italic.ttf&quot;</span>, <span style="color: #666666">100</span>, <span style="color: #BA2121">&quot;screen 1&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>);
-        screen1Text<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> screen1Text<span style="color: #666666">-&gt;</span>getW() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
+        screen1Text<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> screen1Text<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
 
         ArcadeTexture<span style="color: #666666">*</span> screen2Text <span style="color: #666666">=</span> createSimpleText(renderer_in, <span style="color: #BA2121">&quot;fonts/retro/italic.ttf&quot;</span>, <span style="color: #666666">100</span>, <span style="color: #BA2121">&quot;screen 2&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>);
-        screen2Text<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> screen2Text<span style="color: #666666">-&gt;</span>getW() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
+        screen2Text<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> screen2Text<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
 
         <span style="color: #408080; font-style: italic">// add the images and text to the screen after creating them</span>
         screen1<span style="color: #666666">-&gt;</span>addTextureToScreen(screen1Background);
@@ -800,14 +823,14 @@ visual studio code as we have done before and type <code>git pull upstream maste
  
         <span style="color: #408080; font-style: italic">// make a text button to put on the screen1</span>
         SimpleButton<span style="color: #666666">*</span> button1 <span style="color: #666666">=</span> createSimpleTextButton(renderer_in, <span style="color: #BA2121">&quot;fonts/pixel/classic.ttf&quot;</span>, <span style="color: #666666">30</span>, <span style="color: #BA2121">&quot;gotoscreen2&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>, <span style="color: #666666">0</span>);
-        button1<span style="color: #666666">-&gt;</span>setButtonPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> button1<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, screen1Text<span style="color: #666666">-&gt;</span>getY() <span style="color: #666666">+</span> screen1Text<span style="color: #666666">-&gt;</span>getH() <span style="color: #666666">+</span> <span style="color: #666666">50</span>);
+        button1<span style="color: #666666">-&gt;</span>setButtonPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> button1<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, screen1Text<span style="color: #666666">-&gt;</span>getY() <span style="color: #666666">+</span> screen1Text<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">+</span> <span style="color: #666666">50</span>);
 
         <span style="color: #408080; font-style: italic">// give this button an action</span>
         button1<span style="color: #666666">-&gt;</span>setButtonAction(createAction(MOVE_SCREENS, screen2));
        
         <span style="color: #408080; font-style: italic">// make a text button to put on the screen2</span>
         SimpleButton<span style="color: #666666">*</span> button2 <span style="color: #666666">=</span> createSimpleTextButton(renderer_in, <span style="color: #BA2121">&quot;fonts/pixel/classic.ttf&quot;</span>, <span style="color: #666666">30</span>, <span style="color: #BA2121">&quot;gotoscreen1&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>, <span style="color: #666666">0</span>);
-        button2<span style="color: #666666">-&gt;</span>setButtonPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> button2<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, screen2Text<span style="color: #666666">-&gt;</span>getY() <span style="color: #666666">+</span> screen2Text<span style="color: #666666">-&gt;</span>getH() <span style="color: #666666">+</span> <span style="color: #666666">50</span>);
+        button2<span style="color: #666666">-&gt;</span>setButtonPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> button2<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, screen2Text<span style="color: #666666">-&gt;</span>getY() <span style="color: #666666">+</span> screen2Text<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">+</span> <span style="color: #666666">50</span>);
        
         <span style="color: #408080; font-style: italic">// give this button an action       </span>
         button2<span style="color: #666666">-&gt;</span>setButtonAction(createAction(MOVE_SCREENS, screen1));
@@ -826,13 +849,11 @@ visual studio code as we have done before and type <code>git pull upstream maste
 };
 </pre></div>
 
+
 <p>
-	<h5>Code for Main.cpp. Copy-paste this into your Main.cpp.</h5> Then type CTRL (CMDN on Mac) + SHIFT + B and run these tasks: "build arcadeSystem" then "run arcadeSystem".
-			<b>Note:</b> There might be some red squiggly lines saying your code has errors, try running the tasks anyways because VS code can be a bit delayed and not recognize some references.
-			If you change the code and want to recompile it run the tasks "recompile arcadeSystem" then "run arcadeSystem".
-			<br></br>
-			<b>IMPORTANT: </b>Once you copy these files to your project and get them working, we need to add, commit, and push them with
-			git so that you can have a working version saved. This way when you make changes and additions you will be able to see and go back to the working
+	<h5>Code for Main.cpp. Copy-paste this into your Main.cpp.</h5> 
+	<b>IMPORTANT: </b>Once you copy these files to your project and get them working, we need to add, commit, and push them with
+	git so that you can have a working version saved. This way when you make changes and additions you will be able to see and go back to the working
 			version when it breaks. See the picture at the bottom for how to do this.
 	<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// main.cpp</span>
 <span style="color: #BC7A00">#include &quot;SDL.h&quot;</span>
@@ -928,18 +949,22 @@ TTF_Font<span style="color: #666666">*</span> font <span style="color: #666666">
 }
 </pre></div>
 
-<h5>When running you should see this screen and be able to flip to the next screen using the button.</h5>
-<div class = "row">
-		<img src="images/s1.jpg"  style="float: right; width: 49%; margin-right: 1%; margin-top: 1%; margin-bottom: 2%;">
-		<img src="images/s2.jpg"  style="float: right; width: 49%; margin-right: 1%; margin-top: 1%; margin-bottom: 2%;">
-</div>
-
 <h4>How to add, commit, and push using git</h4>
 Type theses commands when you get your code working.
 <code>git add .</code> then <code>git commit -m"working version"</code> then <code>git push origin master</code> You should see these additions in your GitHub account.
 <img src="images/useGit.png"  style="float: right; width: 100%; margin-right: 1%; margin-top: 1%; margin-bottom: 2%;">
 
-<h4>Dissecting the code</h4>
+<br>
+Then type CTRL (CMDN on Mac) + SHIFT + B and run these tasks: "build arcadeSystem" then "run arcadeSystem".
+			<b>Note:</b> There might be some red squiggly lines saying your code has errors, try running the tasks anyways because VS code can be a bit delayed and not recognize some references.
+			If you change the code and want to recompile it run the tasks "recompile arcadeSystem" then "run arcadeSystem".
+			<h5>When running you should see this screen and be able to flip to the next screen using the button.</h5>
+			<div class = "row">
+					<img src="images/s1.jpg"  style="float: right; width: 49%; margin-right: 1%; margin-top: 1%; margin-bottom: 2%;">
+					<img src="images/s2.jpg"  style="float: right; width: 49%; margin-right: 1%; margin-top: 1%; margin-bottom: 2%;">
+			</div>
+
+			<h4>Dissecting the code</h4>
 <h5>Main.cpp</h5>
 All C++ programs start their execution from the method "main()" so let's start from the file Main.cpp
 where the function "main" sits.<br></br>
@@ -1084,7 +1109,7 @@ to store the state of our program (is it running or did we quit) and 2. We creat
 		}
 	}
 </pre></div>
-Then we say while the value of quit is true (!quit means opposite of false) do the following:
+Then we say while we have not quit (!quit means opposite of false) do the following:
 <ol>
 	<li>Create an event object to store the latest event that happens</li>
 	<li>While events (mouse clicks, keystrokes) are still happening handle those events. We handle an event by 
@@ -1150,10 +1175,10 @@ if you are curious you can ask me through email or my office hour.
 	ArcadeTexture<span style="color: #666666">*</span> screen2Background <span style="color: #666666">=</span> createImage(renderer_in, <span style="color: #BA2121">&quot;rootNodeImages/rootNodeScreenBackground.png&quot;</span>, <span style="color: #008000">true</span>);
 
 	ArcadeTexture<span style="color: #666666">*</span> screen1Text <span style="color: #666666">=</span> createSimpleText(renderer_in, <span style="color: #BA2121">&quot;fonts/retro/italic.ttf&quot;</span>, <span style="color: #666666">100</span>, <span style="color: #BA2121">&quot;screen 1&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>);
-	screen1Text<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> screen1Text<span style="color: #666666">-&gt;</span>getW() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
+	screen1Text<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> screen1Text<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
 
 	ArcadeTexture<span style="color: #666666">*</span> screen2Text <span style="color: #666666">=</span> createSimpleText(renderer_in, <span style="color: #BA2121">&quot;fonts/retro/italic.ttf&quot;</span>, <span style="color: #666666">100</span>, <span style="color: #BA2121">&quot;screen 2&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>);
-	screen2Text<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> screen2Text<span style="color: #666666">-&gt;</span>getW() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
+	screen2Text<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> screen2Text<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
 </pre></div>
 Next we create two images and two pieces of text we want to put on our screens using the "createImage()" and "createSimpleText()" methods. Any time
 you want to create an image or text use these methods as shown and change the parameters to what you want.
@@ -1174,13 +1199,13 @@ We also need to set the x,y position of the text, the images automatically have 
 </pre></div>
 <br>
 <h5>Next we will create buttons. Buttons are just images or text that have an action associated with them</h5>
-<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// make a text button to put on the screen1</span>
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// make a text button to put on screen1</span>
 	SimpleButton<span style="color: #666666">*</span> button1 <span style="color: #666666">=</span> createSimpleTextButton(renderer_in, <span style="color: #BA2121">&quot;fonts/pixel/classic.ttf&quot;</span>, <span style="color: #666666">30</span>, <span style="color: #BA2121">&quot;gotoscreen2&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>, <span style="color: #666666">0</span>);
-	button1<span style="color: #666666">-&gt;</span>setButtonPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> button1<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, screen1Text<span style="color: #666666">-&gt;</span>getY() <span style="color: #666666">+</span> screen1Text<span style="color: #666666">-&gt;</span>getH() <span style="color: #666666">+</span> <span style="color: #666666">50</span>);
+	button1<span style="color: #666666">-&gt;</span>setButtonPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> button1<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, screen1Text<span style="color: #666666">-&gt;</span>getY() <span style="color: #666666">+</span> screen1Text<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">+</span> <span style="color: #666666">50</span>);
 
-	<span style="color: #408080; font-style: italic">// make a text button to put on the screen1</span>
+	<span style="color: #408080; font-style: italic">// make a text button to put on screen2</span>
 	SimpleButton<span style="color: #666666">*</span> button2 <span style="color: #666666">=</span> createSimpleTextButton(renderer_in, <span style="color: #BA2121">&quot;fonts/pixel/classic.ttf&quot;</span>, <span style="color: #666666">30</span>, <span style="color: #BA2121">&quot;gotoscreen1&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>, <span style="color: #666666">0</span>);
-	button2<span style="color: #666666">-&gt;</span>setButtonPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> button2<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, screen2Text<span style="color: #666666">-&gt;</span>getY() <span style="color: #666666">+</span> screen2Text<span style="color: #666666">-&gt;</span>getH() <span style="color: #666666">+</span> <span style="color: #666666">50</span>);
+	button2<span style="color: #666666">-&gt;</span>setButtonPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> button2<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, screen2Text<span style="color: #666666">-&gt;</span>getY() <span style="color: #666666">+</span> screen2Text<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">+</span> <span style="color: #666666">50</span>);
 </pre></div>
 You might notice that creating a text button is exactly like creating text. The only difference
 is that is a button object and we need to give it an action which we will see below.
@@ -1411,7 +1436,8 @@ Create another file called "Ball.cpp"
 
 	<br></br>
 	The first function we define is the constructor. Everytime we create a ball object, this method is called.
-	Typically the constructor will initialize the member variables to some default value. Here we set all
+	Typically the constructor will initialize the member variables to some values passed in as parameters but in this
+	case we have a default constructor. Here we set all
 	the attributes of ball to zero by default but we can change these later on.
 	<br></br>
 	Next we define the update method which takes in an event. If you recall, in our GUI loop we call the update method twice, the first time
@@ -1443,7 +1469,7 @@ Create another file called "Ball.cpp"
         <span style="color: #B00040">void</span> <span style="color: #0000FF">logic</span>();
 
         <span style="color: #B00040">void</span> <span style="color: #0000FF">newGame</span>();
-        <span style="color: #408080; font-style: italic">//void checkCollision();</span>
+        <span style="color: #408080; font-style: italic"></span>
 
         <span style="color: #B00040">void</span> <span style="color: #0000FF">setBall</span>(Ball<span style="color: #666666">*</span> ball_in) {ball <span style="color: #666666">=</span> ball_in;}
         Ball<span style="color: #666666">*</span> <span style="color: #0000FF">getBall</span>() {<span style="color: #008000; font-weight: bold">return</span> ball;}
@@ -1500,9 +1526,9 @@ Now create a file called SimpleGame.cpp to implement the methods of the SimpleGa
 		Action newAction <span style="color: #666666">=</span> {DO_NOTHING, nullptr};
 	
 		<span style="color: #408080; font-style: italic">// update all the game objects</span>
-		<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities()<span style="color: #666666">-&gt;</span>size(); i<span style="color: #666666">++</span>)
+		<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities()<span style="color: #666666">.</span>size(); i<span style="color: #666666">++</span>)
 		{
-			(<span style="color: #666666">*</span>getMovingEntities())[i]<span style="color: #666666">-&gt;</span>update(event);
+			<span style="color: #666666"></span>getMovingEntities()[i]<span style="color: #666666">-&gt;</span>update(event);
 		}
 	
 		<span style="color: #408080; font-style: italic">// execute game logic</span>
@@ -1594,9 +1620,9 @@ Now create a file called SimpleGame.cpp to implement the methods of the SimpleGa
     Action newAction <span style="color: #666666">=</span> {DO_NOTHING, nullptr};
 
     <span style="color: #408080; font-style: italic">// update all the game objects</span>
-    <span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities()<span style="color: #666666">-&gt;</span>size(); i<span style="color: #666666">++</span>)
+    <span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities()<span style="color: #666666">.</span>size(); i<span style="color: #666666">++</span>)
     {
-        (<span style="color: #666666">*</span>getMovingEntities())[i]<span style="color: #666666">-&gt;</span>update(event);
+        <span style="color: #666666"></span>getMovingEntities()[i]<span style="color: #666666">-&gt;</span>update(event);
     }
 </pre></div>
 First let's look at the function signature, we have an Action as the return type and pass in an event as a 
@@ -2275,7 +2301,7 @@ The final step is to actually create the paddle object and add it to the game th
 				MenuScreen<span style="color: #666666">*</span> gameOverScreen <span style="color: #666666">=</span> createMenuScreen();
 				gameOverScreen<span style="color: #666666">-&gt;</span>addTextureToScreen(createImage(renderer_in, <span style="color: #BA2121">&quot;brickBreakerNodeImages/pauseScreenBackgroundTexture.png&quot;</span>, <span style="color: #008000">true</span>));
 				ArcadeTexture<span style="color: #666666">*</span> gameOverText <span style="color: #666666">=</span> createSimpleText(renderer_in, <span style="color: #BA2121">&quot;fonts/retro/italic.ttf&quot;</span>, <span style="color: #666666">100</span>, <span style="color: #BA2121">&quot;GAME OVER&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>);
-				gameOverText<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> gameOverText<span style="color: #666666">-&gt;</span>getW() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
+				gameOverText<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> gameOverText<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
 				gameOverScreen<span style="color: #666666">-&gt;</span>addTextureToScreen(gameOverText);
 	
 				SimpleButton<span style="color: #666666">*</span> mainMenuButton2 <span style="color: #666666">=</span> createSimpleTextButton(renderer_in, <span style="color: #BA2121">&quot;fonts/pixel/classic.ttf&quot;</span>, <span style="color: #666666">30</span>,<span style="color: #BA2121">&quot;GAME MENU&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>, <span style="color: #666666">0</span>);
@@ -2294,7 +2320,7 @@ The final step is to actually create the paddle object and add it to the game th
 				MenuScreen<span style="color: #666666">*</span> pauseScreen <span style="color: #666666">=</span> createMenuScreen();
 				pauseScreen<span style="color: #666666">-&gt;</span>addTextureToScreen(createImage(renderer_in, <span style="color: #BA2121">&quot;brickBreakerNodeImages/pauseScreenBackgroundTexture.png&quot;</span>));
 				ArcadeTexture<span style="color: #666666">*</span> pauseText <span style="color: #666666">=</span> createSimpleText(renderer_in, <span style="color: #BA2121">&quot;fonts/retro/italic.ttf&quot;</span>, <span style="color: #666666">100</span>,<span style="color: #BA2121">&quot;PAUSE&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>);
-				pauseText<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> pauseText<span style="color: #666666">-&gt;</span>getW() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
+				pauseText<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> pauseText<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
 				pauseScreen<span style="color: #666666">-&gt;</span>addTextureToScreen(pauseText);
 	
 	
@@ -2338,7 +2364,7 @@ Next we want to add another screen to this node so that when our game ends we ge
 <!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">            MenuScreen<span style="color: #666666">*</span> gameOverScreen <span style="color: #666666">=</span> createMenuScreen();
 	gameOverScreen<span style="color: #666666">-&gt;</span>addTextureToScreen(createImage(renderer_in, <span style="color: #BA2121">&quot;brickBreakerNodeImages/pauseScreenBackgroundTexture.png&quot;</span>, <span style="color: #008000">true</span>));
 	ArcadeTexture<span style="color: #666666">*</span> gameOverText <span style="color: #666666">=</span> createSimpleText(renderer_in, <span style="color: #BA2121">&quot;fonts/retro/italic.ttf&quot;</span>, <span style="color: #666666">100</span>, <span style="color: #BA2121">&quot;GAME OVER&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>);
-	gameOverText<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> gameOverText<span style="color: #666666">-&gt;</span>getW() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
+	gameOverText<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> gameOverText<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
 	gameOverScreen<span style="color: #666666">-&gt;</span>addTextureToScreen(gameOverText);
 
 	SimpleButton<span style="color: #666666">*</span> mainMenuButton2 <span style="color: #666666">=</span> createSimpleTextButton(renderer_in, <span style="color: #BA2121">&quot;fonts/pixel/classic.ttf&quot;</span>, <span style="color: #666666">30</span>,<span style="color: #BA2121">&quot;GAME MENU&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>, <span style="color: #666666">0</span>);
@@ -2365,7 +2391,7 @@ We also want to create a pause screen. This will be very similar to the game ove
 <!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">            MenuScreen<span style="color: #666666">*</span> pauseScreen <span style="color: #666666">=</span> createMenuScreen();
 	pauseScreen<span style="color: #666666">-&gt;</span>addTextureToScreen(createImage(renderer_in, <span style="color: #BA2121">&quot;brickBreakerNodeImages/pauseScreenBackgroundTexture.png&quot;</span>));
 	ArcadeTexture<span style="color: #666666">*</span> pauseText <span style="color: #666666">=</span> createSimpleText(renderer_in, <span style="color: #BA2121">&quot;fonts/retro/italic.ttf&quot;</span>, <span style="color: #666666">100</span>,<span style="color: #BA2121">&quot;PAUSE&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>);
-	pauseText<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> pauseText<span style="color: #666666">-&gt;</span>getW() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
+	pauseText<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> pauseText<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
 	pauseScreen<span style="color: #666666">-&gt;</span>addTextureToScreen(pauseText);
 
 
@@ -2421,7 +2447,7 @@ Next let's create a basic root node that will allow us to go to this game from a
 			ArcadeTexture<span style="color: #666666">*</span> screen1Background <span style="color: #666666">=</span> createImage(renderer_in, <span style="color: #BA2121">&quot;rootNodeImages/rootNodeScreenBackground.png&quot;</span>, <span style="color: #008000">true</span>);
 	
 			ArcadeTexture<span style="color: #666666">*</span> screen1Text <span style="color: #666666">=</span> createSimpleText(renderer_in, <span style="color: #BA2121">&quot;fonts/retro/italic.ttf&quot;</span>, <span style="color: #666666">100</span>, <span style="color: #BA2121">&quot;MAIN MENU&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>);
-			screen1Text<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> screen1Text<span style="color: #666666">-&gt;</span>getW() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
+			screen1Text<span style="color: #666666">-&gt;</span>setPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> screen1Text<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, <span style="color: #666666">25</span>);
 	
 			<span style="color: #408080; font-style: italic">// add the images and text to the screen after creating them</span>
 			screen1<span style="color: #666666">-&gt;</span>addTextureToScreen(screen1Background);
@@ -2429,7 +2455,7 @@ Next let's create a basic root node that will allow us to go to this game from a
 	 
 			<span style="color: #408080; font-style: italic">// make a text button to put on the screen1</span>
 			SimpleButton<span style="color: #666666">*</span> button1 <span style="color: #666666">=</span> createSimpleTextButton(renderer_in, <span style="color: #BA2121">&quot;fonts/pixel/classic.ttf&quot;</span>, <span style="color: #666666">30</span>, <span style="color: #BA2121">&quot;PLAY SIMPLE GAME&quot;</span>, <span style="color: #666666">255</span>, <span style="color: #666666">0</span>, <span style="color: #666666">0</span>);
-			button1<span style="color: #666666">-&gt;</span>setButtonPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> button1<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, screen1Text<span style="color: #666666">-&gt;</span>getY() <span style="color: #666666">+</span> screen1Text<span style="color: #666666">-&gt;</span>getH() <span style="color: #666666">+</span> <span style="color: #666666">50</span>);
+			button1<span style="color: #666666">-&gt;</span>setButtonPosition(windowWidth <span style="color: #666666">/</span> <span style="color: #666666">2</span> <span style="color: #666666">-</span> button1<span style="color: #666666">-&gt;</span>getWidth() <span style="color: #666666">/</span> <span style="color: #666666">2</span>, screen1Text<span style="color: #666666">-&gt;</span>getY() <span style="color: #666666">+</span> screen1Text<span style="color: #666666">-&gt;</span>getHeight() <span style="color: #666666">+</span> <span style="color: #666666">50</span>);
 	
 			<span style="color: #408080; font-style: italic">// give this button an action</span>
 			button1<span style="color: #666666">-&gt;</span>setButtonAction(createAction(MOVE_NODES, gameNode));
