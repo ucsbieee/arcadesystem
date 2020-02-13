@@ -52,7 +52,10 @@
 										<a href="#Lesson2"><b>Lesson 2</b>: Using Git and Implementing the Menu System</a>
 									</li>
 									<li>
-										<a href="#Lesson3"><b>Lesson 3</b>: Animation and Game Design</a>
+										<a href="#Lesson3F"><b>Lesson 3 Fall</b>: Animation and Game Design (Brick Breaker)</a>
+									</li>
+									<li>
+										<a href="#Lesson3W"><b>Lesson 3 Winter</b>: Animation and Game Design (Tetris)</a>
 									</li>
 									<li>
 										<a href="#Lesson4"><b>Lesson 4</b>: Animation and Game Design Part 2</a>
@@ -1254,8 +1257,8 @@ we are still inside the constructor of the RootNode. Finally, we have to set the
 
 <hr>
 
-<a name="Lesson3"></a>
-<h2>Lesson 3: Animation and Game Design</h2>
+<a name="Lesson3F"></a>
+<h2>Lesson 3 Fall: Animatsion and Game Design (Brick Breaker)</h2>
 <p>
 	Lessons 0-2 were mainly setup, design, and building the structure of our Arcade.
 	With this foundation we can now expand and integrate more exciting things like animation
@@ -1373,6 +1376,7 @@ we are still inside the constructor of the RootNode. Finally, we have to set the
 				 ever create one object of those classes so they are a special case.
 
 				 <br></br>
+				 <a name="ballClass"></a>
 				 So now let's create the file Ball.h and define the ball class as shown.
 				 <!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// Ball.h</span>
 
@@ -1913,6 +1917,708 @@ Also, don't forget to use the git commands from last lesson to keep track of you
 </p>
 
 	</p>
+<hr>
+
+<a name="Lesson3W"></a>
+<h2>Lesson 3 Winter: Animation and Game Design (Tetris)</h2>
+<p>
+	Lessons 0-2 were mainly setup, design, and building the structure of our Arcade. With this foundation
+	we can now expand and integrate more exciting things like animation and game design. In this lesson we will 
+	create a very simple "game" that will let us move a tetris piece around the screen. 
+</p>
+<h4>animation</h4>
+<p>In the fall we built brick breaker which involved the animation of a ball bouncing on the screen. Tetris
+	is a more static game but still follows the same animation concepts. Animation is essentially a rapid sequence
+	of still images that mimic continuous motion. For more detail you can look at <a href="#Lesson3F"><b>Lesson 3 Fall.</b></a> 
+	Our game loop runs 60 frame per second and every frame we will need to rerender our tetris piece. However, unlike brick breaker,
+	the piece doesn't move every frame. It only moves based on user input.
+</p>
+
+<h4>Game Design Introduction</h4>
+	So now that we have a rough idea of how animation works, let's look at how a simple game works. Note this part of the lesson
+	is very similar to the brick breaker lesson from fall.
+
+	<ul>
+		<li>
+			In general a game is just a succession of events and interactions with some end goal.	
+		</li>
+		<li>
+			An event in our game will be any form of user input as well as the movement of "game objects". Interactions include
+			collisions and any other logic or "states" that are defined by our game. For example, if a game object enters
+			a certain region of the screen then we might want it to do something or for something to happen.
+		</li>
+		<IMG SRC="images/events.png" style="float: right; width: 100%; margin-right: 1%; margin-top: 1%; margin-bottom: 2%;">
+		<li>
+			So overall we have game objects that are part of our game and can move or stay still. Each object has
+			its own update method that changes its state from frame to frame. This typically will just be movement but can 
+			be whatever you want it to be. Based on these updates, certain states will result in the game. For example,
+			when a ball game object updates, it will change position. Based on this change of position certain states can occur
+			like collision with the wall or other objects which must be recognized and handled by our game's logic. This sequence of update then game logic is seen
+			in the image above of a simple game object.
+		</li>
+	</ul>
+
+	<h5>Steps to implement our game</h5>
+	<ol>
+		<li>
+			The first step is to define game objects which is anything you can interact with
+			such as obstacles, moving pieces, or the player. For our simple game the only game object will be the tetris piece. 
+			To implement a game object in code we must create a class. I have
+			already created a generic class called Entity that provides essential attributes
+			and functions any game object has including <b><i>size, position, velocity, etc
+			</i></b> as well as update and render functions. To create game objects we will create a class
+			that inherits from Entity so that every game object will not only have all the essential methods and qualities 
+			already, but also they will be easy to interface with in a standardized way.
+		</li>
+		<li>
+			The next step is to define our game. This includes all the logic, including
+			colision detection, game states, and any other interactions we want to recognize. The generic outline
+			for a game has already been implemented in a class called GameScreen. If you recall we have a generic screen
+			class and under screen we had MenuScreen which was a collection of buttons. A GameScreen is another
+			type of screen that implements a game. So to create a new game we will inherit from the GameScreen
+			class so that our game will already have the essential attributes and methods and also
+			have a standerdized interface. However, we will customize how these functions and attributes are
+			imlemented and used enabling us to create any simple game we want.
+		</li>
+		<li>
+			The final step is to create a new Node that will contain our game. If you recall from the menu system,
+			we created buttons which were part of screens which were bundled all into a node. This is the same thing;
+			we create game objects which are part of a GameScreen which along with other MenuScreens (like a pause screen)
+			are bundled into a node.
+		</li>
+	</ol>
+
+	<h4>Coding</h4>
+	<b>Important: </b>Before coding type "git pull upstream master" into the terminal as we did last lesson.
+	I made some changes that you must have to get the code to work.
+	<p>
+		Let's get into coding now that we have a high level understanding of how to implement
+		a game into the structure of our arcade.
+		<ol>
+			<li>
+				<h5>Defining the game object</h5>
+				 The first thing we need to do is define our game objects. In tetris the only objects are the pieces.
+				 If you recall, tetris is played on map of squares (tiles) and each piece is made up of individual tiles.
+				 Rather than defining a new class called "piece" we instead will use a predefined class called "tile".
+				 The reason for this is a matter of style and design choice but in my opinion it is easier to deal
+				 with individual tiles rather than entire game pieces. This will become more clear later on. The image below 
+				 shows what I mean by a tile. 
+				 <IMG SRC="images/tileMap.png" style="float: left; width: 20%; margin-right: 1%; margin-top: 1%; margin-bottom: 2%;">
+					<br></br>This image shows an example of piece in tetris. As you can see, there is a grid of squares that represent
+				 each position in the tetris map. Each piece is made of tiles that fill up squares in the grid. I have already made classes
+				 called tile and map that can be used to build tetris or any other tile based or grid based game. The tile class
+				 is very simple and bare bones class that just inherits from entity. The map class helps automate the creation and managing process
+				 of a 2D grid. A map can be though of as a 2D array of tile objects.<br></br>In C++ classes are typically separated into .h files called header files
+				 and .cpp files which are c plus plus files. The header file will contain the class
+				 defintion with function protoypes and member variables whereas the cpp file
+				 will contain the function implementation. For an example of
+				 this read <a href = "http://www.cppforschool.com/tutorial/separate-header-and-implementation-files.html" target = "blank">this article</a>. 
+				 and <a href = "http://www.cplusplus.com/forum/articles/10627/">this article</a>. There are a few reasons we divide classes into headers and cpp files.
+				 <ul>
+					 <li>
+							The first reason is to divide the interface of our class from the implementation.
+				 This goes back to the concept of abstraction, users of the class don't need to be
+				 concerned with the details of implementation. The headers contain the class interface and the cpp contain the implementation.
+					 </li>
+					 <li>
+							The second reason is compile time. This is beyond the scope of the project but basically
+							imagine if all our code was in the same file. Every time we made a change we would have to recompile all of the code
+							which for larger projects can take several minutes. Using header and cpp files, we separate the implementation so that we 
+							only need to recompile the headers everytime which are much smaller. For example, we are using the SDL2 lirary which contains 
+							many files. Everytime we compile our code we don't recompile the entire SDL2 library, we just use the precompiled .cpp files 
+							and recompile the headers when we include them into our cpp files.
+					 </li>
+				 </ul>
+				 
+				 
+
+				 You might wonder why we didn't have .cpp files for Node classes. That is because the implementation
+				 of those classes are a special case that are a bit unorthodox. Typically you create a class so you can
+				 create objects of those classes to use. In the case of node classes we just wanted to 
+				 have a unit of organization so we bundled the initialization of the node into a class.
+				 The only thing we really implemented for that class was the constructor, and we only
+				 ever create one object of those classes so they are a special case.
+				 <br></br>
+				 You can see the implementation of tile and map under the GUI folder. I reccommend you look at how <a href="#ballClass"><b>the ball class</b></a>
+				 was implemented for brick breaker to get an idea of how to make a class and how a game object can be made.
+				</li>
+			<li>
+				<h5>Defining the game</h5>
+				The next step after creating the game objects is to make the actual game, which is essentially the game screen.
+				To do this let's make a new class called TetrisGame.h as shown below.
+				<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// TetrisGame.h</span>
+
+<span style="color: #BC7A00">#ifndef TETRIS_GAME_H</span>
+<span style="color: #BC7A00">#define TETRIS_GAME_H</span>
+
+<span style="color: #408080; font-style: italic">// resources</span>
+<span style="color: #BC7A00">#include &quot;GameScreen.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;Map.h&quot;</span>
+
+<span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">TetrisGame</span> <span style="color: #666666">:</span> <span style="color: #008000; font-weight: bold">public</span> GameScreen
+{
+    <span style="color: #A0A000">public:</span>
+    Action update(SDL_Event<span style="color: #666666">*</span> event);
+    <span style="color: #B00040">void</span> <span style="color: #0000FF">logic</span>();
+    <span style="color: #B00040">void</span> <span style="color: #0000FF">setMap</span>(Map<span style="color: #666666">*</span> m);
+    <span style="color: #B00040">void</span> <span style="color: #0000FF">addPiece</span>(std<span style="color: #666666">::</span>string path, point tlc, std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span><span style="color: #B00040">int</span><span style="color: #666666">&gt;</span> <span style="color: #666666">&gt;</span> piece);
+    <span style="color: #B00040">void</span> <span style="color: #0000FF">newGame</span>();
+    <span style="color: #B00040">bool</span> <span style="color: #0000FF">moveLeft</span>(std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>Entity<span style="color: #666666">*&gt;&amp;</span> piece);
+    <span style="color: #B00040">bool</span> <span style="color: #0000FF">moveRight</span>(std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>Entity<span style="color: #666666">*&gt;&amp;</span> piece);
+    <span style="color: #B00040">bool</span> <span style="color: #0000FF">moveUp</span>(std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>Entity<span style="color: #666666">*&gt;&amp;</span> piece);
+    <span style="color: #B00040">bool</span> <span style="color: #0000FF">moveDown</span>(std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>Entity<span style="color: #666666">*&gt;&amp;</span> piece);
+
+    std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span><span style="color: #B00040">int</span><span style="color: #666666">&gt;</span> <span style="color: #666666">&gt;</span> <span style="color: #666666">&gt;</span> pieces;
+
+    <span style="color: #A0A000">private:</span>
+    Map<span style="color: #666666">*</span> m;
+};
+
+<span style="color: #BC7A00">#endif</span>
+</pre></div>
+At the top we specifiy the file name. Next we create what are called header guards which are a set of statements to prevent us
+from including a header file into another file more than once which is a problem because it can cause duplicate definitions. The header guards are
+the <b>#ifndef BALL_H #define BALL_H ... #endif </b>. This means, if you have not defined BALL_H then define it and include the code between the #ifndef and #endif. If it is defined then everything below the #ifndef will be ignored. 
+An example of multiple inclusion is let's say we have a header called functions.h that we #include in a lot of files including Main.cpp and object.h. Now
+let's say we include object.h into Main.cpp. Now Main.cpp has included functions.h twice, once directly, and once indirectly through objects.h.
+When we start having lots of files it is very difficult to keep track of these dependencies so we use header guards to prevent multiple inclusion. 				 
+<br></br>
+Next we have all our resources that we need to include at the top. All we need is "GameScreen.h" and "Map.h" which include everything else we need.
+Finally, we define the class TetrisGame and publicly inherit from GameScreen so that we get all its functions and attributes.
+Inside the class we create the public section. (read about public vs private <a href ="https://www.geeksforgeeks.org/access-modifiers-in-c/" target = "blank">here</a>)
+The public section has the all the TetrisGame functions. Note how these are just the function prototypes, no definitions.
+This class definition simply defines the interface. Also note that we don't have a render method because it is already implemented by GameScreen.
+The only private variable we have is a pointer to a map object which will store the state of all the tiles.
+<br></br>
+Two important attributes of GameScreen are the lists "entities" and "moving entities". All our game objects will
+be stored in entities and all objects that can move will be in moving entities. We will use moving entities a lot
+in order to edit the moving piece's posiiton.
+<br></br>
+
+Now we need to create the file "TetrisGame.cpp" which is where all the functions will be implemented:
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// TetrisGame.cpp</span>
+	<span style="color: #BC7A00">#include &quot;TetrisGame.h&quot;</span>
+
+	<span style="color: #B00040">void</span> TetrisGame<span style="color: #666666">::</span>addPiece(std<span style="color: #666666">::</span>string path, point tlc, std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span><span style="color: #B00040">int</span><span style="color: #666666">&gt;</span> <span style="color: #666666">&gt;</span> piece)
+	{
+		<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> row <span style="color: #666666">=</span> <span style="color: #666666">0</span>; row <span style="color: #666666">&lt;</span> piece.size(); row<span style="color: #666666">++</span>)
+		{
+			<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> col <span style="color: #666666">=</span> <span style="color: #666666">0</span>; col <span style="color: #666666">&lt;</span> piece[row].size(); col<span style="color: #666666">++</span>)
+			{
+				<span style="color: #008000; font-weight: bold">if</span>(piece[row][col] <span style="color: #666666">==</span> <span style="color: #666666">1</span>)
+				{
+					ArcadeTexture<span style="color: #666666">*</span> newArcadeTexture <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">new</span> ArcadeTexture;
+					newArcadeTexture<span style="color: #666666">-&gt;</span>setRenderer(m<span style="color: #666666">-&gt;</span>getRenderer());
+					newArcadeTexture<span style="color: #666666">-&gt;</span>loadFromFile(path);
+					newArcadeTexture<span style="color: #666666">-&gt;</span>isEntireDestination <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+					newArcadeTexture<span style="color: #666666">-&gt;</span>setSize(m<span style="color: #666666">-&gt;</span>getTiles()[row][col]<span style="color: #666666">-&gt;</span>getWidth(),
+					m<span style="color: #666666">-&gt;</span>getTiles()[row][col]<span style="color: #666666">-&gt;</span>getHeight());
+					newArcadeTexture<span style="color: #666666">-&gt;</span>setPosition(m<span style="color: #666666">-&gt;</span>getSideSize()<span style="color: #666666">*</span>(tlc.x<span style="color: #666666">+</span>col),
+					m<span style="color: #666666">-&gt;</span>getSideSize()<span style="color: #666666">*</span>(tlc.y<span style="color: #666666">+</span>row));
+					Tile<span style="color: #666666">*</span> newPiece <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">new</span> Tile;
+					newPiece<span style="color: #666666">-&gt;</span>setGameObjectTexture(newArcadeTexture);
+					newPiece<span style="color: #666666">-&gt;</span>setState(<span style="color: #008000">true</span>);
+					addEntity(newPiece);
+					addMovingEntity(newPiece);
+				}
+			}
+		}
+	}
+	
+	<span style="color: #B00040">void</span> TetrisGame<span style="color: #666666">::</span>setMap(Map<span style="color: #666666">*</span> m_in)
+	{
+		m <span style="color: #666666">=</span> m_in;
+		<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> row <span style="color: #666666">=</span> <span style="color: #666666">0</span>; row <span style="color: #666666">&lt;</span> (m<span style="color: #666666">-&gt;</span>getTiles()).size(); row<span style="color: #666666">++</span>)
+		{
+			<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> col <span style="color: #666666">=</span> <span style="color: #666666">0</span>; col <span style="color: #666666">&lt;</span> (m<span style="color: #666666">-&gt;</span>getTiles())[row].size(); col<span style="color: #666666">++</span>)
+			{
+				addEntity((m<span style="color: #666666">-&gt;</span>getTiles())[row][col]);
+			}
+		}
+	}
+	
+	Action TetrisGame<span style="color: #666666">::</span>update(SDL_Event<span style="color: #666666">*</span> event)
+	{
+		<span style="color: #008000; font-weight: bold">if</span>(getIsNewGame())
+		{
+			newGame();
+		}
+	
+		Action newAction <span style="color: #666666">=</span> {DO_NOTHING, nullptr};
+	
+		<span style="color: #008000; font-weight: bold">if</span>(event)
+		{
+			<span style="color: #008000; font-weight: bold">if</span>((<span style="color: #666666">*</span>event).type <span style="color: #666666">==</span> SDL_KEYDOWN <span style="color: #666666">&amp;&amp;</span> (<span style="color: #666666">*</span>event).key.keysym.sym <span style="color: #666666">==</span> SDLK_DOWN)
+			{
+				moveDown(getMovingEntities());
+			}
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span>((<span style="color: #666666">*</span>event).type <span style="color: #666666">==</span> SDL_KEYDOWN <span style="color: #666666">&amp;&amp;</span> (<span style="color: #666666">*</span>event).key.keysym.sym <span style="color: #666666">==</span> SDLK_UP)
+			{
+				moveUp(getMovingEntities());
+			}
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span>((<span style="color: #666666">*</span>event).type <span style="color: #666666">==</span> SDL_KEYDOWN <span style="color: #666666">&amp;&amp;</span> (<span style="color: #666666">*</span>event).key.keysym.sym <span style="color: #666666">==</span> SDLK_LEFT)
+			{
+				moveLeft(getMovingEntities());
+			}
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span>((<span style="color: #666666">*</span>event).type <span style="color: #666666">==</span> SDL_KEYDOWN <span style="color: #666666">&amp;&amp;</span> (<span style="color: #666666">*</span>event).key.keysym.sym <span style="color: #666666">==</span> SDLK_RIGHT)
+			{
+				moveRight(getMovingEntities());
+			}
+		}
+	
+		logic();
+		<span style="color: #008000; font-weight: bold">return</span> newAction;
+	}
+	
+	<span style="color: #B00040">void</span> TetrisGame<span style="color: #666666">::</span>newGame()
+	{
+		addPiece(<span style="color: #BA2121">&quot;brickBreakerNodeImages/yellowBrickTexture.png&quot;</span>, {<span style="color: #666666">0</span>,<span style="color: #666666">0</span>}, pieces.at(<span style="color: #666666">0</span>));
+		setisNewGame(<span style="color: #008000">false</span>);
+	}
+	
+	<span style="color: #B00040">void</span> TetrisGame<span style="color: #666666">::</span>logic(){}
+	
+	<span style="color: #B00040">bool</span> TetrisGame<span style="color: #666666">::</span>moveLeft(std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>Entity<span style="color: #666666">*&gt;&amp;</span> piece)
+	{
+		<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities().size(); i<span style="color: #666666">++</span>)
+		{
+			<span style="color: #B00040">int</span> x <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getXPos();
+			<span style="color: #B00040">int</span> y <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getYPos();
+	
+			<span style="color: #B00040">int</span> nextCol <span style="color: #666666">=</span> (x<span style="color: #666666">-</span>getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getWidth())<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize());
+			<span style="color: #B00040">int</span> nextRow <span style="color: #666666">=</span> y<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize());
+			<span style="color: #008000; font-weight: bold">if</span>(nextCol <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+			{
+				<span style="color: #008000; font-weight: bold">return</span> <span style="color: #008000">false</span>;
+			}
+		}
+		<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities().size(); i<span style="color: #666666">++</span>)
+		{
+			getMovingEntities()[i]<span style="color: #666666">-&gt;</span>setXPos(getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">-</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getWidth());
+		}
+	}
+	
+	<span style="color: #B00040">bool</span> TetrisGame<span style="color: #666666">::</span>moveRight(std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>Entity<span style="color: #666666">*&gt;&amp;</span> piece)
+	{
+		<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities().size(); i<span style="color: #666666">++</span>)
+		{
+			<span style="color: #B00040">int</span> x <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getXPos();
+			<span style="color: #B00040">int</span> y <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getYPos();
+	
+			<span style="color: #B00040">int</span> nextCol <span style="color: #666666">=</span> (x<span style="color: #666666">+</span>getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getWidth())<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize());
+			<span style="color: #B00040">int</span> nextRow <span style="color: #666666">=</span> y<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize());
+			<span style="color: #008000; font-weight: bold">if</span>(nextCol <span style="color: #666666">==</span> m<span style="color: #666666">-&gt;</span>getxDim())
+			{
+				<span style="color: #008000; font-weight: bold">return</span> <span style="color: #008000">false</span>;
+			}
+		}
+		<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities().size(); i<span style="color: #666666">++</span>)
+		{
+			getMovingEntities()[i]<span style="color: #666666">-&gt;</span>setXPos(getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getWidth());
+		}
+	}
+	
+	<span style="color: #B00040">bool</span> TetrisGame<span style="color: #666666">::</span>moveDown(std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>Entity<span style="color: #666666">*&gt;&amp;</span> piece)
+	{
+		<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities().size(); i<span style="color: #666666">++</span>)
+		{
+			<span style="color: #B00040">int</span> x <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getXPos();
+			<span style="color: #B00040">int</span> y <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getYPos();
+	
+			<span style="color: #B00040">int</span> nextCol <span style="color: #666666">=</span> (x<span style="color: #666666">/</span>m<span style="color: #666666">-&gt;</span>getSideSize());
+			<span style="color: #B00040">int</span> nextRow <span style="color: #666666">=</span> (y<span style="color: #666666">+</span>getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getHeight())<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize());
+			<span style="color: #008000; font-weight: bold">if</span>(nextRow <span style="color: #666666">==</span> m<span style="color: #666666">-&gt;</span>getyDim())
+			{
+				<span style="color: #008000; font-weight: bold">return</span> <span style="color: #008000">false</span>;
+			}
+		}
+		<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities().size(); i<span style="color: #666666">++</span>)
+		{
+			getMovingEntities()[i]<span style="color: #666666">-&gt;</span>setYPos(getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getHeight());
+		}
+	}
+	
+	<span style="color: #B00040">bool</span> TetrisGame<span style="color: #666666">::</span>moveUp(std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>Entity<span style="color: #666666">*&gt;&amp;</span> piece)
+	{
+		<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities().size(); i<span style="color: #666666">++</span>)
+		{
+			<span style="color: #B00040">int</span> x <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getXPos();
+			<span style="color: #B00040">int</span> y <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getYPos();
+	
+			<span style="color: #B00040">int</span> nextCol <span style="color: #666666">=</span> (x<span style="color: #666666">/</span>m<span style="color: #666666">-&gt;</span>getSideSize());
+			<span style="color: #B00040">int</span> nextRow <span style="color: #666666">=</span> (y<span style="color: #666666">-</span>getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getHeight())<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize());
+			<span style="color: #008000; font-weight: bold">if</span>(nextRow <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+			{
+				<span style="color: #008000; font-weight: bold">return</span> <span style="color: #008000">false</span>;
+			}
+		}
+		<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities().size(); i<span style="color: #666666">++</span>)
+		{
+			getMovingEntities()[i]<span style="color: #666666">-&gt;</span>setYPos(getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">-</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getHeight());
+		}
+	}
+	</pre></div>
+<br></br>
+<h5>This is a lot of code so let's break it down by function</h5>	
+The first function we want to implement is addPiece. This function gets called whenver we want
+to add a new piece to the game. Let's dissect the code below.
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #B00040">void</span> TetrisGame<span style="color: #666666">::</span>addPiece(std<span style="color: #666666">::</span>string path, point tlc, std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span><span style="color: #B00040">int</span><span style="color: #666666">&gt;</span> <span style="color: #666666">&gt;</span> piece)
+	{
+		<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> row <span style="color: #666666">=</span> <span style="color: #666666">0</span>; row <span style="color: #666666">&lt;</span> piece.size(); row<span style="color: #666666">++</span>)
+		{
+			<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> col <span style="color: #666666">=</span> <span style="color: #666666">0</span>; col <span style="color: #666666">&lt;</span> piece[row].size(); col<span style="color: #666666">++</span>)
+			{
+				<span style="color: #008000; font-weight: bold">if</span>(piece[row][col] <span style="color: #666666">==</span> <span style="color: #666666">1</span>)
+				{
+					ArcadeTexture<span style="color: #666666">*</span> newArcadeTexture <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">new</span> ArcadeTexture;
+					newArcadeTexture<span style="color: #666666">-&gt;</span>setRenderer(m<span style="color: #666666">-&gt;</span>getRenderer());
+					newArcadeTexture<span style="color: #666666">-&gt;</span>loadFromFile(path);
+					newArcadeTexture<span style="color: #666666">-&gt;</span>isEntireDestination <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+					newArcadeTexture<span style="color: #666666">-&gt;</span>setSize(m<span style="color: #666666">-&gt;</span>getTiles()[row][col]<span style="color: #666666">-&gt;</span>getWidth(),
+					m<span style="color: #666666">-&gt;</span>getTiles()[row][col]<span style="color: #666666">-&gt;</span>getHeight());
+					newArcadeTexture<span style="color: #666666">-&gt;</span>setPosition(m<span style="color: #666666">-&gt;</span>getSideSize()<span style="color: #666666">*</span>(tlc.x<span style="color: #666666">+</span>col),
+					m<span style="color: #666666">-&gt;</span>getSideSize()<span style="color: #666666">*</span>(tlc.y<span style="color: #666666">+</span>row));
+					Tile<span style="color: #666666">*</span> newPiece <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">new</span> Tile;
+					newPiece<span style="color: #666666">-&gt;</span>setGameObjectTexture(newArcadeTexture);
+					newPiece<span style="color: #666666">-&gt;</span>setState(<span style="color: #008000">true</span>);
+					addEntity(newPiece);
+					addMovingEntity(newPiece);
+				}
+			}
+		}
+	}
+	</pre></div>
+First let's look at the function parameters.
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #B00040">void</span> TetrisGame<span style="color: #666666">::</span>addPiece(std<span style="color: #666666">::</span>string path, point tlc, std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span><span style="color: #B00040">int</span><span style="color: #666666">&gt;</span> <span style="color: #666666">&gt;</span> piece)
+</pre></div>
+It takes in a string to a file path, a point which is the top left corner,
+and then a 2D vector of integers (a 2 dimensional list). In order to create a piece we need to specify what it will look like
+in terms of what is called a bitmap (ours is a very simple bitmap). For example, to make the L piece we want a bitmap like the one below where 1's represent
+filled tiles and 0's are empty tiles.	
+<IMG SRC="images/bitMapList.png" style="float: left; width: 50%; margin-right: 1%; margin-top: 1%; margin-bottom: 2%;">
+			</li>
+	The left part of the image shows the bitmap we want and the right part shows us how we will actually
+	implement it in our program using a 2D list. The creation of the bitmap will be outside the tetris game 
+	but the 2D vector called "piece" passed in is what the right part of the picture is. A 2D vector
+	is a list of lists. This means there is an outer list and multiple inner lists. The outer list
+	is shown in blue brackets, and he inner lists are in red brackets. The numbers alongside the lists
+	show the indices so if we wanted to access the bottom right corner we need to say the row and column.
+	So piece[2][1] gets the second row (second list) and then the element at index 1 in that list (bottom right
+	corner) which in this case is a 0.
+	<br></br>
+	<br></br>
+	<br>
+	So to create a piece, we will need to iterate over every element in the bitmap by going through each column in each
+	row and checking if it is a 1. If it is we will create a new tile and a new arcade texture and then assign
+	the arcade texture to the tile. This is shown in the code below which is the body of the add piece function.
+	<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> row <span style="color: #666666">=</span> <span style="color: #666666">0</span>; row <span style="color: #666666">&lt;</span> piece.size(); row<span style="color: #666666">++</span>)
+		{
+			<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> col <span style="color: #666666">=</span> <span style="color: #666666">0</span>; col <span style="color: #666666">&lt;</span> piece[row].size(); col<span style="color: #666666">++</span>)
+			{
+				<span style="color: #008000; font-weight: bold">if</span>(piece[row][col] <span style="color: #666666">==</span> <span style="color: #666666">1</span>)
+				{
+					ArcadeTexture<span style="color: #666666">*</span> newArcadeTexture <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">new</span> ArcadeTexture;
+					newArcadeTexture<span style="color: #666666">-&gt;</span>setRenderer(m<span style="color: #666666">-&gt;</span>getRenderer());
+					newArcadeTexture<span style="color: #666666">-&gt;</span>loadFromFile(path);
+					newArcadeTexture<span style="color: #666666">-&gt;</span>isEntireDestination <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+					newArcadeTexture<span style="color: #666666">-&gt;</span>setSize(m<span style="color: #666666">-&gt;</span>getSideSize(), m<span style="color: #666666">-&gt;</span>getSideSize());
+					newArcadeTexture<span style="color: #666666">-&gt;</span>setPosition(m<span style="color: #666666">-&gt;</span>getSideSize()<span style="color: #666666">*</span>(tlc.x<span style="color: #666666">+</span>col),
+					m<span style="color: #666666">-&gt;</span>getSideSize()<span style="color: #666666">*</span>(tlc.y<span style="color: #666666">+</span>row));
+					Tile<span style="color: #666666">*</span> newPiece <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">new</span> Tile;
+					newPiece<span style="color: #666666">-&gt;</span>setGameObjectTexture(newArcadeTexture);
+					newPiece<span style="color: #666666">-&gt;</span>setState(<span style="color: #008000">true</span>);
+					addEntity(newPiece);
+					addMovingEntity(newPiece);
+				}
+			}
+		}
+	</pre></div>
+So here we create a pointer to a new arcade texture object, set the renderer, create the texture from an image path,
+then set full screen to false, set its size to the whatever the map size is (side size of each square in the grid), then set the position
+based on the top left corner passed in (note the top left corner is passed in relative to the map coordinates, not pixel coordinates
+so we need to convert it into pixel coordinates by scaling it by the side size of the map), then make a new tile and assign the texture to it,
+then add it to our entity lists. So basically this function creates a new tile based on the bitmap passed in. It is
+important to note that we don't store the current moving piece as a 2D list in the game. Instead we just add all
+its blocks to the moving entities list go from there.
+<br></br>
+The next function is the set map function. 
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #B00040">void</span> TetrisGame<span style="color: #666666">::</span>setMap(Map<span style="color: #666666">*</span> m_in)
+	{
+		m <span style="color: #666666">=</span> m_in;
+		<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> row <span style="color: #666666">=</span> <span style="color: #666666">0</span>; row <span style="color: #666666">&lt;</span> (m<span style="color: #666666">-&gt;</span>getTiles()).size(); row<span style="color: #666666">++</span>)
+		{
+			<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> col <span style="color: #666666">=</span> <span style="color: #666666">0</span>; col <span style="color: #666666">&lt;</span> (m<span style="color: #666666">-&gt;</span>getTiles())[row].size(); col<span style="color: #666666">++</span>)
+			{
+				addEntity((m<span style="color: #666666">-&gt;</span>getTiles())[row][col]);
+			}
+		}
+	}
+	</pre></div>
+	All this function does is goes through all the tiles in our map and adds
+them as entities in our game. For know this won't do anything because our map is empty but later on when we have
+blocks being set this will be important. All the static or set blocks will be stored in entities. So technically the moving
+piece will not be part of the map and only gets added once it gets placed.
+
+<br></br>
+Next is the update method. This is where the game actually runs and where the uesr input is handled.
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">Action TetrisGame<span style="color: #666666">::</span>update(SDL_Event<span style="color: #666666">*</span> event)
+	{
+		<span style="color: #008000; font-weight: bold">if</span>(getIsNewGame())
+		{
+			newGame();
+		}
+	
+		Action newAction <span style="color: #666666">=</span> {DO_NOTHING, nullptr};
+	
+		<span style="color: #008000; font-weight: bold">if</span>(event)
+		{
+			<span style="color: #008000; font-weight: bold">if</span>((<span style="color: #666666">*</span>event).type <span style="color: #666666">==</span> SDL_KEYDOWN <span style="color: #666666">&amp;&amp;</span> (<span style="color: #666666">*</span>event).key.keysym.sym <span style="color: #666666">==</span> SDLK_DOWN)
+			{
+				moveDown(getMovingEntities());
+			}
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span>((<span style="color: #666666">*</span>event).type <span style="color: #666666">==</span> SDL_KEYDOWN <span style="color: #666666">&amp;&amp;</span> (<span style="color: #666666">*</span>event).key.keysym.sym <span style="color: #666666">==</span> SDLK_UP)
+			{
+				moveUp(getMovingEntities());
+			}
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span>((<span style="color: #666666">*</span>event).type <span style="color: #666666">==</span> SDL_KEYDOWN <span style="color: #666666">&amp;&amp;</span> (<span style="color: #666666">*</span>event).key.keysym.sym <span style="color: #666666">==</span> SDLK_LEFT)
+			{
+				moveLeft(getMovingEntities());
+			}
+			<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span>((<span style="color: #666666">*</span>event).type <span style="color: #666666">==</span> SDL_KEYDOWN <span style="color: #666666">&amp;&amp;</span> (<span style="color: #666666">*</span>event).key.keysym.sym <span style="color: #666666">==</span> SDLK_RIGHT)
+			{
+				moveRight(getMovingEntities());
+			}
+		}
+	
+		logic();
+		<span style="color: #008000; font-weight: bold">return</span> newAction;
+	}
+	</pre></div>
+As of now there is not much because we just want to move a piece around the screen. If you remember every frame the update
+function gets called for the current screen so this function will be called 60 times a second while we are playing the game.
+The first thing we want to do is check if this is the first time we are playing the game. If so we want to initialize
+everything to the default values (do this by calling the new game function). If this is not the start of a new game	we continue
+and check for user input. Remember that the update function must return an action so that the other levels of the arcade
+can handle user input if necessary. In this case we se the Action to DO_NOTHING and we will change it if we need to. In this
+case all the user input is handled by the game so we won't change the action.
+The user input we need to handle is pressing the arrow keys which correspond to movement of the tetris piece.
+We can use the SDL2 functions and variables to check if there was a user event and if so check if a key was pressed down. If a key is pressed down we want to
+move the piece accordingly by calling our move functions (we will define these later). Remember the piece is stored in our moving
+entities list so we pass it to the move functions.
+
+<br></br>
+The next two functions are the new game and logic functions
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #B00040">void</span> TetrisGame<span style="color: #666666">::</span>newGame()
+{
+	addPiece(<span style="color: #BA2121">&quot;brickBreakerNodeImages/yellowBrickTexture.png&quot;</span>, {<span style="color: #666666">0</span>,<span style="color: #666666">0</span>}, pieces.at(<span style="color: #666666">0</span>));
+	setisNewGame(<span style="color: #008000">false</span>);
+}
+
+<span style="color: #B00040">void</span> TetrisGame<span style="color: #666666">::</span>logic(){}
+	</pre></div>
+For new game we just create a new piece at the start and then set the new game variable to false.
+The logic function is empty because in this case we don't really have a game yet and all we want to do is move the piece.	
+
+Finally, the last step is to define our move functions that will move our game piece. The way we will do this is by
+passing in a list of entities (all the blocks of the game piece) and then for each block of the piece we will check if we
+can move it. If we can then we edit all the blocks posiitons. If not we return false.
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #B00040">bool</span> TetrisGame<span style="color: #666666">::</span>moveLeft(std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>Entity<span style="color: #666666">*&gt;&amp;</span> piece)
+	{
+		<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities().size(); i<span style="color: #666666">++</span>)
+		{
+			<span style="color: #B00040">int</span> x <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getXPos();
+			<span style="color: #B00040">int</span> y <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getYPos();
+	
+			<span style="color: #B00040">int</span> nextCol <span style="color: #666666">=</span> (x<span style="color: #666666">-</span>getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getWidth())<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize());
+			<span style="color: #B00040">int</span> nextRow <span style="color: #666666">=</span> y<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize());
+			<span style="color: #008000; font-weight: bold">if</span>(nextCol <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+			{
+				<span style="color: #008000; font-weight: bold">return</span> <span style="color: #008000">false</span>;
+			}
+		}
+		<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities().size(); i<span style="color: #666666">++</span>)
+		{
+			getMovingEntities()[i]<span style="color: #666666">-&gt;</span>setXPos(getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">-</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getWidth());
+		}
+	}
+	</pre></div>
+This is the function for moving left. So as you can see we loop through all the blocks and get their current position.
+We then create two variables called next row and next col that represent the next position in our map that we want to move to.
+IMPORTANT: next row and next col are map coordinates not pixel coordinates so we must convert our block position from pixel
+coordinates to map coordinates. For example let's say our block is at pixel position (200,200) and we want to move the block one 
+column to the left in our map. If our map has a side size of five pixels then we must subtract 200 by five to get the pixel position
+we want to go to and then divide by 5 to get the position in terms of map columns. We then check if that column is valid (on the screen).
+Note that we don't need to check if the row is valid because we aren't changing rows. If it is not valid we return false. If it is valid we
+we continue to check if the next block is valid. If the movement of all blocksis valid, then we exit the for loop and enter another
+for loop which will edit the position of each block by one column.
+<br></br>
+Move right, up, and down are almost identical to this function so I will not explain them. See if you can understand the 
+differences for each function and how they work. They all follow the same idea, "check if all blocks are able to move
+one position to the left,right,up, or down. If yes then move all the blocks by one position. If not then return."
+
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #B00040">bool</span> TetrisGame<span style="color: #666666">::</span>moveRight(std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>Entity<span style="color: #666666">*&gt;&amp;</span> piece)
+	{
+		<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities().size(); i<span style="color: #666666">++</span>)
+		{
+			<span style="color: #B00040">int</span> x <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getXPos();
+			<span style="color: #B00040">int</span> y <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getYPos();
+	
+			<span style="color: #B00040">int</span> nextCol <span style="color: #666666">=</span> (x<span style="color: #666666">+</span>getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getWidth())<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize());
+			<span style="color: #B00040">int</span> nextRow <span style="color: #666666">=</span> y<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize());
+			<span style="color: #008000; font-weight: bold">if</span>(nextCol <span style="color: #666666">==</span> m<span style="color: #666666">-&gt;</span>getxDim())
+			{
+				<span style="color: #008000; font-weight: bold">return</span> <span style="color: #008000">false</span>;
+			}
+		}
+		<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities().size(); i<span style="color: #666666">++</span>)
+		{
+			getMovingEntities()[i]<span style="color: #666666">-&gt;</span>setXPos(getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getXPos() <span style="color: #666666">+</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getWidth());
+		}
+	}
+	
+	<span style="color: #B00040">bool</span> TetrisGame<span style="color: #666666">::</span>moveDown(std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>Entity<span style="color: #666666">*&gt;&amp;</span> piece)
+	{
+		<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities().size(); i<span style="color: #666666">++</span>)
+		{
+			<span style="color: #B00040">int</span> x <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getXPos();
+			<span style="color: #B00040">int</span> y <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getYPos();
+	
+			<span style="color: #B00040">int</span> nextCol <span style="color: #666666">=</span> (x<span style="color: #666666">/</span>m<span style="color: #666666">-&gt;</span>getSideSize());
+			<span style="color: #B00040">int</span> nextRow <span style="color: #666666">=</span> (y<span style="color: #666666">+</span>getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getHeight())<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize());
+			<span style="color: #008000; font-weight: bold">if</span>(nextRow <span style="color: #666666">==</span> m<span style="color: #666666">-&gt;</span>getyDim())
+			{
+				<span style="color: #008000; font-weight: bold">return</span> <span style="color: #008000">false</span>;
+			}
+		}
+		<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities().size(); i<span style="color: #666666">++</span>)
+		{
+			getMovingEntities()[i]<span style="color: #666666">-&gt;</span>setYPos(getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">+</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getHeight());
+		}
+	}
+	
+	<span style="color: #B00040">bool</span> TetrisGame<span style="color: #666666">::</span>moveUp(std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>Entity<span style="color: #666666">*&gt;&amp;</span> piece)
+	{
+		<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities().size(); i<span style="color: #666666">++</span>)
+		{
+			<span style="color: #B00040">int</span> x <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getXPos();
+			<span style="color: #B00040">int</span> y <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getYPos();
+	
+			<span style="color: #B00040">int</span> nextCol <span style="color: #666666">=</span> (x<span style="color: #666666">/</span>m<span style="color: #666666">-&gt;</span>getSideSize());
+			<span style="color: #B00040">int</span> nextRow <span style="color: #666666">=</span> (y<span style="color: #666666">-</span>getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getHeight())<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize());
+			<span style="color: #008000; font-weight: bold">if</span>(nextRow <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+			{
+				<span style="color: #008000; font-weight: bold">return</span> <span style="color: #008000">false</span>;
+			}
+		}
+		<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities().size(); i<span style="color: #666666">++</span>)
+		{
+			getMovingEntities()[i]<span style="color: #666666">-&gt;</span>setYPos(getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getYPos() <span style="color: #666666">-</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getHeight());
+		}
+	}
+	</pre></div>
+
+	<li>
+		<h5>Creating a new node</h5>
+		We made our objects, we made our game, now we need to make a new node to contain our game. Make a new file, TetrisNode.h
+		<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// TetrisNode.h</span>
+
+	<span style="color: #BC7A00">#include &quot;Node.h&quot;</span>
+	<span style="color: #BC7A00">#include &quot;Config.h&quot;</span>
+	<span style="color: #BC7A00">#include &quot;TetrisGame.h&quot;</span>
+	
+	<span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">TetrisNode</span> <span style="color: #666666">:</span> <span style="color: #008000; font-weight: bold">public</span> Node
+	{
+		<span style="color: #A0A000">public:</span> 
+			TetrisNode(SDL_Renderer<span style="color: #666666">*</span> renderer_in, Node<span style="color: #666666">*</span> parentNode_in)<span style="color: #666666">:</span> Node(renderer_in, parentNode_in)
+			{
+				<span style="color: #408080; font-style: italic">// Create the GameScreen</span>
+				TetrisGame<span style="color: #666666">*</span> game <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">new</span> TetrisGame;
+
+				<span style="color: #408080; font-style: italic">// Add a background image</span>
+				game<span style="color: #666666">-&gt;</span>addTextureToScreen(createImage(renderer_in, <span style="color: #BA2121">&quot;brickBreakerNodeImages/tetrisScreen.png&quot;</span>, <span style="color: #008000">true</span>));
+
+				Map<span style="color: #666666">*</span> newMap <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">new</span> Map(<span style="color: #666666">30</span>,<span style="color: #666666">10</span>,<span style="color: #666666">16</span>,renderer_in);
+				<span style="color: #408080; font-style: italic">// each  outer bracket is the row and each inner is the column</span>
+
+				std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span><span style="color: #B00040">int</span><span style="color: #666666">&gt;</span> <span style="color: #666666">&gt;</span> LPiece <span style="color: #666666">=</span>
+				{
+					{ <span style="color: #666666">1</span>,<span style="color: #666666">0</span>,<span style="color: #666666">0</span> },
+					{ <span style="color: #666666">1</span>,<span style="color: #666666">0</span>,<span style="color: #666666">0</span> },
+					{ <span style="color: #666666">1</span>,<span style="color: #666666">1</span>,<span style="color: #666666">0</span> }
+				};
+				game<span style="color: #666666">-&gt;</span>pieces <span style="color: #666666">=</span> {LPiece};
+				game<span style="color: #666666">-&gt;</span>setMap(newMap);
+
+				game<span style="color: #666666">-&gt;</span>setisNewGame(<span style="color: #008000">true</span>);
+				game<span style="color: #666666">-&gt;</span>setGameState(<span style="color: #008000">true</span>);
+	
+				<span style="color: #008000; font-weight: bold">this</span><span style="color: #666666">-&gt;</span>addScreen(game);
+				<span style="color: #008000; font-weight: bold">this</span><span style="color: #666666">-&gt;</span>setCurrentScreen(game);
+			}
+	};
+</pre></div>
+	The way we create this node is similar to other nodes except we need to create game objects rather than menu objects.
+	First we include our resources, we need tetris game, then we create our new class that inherits from node. Inside the constructor
+	we create the tetris game. We create and add a background, create a new map that is 10 cols and 16 rows with a square size of 30.
+	Then we create our bit map for the L piece. We add this piece to our game's list of pieces. Then we set the map of the game
+	to the one we just created, and finally initialize the game start values and add the screen to the node.
+
+	<br></br>
+	That is it for the node but there is one small thing we need to do. Let's think about how our menu works. We have a tree
+	of nodes that are connected to eachother using buttons. As of now we made a class for complete node that is fully initialized but it 
+	doesn't exist yet. We never made a new tetris node object and nexer linked it to our menu. That is the final step.
+
+	<br></br>
+	Go to file "GameMenuNode.h". Add the following lines that have comments next to them that say "new lines":
+	<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// GameMenuNode.h</span>
+
+<span style="color: #BC7A00">#include &quot;Node.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;MenuScreen.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;SimpleButton.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;Config.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;TetrisNode.h&quot; </span><span style="color: #408080; font-style: italic">// NEW LINE ADD THIS</span>
+
+<span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">GameMenuNode</span> <span style="color: #666666">:</span> <span style="color: #008000; font-weight: bold">public</span> Node
+{
+	TetrisNode<span style="color: #666666">*</span> tetrisNode; <span style="color: #408080; font-style: italic">// NEW LINE ADD THIS</span>
+<span style="color: #A0A000">public:</span>
+	<span style="color: #408080; font-style: italic">// pass this in from main when you create it</span>
+	GameMenuNode(SDL_Renderer<span style="color: #666666">*</span> renderer_in <span style="color: #666666">=</span> nullptr, Node<span style="color: #666666">*</span> parentNode_in <span style="color: #666666">=</span> nullptr) <span style="color: #666666">:</span> Node(renderer_in, parentNode_in)
+	{
+		tetrisNode <span style="color: #666666">=</span> <span style="color: #008000; font-weight: bold">new</span> TetrisNode(renderer_in, <span style="color: #008000; font-weight: bold">this</span>); <span style="color: #408080; font-style: italic">// NEW LINE ADD THIS</span>
+		children.push_back(tetrisNode); <span style="color: #408080; font-style: italic">// NEW LINE ADD THIS</span>
+</pre></div>
+Finally we need to set the action of the tetris button to go to the tetris node.
+Find the line that looks like the following (use CTRL + F) and switch "getParentNode()" to "tetrisNode"
+
+<br></br>
+Switch this
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">tetrisButton<span style="color: #666666">-&gt;</span>setButtonAction(createAction(MOVE_NODES, getParentNode()));
+</pre></div>
+
+To this
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">tetrisButton<span style="color: #666666">-&gt;</span>setButtonAction(createAction(MOVE_NODES, tetrisNode));
+</pre></div>
+
+
+	</li>
+
+
+</ol>				 
+<h5>link to code for lesson 3, files are "TetrisGame.h, TetrisGame.cpp, TetrisNode.h, GameMenuNode.h"</h5>
+<p> https://github.com/geffencooper/geffenArcade2/tree/master/source </p>
+
+<h4> That is how you make a simple game in our arcade. While it seems like a lot just to make a
+	piece move on the screen it was about 200 lines of code (about half of these are empty or comments).
+	This is the bulk of the code and from here you can easily add new objects and new logic.
+	I encourage everyone to mess around with this code once they get it working and see what you can make
+	just with this simple template. Please contact me if you are confused or need help.
+</h4>
+
+Also, don't forget to use the git commands from last lesson to keep track of your changes and save them to GitHub.
+<code>git add .</code> and <code>git commit -m "message"</code> and <code>git push origin master</code>
+</p>
+<br></br>
 <hr>
 	<a name="Lesson4"></a>
 	<h2>Lesson 4: Animation and Game design Part 2</h2>
