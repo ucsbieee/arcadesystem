@@ -2078,7 +2078,7 @@ Also, don't forget to use the git commands from last lesson to keep track of you
 </pre></div>
 At the top we specifiy the file name. Next we create what are called header guards which are a set of statements to prevent us
 from including a header file into another file more than once which is a problem because it can cause duplicate definitions. The header guards are
-the <b>#ifndef BALL_H #define BALL_H ... #endif </b>. This means, if you have not defined BALL_H then define it and include the code between the #ifndef and #endif. If it is defined then everything below the #ifndef will be ignored. 
+the <b>#ifndef TETRIS_GAME_H #define TETRIS_GAME_H ... #endif </b>. This means, if you have not defined BALL_H then define it and include the code between the #ifndef and #endif. If it is defined then everything below the #ifndef will be ignored. 
 An example of multiple inclusion is let's say we have a header called functions.h that we #include in a lot of files including Main.cpp and object.h. Now
 let's say we include object.h into Main.cpp. Now Main.cpp has included functions.h twice, once directly, and once indirectly through objects.h.
 When we start having lots of files it is very difficult to keep track of these dependencies so we use header guards to prevent multiple inclusion. 				 
