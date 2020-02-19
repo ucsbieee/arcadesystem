@@ -58,7 +58,10 @@
 										<a href="#Lesson3W"><b>Lesson 3 Winter</b>: Animation and Game Design (Tetris)</a>
 									</li>
 									<li>
-										<a href="#Lesson4"><b>Lesson 4</b>: Animation and Game Design Part 2</a>
+										<a href="#Lesson4F"><b>Lesson 4 Fall</b>: Animation and Game Design Part 2 (Brick Breaker)</a>
+									</li>
+									<li>
+										<a href="#Lesson4W"><b>Lesson 4 Winter</b>: Animation and Game Design Part 2 (Tetris)</a>
 									</li>
 									<li>
 										<a href="#Lesson5"><b>Lesson 5</b>: Finishing the Game</a>
@@ -1248,17 +1251,23 @@ a pointer to the object we are currently in. So this->addScreen means we are add
 we are still inside the constructor of the RootNode. Finally, we have to set the current screen so that our node know which screen to default to.
 
 <hr>
- That's how we create nodes. This was a basic node. To see the full menu which is more complex click <a href = "https://github.com/geffencooper/bareMenuFiles" target = "blank">here</a>
+ That's how we create nodes. This was a basic node. To see GitHub repo of the full menu which is more complex click <a href = "https://github.com/geffencooper/Arcade_System_Project_Lessons/tree/master/Bare_Menu_Files" target = "blank">this link</a>.
+ The code for this lesson can be found at <a href = "https://github.com/geffencooper/Arcade_System_Project_Lessons/tree/master/Lesson_02_SimpleMenu" target = "blank">this link</a>: 
 
 <h5>Once you get this code working, try changing and messing with it. See what happens. It's really difficult to understand
 	how something works just by reading it, the best way to learn is to try it yourself. Gradually, things will start to make more
 	sense and you will be able to customize your menu system however you want which is the most fun part!
 </h5>
 
+<h4>Links to Source Code</h4>
+https://github.com/geffencooper/Arcade_System_Project_Lessons/tree/master/Lesson_02_SimpleMenu
+https://github.com/geffencooper/Arcade_System_Project_Lessons/tree/master/Bare_Menu_Files
+
+
 <hr>
 
 <a name="Lesson3F"></a>
-<h2>Lesson 3 Fall: Animatsion and Game Design (Brick Breaker)</h2>
+<h2>Lesson 3 Fall: Animation and Game Design (Brick Breaker)</h2>
 <p>
 	Lessons 0-2 were mainly setup, design, and building the structure of our Arcade.
 	With this foundation we can now expand and integrate more exciting things like animation
@@ -1903,7 +1912,7 @@ TTF_Font<span style="color: #666666">*</span> font <span style="color: #666666">
 
 </p>
 <h5>link to code for lesson 3</h5>
-<p> https://github.com/geffencooper/lesson03_code </p>
+<p> https://github.com/geffencooper/Arcade_System_Project_Lessons/tree/master/Fall_Lessons_3-5(BrickBreaker)/Lesson_03_BallBouncing</p>
 
 <h4> That is how you make a game in our arcade. While it seems like a lot just to make a
 	ball bounce on the screen it was less than 200 lines of code (about half of these are empty or comments).
@@ -2607,8 +2616,8 @@ To this
 </ol>	
 Finally use the command "build arcade sytem" and then "run arcade sytem" and you should see this and should be able to move the piece with the arrow keys.
 <img src="images/resultL3.png" alt="" style="float: left; width: 100%; margin-right: 1%;">			 
-<h5>link to code for lesson 3, files are "TetrisGame.h, TetrisGame.cpp, TetrisNode.h, GameMenuNode.h"</h5>
-<p> https://github.com/geffencooper/geffenArcade2/tree/master/source </p>
+<h5>link to code for lesson 3</h5>
+<p> https://github.com/geffencooper/Arcade_System_Project_Lessons/tree/master/Winter_Lessons_3-5(Tetris)/Lesson_03_MovingPiece</p>
 
 <h4> That is how you make a simple game in our arcade. While it seems like a lot just to make a
 	piece move on the screen it was about 200 lines of code (about half of these are empty or comments).
@@ -2622,8 +2631,8 @@ Also, don't forget to use the git commands from last lesson to keep track of you
 </p>
 <br></br>
 <hr>
-	<a name="Lesson4"></a>
-	<h2>Lesson 4: Animation and Game design Part 2</h2>
+	<a name="Lesson4F"></a>
+	<h2>Lesson 4: Animation and Game design Part 2 (Brick Breaker)</h2>
 	<p>
 		In this lesson we will continue where we left off last lesson and just keep adding to 
 		our simple game. We will be adding a few new features including user interaction and more screens.
@@ -3339,7 +3348,8 @@ by currentNode's update. Then we check if this action is to change nodes or not.
 set the currentNode to the parameter of the action returned and enter that node. Also, because currentNode is pointer we must change
 all the "." to "->". This was the final step. All the code for these file is posted at this link:
 <br></br>
-https://github.com/geffencooper/lesson_04_code
+<h5>Link to this lesson's code</h5>
+https://github.com/geffencooper/Arcade_System_Project_Lessons/tree/master/Fall_Lessons_3-5(BrickBreaker)/Lesson_04_Paddle
 
 <br></br>
 <br></br>
@@ -3352,9 +3362,13 @@ or change is the nodes themselves and customize them however you want.</h4>
 
 		</p>
 	</p>
+	<br></br>
+<hr>
+	<a name="Lesson4W"></a>
+	<h2>Lesson 4: Animation and Game design Part 2 (Brick Breaker)</h2>
 	<hr>
 	<a name="Lesson5"></a>
-	<h2>Lesson 5: Finishing the Arcade</h2>
+	<h2>Lesson 5 Fall: Finishing the Arcade (Brick Breaker)</h2>
 	<P>
 		Last lesson we added the paddle to our game and created a simple "main menu"
 		screen to transition into the game. So as of now we have two nodes in our arcade,
@@ -4176,10 +4190,10 @@ over this in prior lessons so I will not go over it. The entire code for the fin
 </p>
 
 	Code for final lesson.<br></br>
-	https://github.com/geffencooper/final_lesson
+	https://github.com/geffencooper/Arcade_System_Project_Lessons/tree/master/Fall_Lessons_3-5(BrickBreaker)/Lesson_05_Bricks
 	<br></br>
-	Code for full menu system<br></br>
-	https://github.com/geffencooper/bareMenuFiles
+	Link to Project GitHub<br></br>
+	https://github.com/geffencooper/Arcade_System_Project_Lessons
 	<br></br>
 	Code for full project<br></br>
 	I will update this soon but all the code you need is in the two repos above and the repos
