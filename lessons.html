@@ -3058,7 +3058,7 @@ The final step is to actually create the paddle object and add it to the game th
 	
 			<span style="color: #B00040">void</span> enter()
 			{
-				setCurrentScreen((<span style="color: #666666">*</span>getScreenList())[<span style="color: #666666">0</span>]);
+				setCurrentScreen(<span style="color: #666666"></span>getScreenList()[<span style="color: #666666">0</span>]);
 			}
 	};
 	</pre></div>
@@ -3130,7 +3130,7 @@ we enter the node we want this screen.
 <br></br>
 <!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #B00040">void</span> <span style="color: #0000FF">enter</span>()
 {
-		setCurrentScreen((<span style="color: #666666">*</span>getScreenList())[<span style="color: #666666">0</span>]);
+		setCurrentScreen(<span style="color: #666666"></span>getScreenList()[<span style="color: #666666">0</span>]);
 }
 </pre></div>
 We want to enter the game screen everytime we enter the node so we define the function "enterNode"
@@ -3488,14 +3488,14 @@ function right after the paddle collision detection. See the explanation below.
 	<span style="color: #008000; font-weight: bold">for</span> (j <span style="color: #666666">=</span> <span style="color: #666666">2</span>; j <span style="color: #666666">&lt;</span> getEntities()<span style="color: #666666">-&gt;</span>size(); j<span style="color: #666666">++</span>)
 	{
         <span style="color: #408080; font-style: italic">// if collided then state should be false, keep track so know when game over</span>
-		<span style="color: #008000; font-weight: bold">if</span> ((<span style="color: #666666">*</span>getEntities())[j]<span style="color: #666666">-&gt;</span>getState() <span style="color: #666666">==</span> <span style="color: #008000">false</span>)
+		<span style="color: #008000; font-weight: bold">if</span> (<span style="color: #666666"></span>getEntities()[j]<span style="color: #666666">-&gt;</span>getState() <span style="color: #666666">==</span> <span style="color: #008000">false</span>)
 		{
 			numFalse <span style="color: #666666">+=</span> <span style="color: #666666">1</span>;
 			<span style="color: #008000; font-weight: bold">continue</span>;
 		}
 
 		SDL_Rect ballRegion <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getGameObjectTexture()<span style="color: #666666">-&gt;</span>getImageDestination();
-		SDL_Rect brickRegion <span style="color: #666666">=</span> (<span style="color: #666666">*</span>getEntities())[j]<span style="color: #666666">-&gt;</span>getGameObjectTexture()<span style="color: #666666">-&gt;</span>getImageDestination();
+		SDL_Rect brickRegion <span style="color: #666666">=</span> <span style="color: #666666"></span>getEntities()[j]<span style="color: #666666">-&gt;</span>getGameObjectTexture()<span style="color: #666666">-&gt;</span>getImageDestination();
 
 		<span style="color: #008000; font-weight: bold">if</span> (SDL_HasIntersection(<span style="color: #666666">&amp;</span>ballRegion, <span style="color: #666666">&amp;</span>brickRegion))
 		{
@@ -3521,7 +3521,7 @@ function right after the paddle collision detection. See the explanation below.
 	<span style="color: #408080; font-style: italic">// for that brick with the largest collision area do the following:</span>
 	<span style="color: #008000; font-weight: bold">if</span> (j <span style="color: #666666">&gt;=</span> <span style="color: #666666">2</span>)
 	{
-        Brick<span style="color: #666666">*</span> currentBrick <span style="color: #666666">=</span> (Brick<span style="color: #666666">*</span>)(<span style="color: #666666">*</span>getEntities())[j];
+        Brick<span style="color: #666666">*</span> currentBrick <span style="color: #666666">=</span> (Brick<span style="color: #666666">*</span>)(<span style="color: #666666"></span>getEntities())[j];
 		<span style="color: #408080; font-style: italic">// first find the corner of the ball that collided</span>
 		<span style="color: #B00040">int</span> xCorner <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
 		<span style="color: #B00040">int</span> yCorner <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
@@ -3749,14 +3749,14 @@ a while the collision will be an edge case and if we don't account for it the an
 		<span style="color: #008000; font-weight: bold">for</span> (j <span style="color: #666666">=</span> <span style="color: #666666">2</span>; j <span style="color: #666666">&lt;</span> getEntities()<span style="color: #666666">-&gt;</span>size(); j<span style="color: #666666">++</span>)
 		{
 			<span style="color: #408080; font-style: italic">// if collided then state should be false, keep track so know when game over</span>
-			<span style="color: #008000; font-weight: bold">if</span> ((<span style="color: #666666">*</span>getEntities())[j]<span style="color: #666666">-&gt;</span>getState() <span style="color: #666666">==</span> <span style="color: #008000">false</span>)
+			<span style="color: #008000; font-weight: bold">if</span> (<span style="color: #666666"></span>getEntities()[j]<span style="color: #666666">-&gt;</span>getState() <span style="color: #666666">==</span> <span style="color: #008000">false</span>)
 			{
 				numFalse <span style="color: #666666">+=</span> <span style="color: #666666">1</span>;
 				<span style="color: #008000; font-weight: bold">continue</span>;
 			}
 	
 			SDL_Rect ballRegion <span style="color: #666666">=</span> ball<span style="color: #666666">-&gt;</span>getGameObjectTexture()<span style="color: #666666">-&gt;</span>getImageDestination();
-			SDL_Rect brickRegion <span style="color: #666666">=</span> (<span style="color: #666666">*</span>getEntities())[j]<span style="color: #666666">-&gt;</span>getGameObjectTexture()<span style="color: #666666">-&gt;</span>getImageDestination();
+			SDL_Rect brickRegion <span style="color: #666666">=</span> <span style="color: #666666"></span>getEntities()[j]<span style="color: #666666">-&gt;</span>getGameObjectTexture()<span style="color: #666666">-&gt;</span>getImageDestination();
 	
 			<span style="color: #008000; font-weight: bold">if</span> (SDL_HasIntersection(<span style="color: #666666">&amp;</span>ballRegion, <span style="color: #666666">&amp;</span>brickRegion))
 			{
@@ -3785,7 +3785,7 @@ a while the collision will be an edge case and if we don't account for it the an
 		<span style="color: #408080; font-style: italic">// for that brick with the largest collision area do the following:</span>
 		<span style="color: #008000; font-weight: bold">if</span> (j <span style="color: #666666">&gt;=</span> <span style="color: #666666">2</span>)
 		{
-					Brick<span style="color: #666666">*</span> currentBrick <span style="color: #666666">=</span> (Brick<span style="color: #666666">*</span>)(<span style="color: #666666">*</span>getEntities())[j];
+			Brick<span style="color: #666666">*</span> currentBrick <span style="color: #666666">=</span> (Brick<span style="color: #666666">*</span>)(<span style="color: #666666"></span>getEntities())[j];
 			<span style="color: #408080; font-style: italic">// first find the corner of the ball that collided</span>
 			<span style="color: #B00040">int</span> xCorner <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
 			<span style="color: #B00040">int</span> yCorner <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
@@ -3947,7 +3947,7 @@ a while the collision will be an edge case and if we don't account for it the an
 		<span style="color: #408080; font-style: italic">// for that brick with the largest collision area do the following:</span>
 		<span style="color: #008000; font-weight: bold">if</span> (j <span style="color: #666666">&gt;=</span> <span style="color: #666666">2</span>)
 		{
-			Brick<span style="color: #666666">*</span> currentBrick <span style="color: #666666">=</span> (Brick<span style="color: #666666">*</span>)(<span style="color: #666666">*</span>getEntities())[j];
+			Brick<span style="color: #666666">*</span> currentBrick <span style="color: #666666">=</span> (Brick<span style="color: #666666">*</span>)(<span style="color: #666666"></span>getEntities())[j];
 			<span style="color: #408080; font-style: italic">// first find the corner of the ball that collided</span>
 			<span style="color: #B00040">int</span> xCorner <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
 			<span style="color: #B00040">int</span> yCorner <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
@@ -4123,7 +4123,7 @@ quite redundant and not too difficult to understand if you draw it out.
 
 <br></br>
 This is all the code for SimpleGame::logic. The next thing we need to do is actually create the bricks in the GameNode.h file as shown below. 
-We basically just make ArcadeTextures and brick entities. We can see this below.
+We basically just make ArcadeTextures and brick entities and add them directly using "addEntity". We can see this below.
 <!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008000; font-weight: bold">for</span> (<span style="color: #B00040">int</span> row <span style="color: #666666">=</span> <span style="color: #666666">0</span>; row <span style="color: #666666">&lt;</span> <span style="color: #666666">5</span>; row<span style="color: #666666">++</span>)
 	{
 		<span style="color: #008000; font-weight: bold">for</span> (<span style="color: #B00040">int</span> col <span style="color: #666666">=</span> <span style="color: #666666">0</span>; col <span style="color: #666666">&lt;</span> <span style="color: #666666">10</span>; col<span style="color: #666666">++</span>)
@@ -4171,6 +4171,27 @@ We basically just make ArcadeTextures and brick entities. We can see this below.
 		}
 	}
 </pre></div>
+
+One final thing we must do is set all the bricks to true in the newGame() function as shown below:
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #B00040">void</span> SimpleGame<span style="color: #666666">::</span>newGame()
+	{
+		setGameState(<span style="color: #008000">true</span>);
+		ball<span style="color: #666666">-&gt;</span>setXPos(<span style="color: #666666">0</span>);
+		ball<span style="color: #666666">-&gt;</span>setYPos(<span style="color: #666666">0</span>);
+		ball<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">2</span>);
+		ball<span style="color: #666666">-&gt;</span>setYVelocity(<span style="color: #666666">5</span>);
+		paddle<span style="color: #666666">-&gt;</span>setXPos(<span style="color: #666666">0</span>);
+		paddle<span style="color: #666666">-&gt;</span>setYPos(windowHeight<span style="color: #666666">-</span>paddle<span style="color: #666666">-&gt;</span>getHeight());
+		paddle<span style="color: #666666">-&gt;</span>setXVelocity(<span style="color: #666666">0</span>);
+		setisNewGame(<span style="color: #008000">false</span>);
+		<span style="color: #008000; font-weight: bold">for</span> (<span style="color: #B00040">int</span> j <span style="color: #666666">=</span> <span style="color: #666666">0</span>; j <span style="color: #666666">&lt;</span> getEntities().size(); j<span style="color: #666666">++</span>)
+		{
+			getEntities()[j]<span style="color: #666666">-&gt;</span>setState(<span style="color: #008000">true</span>);
+		}
+	}
+	</pre></div>
+	
+<br></br>
 We are finally done with the game programming and we can connect it with the menu system by adding some more nodes. We have already gone
 over this in prior lessons so I will not go over it. The entire code for the final project is in the GitHub repos at the bottom.
 
