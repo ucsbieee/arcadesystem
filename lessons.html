@@ -3365,8 +3365,631 @@ or change is the nodes themselves and customize them however you want.</h4>
 	<br></br>
 <hr>
 	<a name="Lesson4W"></a>
-	<h2>Lesson 4: Animation and Game design Part 2 (Brick Breaker)</h2>
-	<hr>
+	<h2>Lesson 4: Animation and Game design Part 2 (Tetris)</h2>
+	<p>
+		Last lesson we started animation and game design and the focus was on introducing 
+		new concepts such as game objects and game screens and how we can utilize them to animate a tetris
+		piece moving around the screen through user input. At this point I have already introduced all the classes
+		and all the concepts that we need for the rest of the project so this lesson will not introduce anything new.
+		Instead, we will add more features and logic to our game so that it starts to resemble tetris.
+	</p>
+	<h4>Rotation</h4>
+	<p>
+		The first thing we want to add is rotation. Currently our piece can move around but cannot rotate.
+		To do this first we need to add a few lines to "TetrisGame.h" as seen below. The added lines are 
+		labeled "NEW LINE"
+	</p>
+	<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// TetrisGame.h</span>
+
+<span style="color: #BC7A00">#ifndef TETRIS_GAME_H</span>
+<span style="color: #BC7A00">#define TETRIS_GAME_H</span>
+
+<span style="color: #408080; font-style: italic">// resources</span>
+<span style="color: #BC7A00">#include &quot;GameScreen.h&quot;</span>
+<span style="color: #BC7A00">#include &quot;Map.h&quot;</span>
+
+<span style="color: #008000; font-weight: bold">class</span> <span style="color: #0000FF; font-weight: bold">TetrisGame</span> <span style="color: #666666">:</span> <span style="color: #008000; font-weight: bold">public</span> GameScreen
+{
+    <span style="color: #A0A000">public:</span>
+    Action update(SDL_Event<span style="color: #666666">*</span> event);
+    <span style="color: #B00040">void</span> <span style="color: #0000FF">logic</span>();
+    <span style="color: #B00040">void</span> <span style="color: #0000FF">setMap</span>(Map<span style="color: #666666">*</span> m);
+    <span style="color: #B00040">void</span> <span style="color: #0000FF">addPiece</span>(std<span style="color: #666666">::</span>string path, point tlc, std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span><span style="color: #B00040">int</span><span style="color: #666666">&gt;</span> <span style="color: #666666">&gt;</span> piece);
+    <span style="color: #B00040">void</span> <span style="color: #0000FF">newGame</span>();
+    <span style="color: #B00040">bool</span> <span style="color: #0000FF">moveLeft</span>(std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>Entity<span style="color: #666666">*&gt;&amp;</span> piece);
+    <span style="color: #B00040">bool</span> <span style="color: #0000FF">moveRight</span>(std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>Entity<span style="color: #666666">*&gt;&amp;</span> piece);
+    <span style="color: #B00040">bool</span> <span style="color: #0000FF">moveUp</span>(std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>Entity<span style="color: #666666">*&gt;&amp;</span> piece);
+    <span style="color: #B00040">bool</span> <span style="color: #0000FF">moveDown</span>(std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>Entity<span style="color: #666666">*&gt;&amp;</span> piece);
+    <span style="color: #B00040">void</span> <span style="color: #0000FF">rotatePiece</span>(std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>Entity<span style="color: #666666">*&gt;&amp;</span> piece, point rot_in); <span style="color: #408080; font-style: italic">// NEW LINE</span>
+    std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span><span style="color: #B00040">int</span><span style="color: #666666">&gt;</span> <span style="color: #666666">&gt;</span> <span style="color: #666666">&gt;</span> pieces;
+
+    <span style="color: #A0A000">private:</span>
+    Map<span style="color: #666666">*</span> m;
+
+    point rot; <span style="color: #408080; font-style: italic">// NEW LINE</span>
+    <span style="color: #B00040">bool</span> hasRotated <span style="color: #666666">=</span> <span style="color: #008000">false</span>; <span style="color: #408080; font-style: italic">// NEW LINE</span>
+};
+
+<span style="color: #BC7A00">#endif</span>
+</pre></div>
+The first line we add is the declaration for a function called rotatePiece. This function will take
+in a list of entities as a parameter just as the move funtions do. Remember the list of entities is just the current
+piece that is being placed. The second parameter is a point which will act as the pivot point that we want to
+rotate our piece around relative to the top left corner of our piece. We also add two new variables whose
+purpose will become clear when we implement the function.
+
+<h4> How we will implement rotation</h4>
+<img src="images/rotation.png" alt="" style="float: left; width: 100%; margin-right: 1%;">
+Here we can see a tetris piece that is rotating about some point (the yellow dot). This is how we
+will implement our rotation function. There are many different ways we can rotate our piece but for simplicity
+we will just rotate all the blocks 90 degrees about some rotation point which we will pass into our function.
+The rotation point will be set relative to the top left corner of our piece, so in this case it is one block to the
+right and one block down. However, as the piece rotates the relative position changes so we will need to keep
+track of its position using the variable we declared above called rot.
+<br>
+<br>
+We implement the rotation function below. It is quite a dense function so we will dissect it line by line.
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #B00040">void</span> TetrisGame<span style="color: #666666">::</span>rotatePiece(std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>Entity<span style="color: #666666">*&gt;&amp;</span> piece_in, point rot_in)
+{
+	<span style="color: #408080; font-style: italic">// x and y start as the top left corner the first time we rotate</span>
+	<span style="color: #B00040">int</span> x <span style="color: #666666">=</span> piece_in[<span style="color: #666666">0</span>]<span style="color: #666666">-&gt;</span>getXPos();
+	<span style="color: #B00040">int</span> y <span style="color: #666666">=</span> piece_in[<span style="color: #666666">0</span>]<span style="color: #666666">-&gt;</span>getYPos();
+	
+	<span style="color: #408080; font-style: italic">// a and b are the pivot coordinates and are some distance away from the TLC</span>
+	<span style="color: #B00040">int</span> a <span style="color: #666666">=</span> x <span style="color: #666666">+</span> rot_in.x;
+	<span style="color: #B00040">int</span> b <span style="color: #666666">=</span> y <span style="color: #666666">+</span> rot_in.y;
+
+	<span style="color: #408080; font-style: italic">// if this is the first rotation then the pivot is just (a,b)</span>
+	<span style="color: #008000; font-weight: bold">if</span>(<span style="color: #666666">!</span>hasRotated)
+	{
+		rot <span style="color: #666666">=</span> {a,b};
+		hasRotated <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+	}
+	<span style="color: #008000; font-weight: bold">else</span> <span style="color: #408080; font-style: italic">// if this is not the first time, then the pivot is the current rot which gets updated with movement</span>
+	{
+		a <span style="color: #666666">=</span> rot.x;
+		b <span style="color: #666666">=</span> rot.y;
+	}
+	
+	<span style="color: #408080; font-style: italic">// for every block, the new TLC is rotated accordingly</span>
+	<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> piece_in.size(); i<span style="color: #666666">++</span>)
+	{
+		x <span style="color: #666666">=</span> piece_in[i]<span style="color: #666666">-&gt;</span>getXPos();
+		y <span style="color: #666666">=</span> piece_in[i]<span style="color: #666666">-&gt;</span>getYPos();
+		<span style="color: #B00040">int</span> newX <span style="color: #666666">=</span> (y<span style="color: #666666">-</span>b)<span style="color: #666666">+</span>a;
+		<span style="color: #B00040">int</span> newY <span style="color: #666666">=</span> <span style="color: #666666">-</span>(x<span style="color: #666666">-</span>a)<span style="color: #666666">+</span>b<span style="color: #666666">-30</span>;
+		<span style="color: #408080; font-style: italic">// check if this new TLC is valid, if off the screen deal with it later</span>
+		<span style="color: #008000; font-weight: bold">if</span>(newX <span style="color: #666666">&gt;</span> <span style="color: #666666">0</span> <span style="color: #666666">&amp;&amp;</span> newY <span style="color: #666666">&gt;</span> <span style="color: #666666">0</span> <span style="color: #666666">&amp;&amp;</span> newX <span style="color: #666666">&lt;</span> (m<span style="color: #666666">-&gt;</span>getxDim())<span style="color: #666666">*</span>(m<span style="color: #666666">-&gt;</span>getSideSize()) <span style="color: #666666">&amp;&amp;</span> newY <span style="color: #666666">&lt;</span> (m<span style="color: #666666">-&gt;</span>getyDim())<span style="color: #666666">*</span>(m<span style="color: #666666">-&gt;</span>getSideSize()))
+		{
+			<span style="color: #408080; font-style: italic">// if on the screen but over another piece then don&#39;t rotate</span>
+			<span style="color: #008000; font-weight: bold">if</span>(m<span style="color: #666666">-&gt;</span>getTiles()[newY<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize())][newX<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize())]<span style="color: #666666">-&gt;</span>getState() <span style="color: #666666">==</span> <span style="color: #008000">true</span>)
+			{
+				<span style="color: #008000; font-weight: bold">return</span>;
+			}
+		}
+	}
+	<span style="color: #408080; font-style: italic">// valid rotation so we adjust each pieces position</span>
+	<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> piece_in.size(); i<span style="color: #666666">++</span>)
+	{
+		x <span style="color: #666666">=</span> piece_in[i]<span style="color: #666666">-&gt;</span>getXPos();
+		y <span style="color: #666666">=</span> piece_in[i]<span style="color: #666666">-&gt;</span>getYPos();
+		<span style="color: #B00040">int</span> newX <span style="color: #666666">=</span> (y<span style="color: #666666">-</span>b)<span style="color: #666666">+</span>a;
+		<span style="color: #B00040">int</span> newY <span style="color: #666666">=</span> <span style="color: #666666">-</span>(x<span style="color: #666666">-</span>a)<span style="color: #666666">+</span>b<span style="color: #666666">-30</span>;
+		
+		piece_in[i]<span style="color: #666666">-&gt;</span>setXPos(newX);
+		piece_in[i]<span style="color: #666666">-&gt;</span>setYPos(newY);
+	}
+	
+	<span style="color: #408080; font-style: italic">// for pieces that were rotated off screen, adjust their position</span>
+	<span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> piece_in.size(); i<span style="color: #666666">++</span>)
+	{
+			x <span style="color: #666666">=</span> piece_in[i]<span style="color: #666666">-&gt;</span>getXPos();
+			y <span style="color: #666666">=</span> piece_in[i]<span style="color: #666666">-&gt;</span>getYPos();
+		<span style="color: #008000; font-weight: bold">while</span>(x <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+		{
+			x<span style="color: #666666">+=</span>m<span style="color: #666666">-&gt;</span>getSideSize();
+			moveRight(getMovingEntities());
+		}
+		<span style="color: #008000; font-weight: bold">while</span>(x <span style="color: #666666">&gt;</span> (m<span style="color: #666666">-&gt;</span>getxDim()<span style="color: #666666">-1</span>)<span style="color: #666666">*</span>(m<span style="color: #666666">-&gt;</span>getSideSize()))
+		{
+			x<span style="color: #666666">-=</span>m<span style="color: #666666">-&gt;</span>getSideSize();
+			moveLeft(getMovingEntities());
+		}
+		<span style="color: #008000; font-weight: bold">while</span>(y <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+		{
+			y<span style="color: #666666">+=</span>m<span style="color: #666666">-&gt;</span>getSideSize();
+			moveDown(getMovingEntities());
+		}
+		<span style="color: #008000; font-weight: bold">while</span>(y <span style="color: #666666">&gt;=</span> (m<span style="color: #666666">-&gt;</span>getyDim()<span style="color: #666666">-1</span>)<span style="color: #666666">*</span>m<span style="color: #666666">-&gt;</span>getSideSize())
+		{
+			y<span style="color: #666666">-=</span>m<span style="color: #666666">-&gt;</span>getSideSize();
+			moveUp(getMovingEntities());
+		}
+	}
+}
+	</pre></div>
+
+Let's take a look at the first part of the function where we set the rotation point
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// x and y start as the top left corner the first time we rotate</span>
+    <span style="color: #B00040">int</span> x <span style="color: #666666">=</span> piece_in[<span style="color: #666666">0</span>]<span style="color: #666666">-&gt;</span>getXPos();
+    <span style="color: #B00040">int</span> y <span style="color: #666666">=</span> piece_in[<span style="color: #666666">0</span>]<span style="color: #666666">-&gt;</span>getYPos();
+    
+    <span style="color: #408080; font-style: italic">// a and b are the pivot coordinates and are some distance away from the TLC</span>
+    <span style="color: #B00040">int</span> a <span style="color: #666666">=</span> x <span style="color: #666666">+</span> rot_in.x;
+    <span style="color: #B00040">int</span> b <span style="color: #666666">=</span> y <span style="color: #666666">+</span> rot_in.y;
+
+    <span style="color: #408080; font-style: italic">// if this is the first rotation then the pivot is just (a,b)</span>
+    <span style="color: #008000; font-weight: bold">if</span>(<span style="color: #666666">!</span>hasRotated)
+    {
+        rot <span style="color: #666666">=</span> {a,b};
+        hasRotated <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+    }
+    <span style="color: #008000; font-weight: bold">else</span> <span style="color: #408080; font-style: italic">// if this is not the first time, then the pivot is the current rot which gets updated with movement</span>
+    {
+        a <span style="color: #666666">=</span> rot.x;
+        b <span style="color: #666666">=</span> rot.y;
+    }
+</pre></div>
+First we get the top left corner of our piece. If you remember from our add piece function, we add the blocks
+to our entity list from top left to bottom right, so initially the top left corner will be the position
+of the first entity in our list. Next we set our rotation point relative to the top left corner by adding
+the rotation point we passed in to the top left corner position.
+<br><br>
+The next thing we need to do is check if this is the first time we rotated the piece. If we look at the image above 
+of the red L piece rotating you can see that the rotation point is only offset relative to the top left corner
+initially but after it has rotated, it is at a different location relative to the original top left corner.
+So if this is the first time we are rotating, we can set the rot variable to the offset we calculated. However, if we have 
+rotated already, then the offset we calculate is not valid, and we instead want to set a and b to the latest value
+of rot.
+
+<br><br> The next part of the function calculates the position each block rotates to and checks if it is valid
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// for every block, the new TLC is rotated accordingly</span>
+    <span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> piece_in.size(); i<span style="color: #666666">++</span>)
+    {
+        x <span style="color: #666666">=</span> piece_in[i]<span style="color: #666666">-&gt;</span>getXPos();
+        y <span style="color: #666666">=</span> piece_in[i]<span style="color: #666666">-&gt;</span>getYPos();
+        <span style="color: #B00040">int</span> newX <span style="color: #666666">=</span> (y<span style="color: #666666">-</span>b)<span style="color: #666666">+</span>a;
+        <span style="color: #B00040">int</span> newY <span style="color: #666666">=</span> <span style="color: #666666">-</span>(x<span style="color: #666666">-</span>a)<span style="color: #666666">+</span>b<span style="color: #666666">-30</span>;
+        <span style="color: #408080; font-style: italic">// check if this new TLC is valid, if off the screen deal with it later</span>
+        <span style="color: #008000; font-weight: bold">if</span>(newX <span style="color: #666666">&gt;</span> <span style="color: #666666">0</span> <span style="color: #666666">&amp;&amp;</span> newY <span style="color: #666666">&gt;</span> <span style="color: #666666">0</span> <span style="color: #666666">&amp;&amp;</span> newX <span style="color: #666666">&lt;</span> (m<span style="color: #666666">-&gt;</span>getxDim())<span style="color: #666666">*</span>(m<span style="color: #666666">-&gt;</span>getSideSize()) <span style="color: #666666">&amp;&amp;</span> newY <span style="color: #666666">&lt;</span> (m<span style="color: #666666">-&gt;</span>getyDim())<span style="color: #666666">*</span>(m<span style="color: #666666">-&gt;</span>getSideSize()))
+        {
+            <span style="color: #408080; font-style: italic">// if on the screen but over another piece then don&#39;t rotate</span>
+            <span style="color: #008000; font-weight: bold">if</span>(m<span style="color: #666666">-&gt;</span>getTiles()[newY<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize())][newX<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize())]<span style="color: #666666">-&gt;</span>getState() <span style="color: #666666">==</span> <span style="color: #008000">true</span>)
+            {
+                <span style="color: #008000; font-weight: bold">return</span>;
+            }
+        }
+    }
+</pre></div>
+The for loop iterates over every block in the piece and does the following:
+<br>1. first we get the position of the block
+<br>2. then we calculate the position of each block after rotating it counter clockwise by 90 degrees
+<br> Let's take a closer look at the rotation formula
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #B00040">int</span> newX <span style="color: #666666">=</span> (y<span style="color: #666666">-</span>b)<span style="color: #666666">+</span>a;
+<span style="color: #B00040">int</span> newY <span style="color: #666666">=</span> <span style="color: #666666">-</span>(x<span style="color: #666666">-</span>a)<span style="color: #666666">+</span>b<span style="color: #666666">-30</span>;
+</pre></div>
+The typical way to rotate a coordinate 90 degrees about the origin is to take (x, y) and make it (-y, x).
+The derivation of this comes from taking our coordinate as a vector and multiplying it by a rotation matrix.
+I will not get into the details but there are plenty of good articles online about how rotation works.
+The main difference for our rotation is that we don't want to rotate about the origin, but rather
+about some other point, namely our pivot point that we set.
+<br> To do this we simply take our coordinate, subtract the pivot coordinate from it, rotate about the origin,
+then add the pivot points back. For a visual of this look at the image below.
+<img src="images/rotCoords.png" alt="" style="float: left; width: 35%; margin-right: 1%;">
+In this image let's say that the blue coordinate is our initial point, the red coordinate is our
+pivot point or the point we want to rotate about, and the green point is the destination
+point after we rotate the blue point 90 degrees. So we are rotating (1,1) about (1,0).
+According to the algorithm, first we subtract the pivot point away, so (1-1, 1-0) --> (0,1).
+Next we rotate about the origin, so (0,1) --> (-1,0). Finally we add back th pivot
+so (-1+1,0+0) --> (0,0). So the algorithm works. But now we need to write it in code.
+So x, y are the initial coordinates and a, b are the pivot points. So we can say 
+(x, y) --> (x-a, y-b) --> (-(y-b), (x-a)) --> (-(y-b)+a, (x-a)+b) which is what we have in our code.
+The only difference is that I added an extra -(m->getSideSize()) at the end. The reason for this can be seen visually below.<br></br><br></br><br></br><br>
+<img src="images/correctCoords.png" alt="" style="float: left; width: 50%; margin-right: 1%;">
+When we rotate each piece what we are doing is just rotating the position of each piece (which is the top left corner), not the individual pixels.
+The problem with this is that now all our blocks are in the wrong spot because our top left corner essentially becomes the bottom left corner.
+As seen in the second image this causes all the blocks to be offset by one in the vertical direction. This
+will cause noticable issues the next time we try to rotate the piece because the rotation point is much farther.
+Also, our piece won't appear to rotate crrectly. To fix this we need to shift all the position coordinates up
+by one block position to make sure that the blocks are oriented correctly as seen in the third image.
+In these images the blue points represent the position coordinate of each block (the top left corner).
+<br></br>
+Now that we have rotated our block correctly, we need to check if the position we rotated to is even valid.
+An invalid position is if it rotates and then overlaps another piece. See below for two cases:
+
+<img src="images/invalidRot.png" alt="" style="float: left; width: 50%; margin-right: 1%;">
+In case one the piece rotates onto another piece, which is invalid. In case two the piece rotates outside
+of the map. We will see how case two is actually still a valid rotation, and how we account for it. So if we look
+back at the code, it first checks to see if the piece rotated on the screen by checking if the position
+coordinate is within the map bounds. If it is on the screen then it checks to see if we rotated onto another piece.
+If it does, then the rotation is invalid.
+
+<br></br>
+Now that we checked that our rotation is valid for all blocks we actually execute it:
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"> <span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> piece_in.size(); i<span style="color: #666666">++</span>)
+{
+	x <span style="color: #666666">=</span> piece_in[i]<span style="color: #666666">-&gt;</span>getXPos();
+	y <span style="color: #666666">=</span> piece_in[i]<span style="color: #666666">-&gt;</span>getYPos();
+	<span style="color: #B00040">int</span> newX <span style="color: #666666">=</span> (y<span style="color: #666666">-</span>b)<span style="color: #666666">+</span>a;
+	<span style="color: #B00040">int</span> newY <span style="color: #666666">=</span> <span style="color: #666666">-</span>(x<span style="color: #666666">-</span>a)<span style="color: #666666">+</span>b<span style="color: #666666">-30</span>;
+	
+	piece_in[i]<span style="color: #666666">-&gt;</span>setXPos(newX);
+	piece_in[i]<span style="color: #666666">-&gt;</span>setYPos(newY);
+}
+</pre></div>
+
+Next we need to account for the blocks that were rotated off the screen:
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008000; font-weight: bold">for</span>(<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> piece_in.size(); i<span style="color: #666666">++</span>)
+    {
+	   x <span style="color: #666666">=</span> piece_in[i]<span style="color: #666666">-&gt;</span>getXPos();
+	   y <span style="color: #666666">=</span> piece_in[i]<span style="color: #666666">-&gt;</span>getYPos();
+	   <span style="color: #008000; font-weight: bold">while</span>(x <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+	   {
+		   x<span style="color: #666666">+=</span>m<span style="color: #666666">-&gt;</span>getSideSize();
+		   moveRight(getMovingEntities());
+	   }
+	   <span style="color: #008000; font-weight: bold">while</span>(x <span style="color: #666666">&gt;</span> (m<span style="color: #666666">-&gt;</span>getxDim()<span style="color: #666666">-1</span>)<span style="color: #666666">*</span>(m<span style="color: #666666">-&gt;</span>getSideSize()))
+	   {
+		   x<span style="color: #666666">-=</span>m<span style="color: #666666">-&gt;</span>getSideSize();
+		   moveLeft(getMovingEntities());
+	   }
+	   <span style="color: #008000; font-weight: bold">while</span>(y <span style="color: #666666">&lt;</span> <span style="color: #666666">0</span>)
+	   {
+		   y<span style="color: #666666">+=</span>m<span style="color: #666666">-&gt;</span>getSideSize();
+		   moveDown(getMovingEntities());
+	   }
+	   <span style="color: #008000; font-weight: bold">while</span>(y <span style="color: #666666">&gt;=</span> (m<span style="color: #666666">-&gt;</span>getyDim()<span style="color: #666666">-1</span>)<span style="color: #666666">*</span>m<span style="color: #666666">-&gt;</span>getSideSize())
+	   {
+		   y<span style="color: #666666">-=</span>m<span style="color: #666666">-&gt;</span>getSideSize();
+		   moveUp(getMovingEntities());
+	   }
+   }
+</pre></div>
+This code is pretty straightforward. Basically, while there is a block off the screen shift the entire piece
+one block length in the according direction until it goes back onto the screen. You might notice that there is an
+exception we haven't accounted for. What if we rotate the block off the screen and then it gets
+shifted back into place but then it overlaps another block? As you can see there are many edge cases that
+make tetris more complicated than it looks. For simplicity and brevity I will not account for this edge case
+and leave it to you to figure out. For the most part it is not noticable and only happens if you rotate only
+certain pieces in very specific spots (which is pretty rare but still happens). That is it for our rotation
+function defenition so let's actually incorporate it into the logic.
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008000; font-weight: bold">if</span>(event)
+	{
+		<span style="color: #008000; font-weight: bold">if</span>((<span style="color: #666666">*</span>event).type <span style="color: #666666">==</span> SDL_KEYDOWN <span style="color: #666666">&amp;&amp;</span> (<span style="color: #666666">*</span>event).key.keysym.sym <span style="color: #666666">==</span> SDLK_DOWN)
+		{
+			moveDown(getMovingEntities());
+			rot.y <span style="color: #666666">+=</span> getMovingEntities()[<span style="color: #666666">0</span>]<span style="color: #666666">-&gt;</span>getHeight(); <span style="color: #408080; font-style: italic">// NEW LINE</span>
+		}
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span>((<span style="color: #666666">*</span>event).type <span style="color: #666666">==</span> SDL_KEYDOWN <span style="color: #666666">&amp;&amp;</span> (<span style="color: #666666">*</span>event).key.keysym.sym <span style="color: #666666">==</span> SDLK_UP)
+		{
+			rotatePiece(getMovingEntities(), {<span style="color: #666666">30</span>,<span style="color: #666666">30</span>}); <span style="color: #408080; font-style: italic">// NEW LINE</span>
+		}
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span>((<span style="color: #666666">*</span>event).type <span style="color: #666666">==</span> SDL_KEYDOWN <span style="color: #666666">&amp;&amp;</span> (<span style="color: #666666">*</span>event).key.keysym.sym <span style="color: #666666">==</span> SDLK_LEFT)
+		{
+			moveLeft(getMovingEntities());
+			rot.x <span style="color: #666666">-=</span> getMovingEntities()[<span style="color: #666666">0</span>]<span style="color: #666666">-&gt;</span>getWidth(); <span style="color: #408080; font-style: italic">// NEW LINE</span>
+		}
+		<span style="color: #008000; font-weight: bold">else</span> <span style="color: #008000; font-weight: bold">if</span>((<span style="color: #666666">*</span>event).type <span style="color: #666666">==</span> SDL_KEYDOWN <span style="color: #666666">&amp;&amp;</span> (<span style="color: #666666">*</span>event).key.keysym.sym <span style="color: #666666">==</span> SDLK_RIGHT)
+		{
+			moveRight(getMovingEntities());
+			rot.x <span style="color: #666666">+=</span> getMovingEntities()[<span style="color: #666666">0</span>]<span style="color: #666666">-&gt;</span>getWidth(); <span style="color: #408080; font-style: italic">// NEW LINE</span>
+		}
+	}
+	</pre></div>
+	
+This code is inside our update function that checks for user input. All we are doing here is adding
+and subtracting a few lines (comments show the added lines). The first thing we need to do is shift
+the rotation point every time we move our piece left, right, or down so that it stays with our piece
+and we don't have to find it everytime. Then next thing we need to do is set the up arrow key to rotate
+instead of moving up. So now everytime we press the up key, the piece rotates. Now if you build and
+run the code you should be able to move your piece around and rotate it.
+
+<h4>Adding "tetris" logic</h4>
+Now that we can move our piece around and rotate it, we should add tetris gameplay logic.
+The first thing we should do is make our piece shift down one automatically about every second instead
+of having to move it manually. The way we will do this is with the count variable we created.
+If you recall this function gets called about 60 times a second so we can increment the count variable
+every frame and then shift the piece down one when the count reaches 60. NOTE: this is a very lazy way to do
+this and not the best way because not every frame executes in the same time. Some frames take longer
+and others take less time so when count reaches 60 it won't be exactly a second. Also,
+it will be slighlty different every time so sometimes it will be .95 seconds, sometimes .98. To do
+it correctly and accurately we should use a timer function, but to keep things simple
+I will just use a count variable, I will leave it to you to figure out how to create and use a timer.
+<br><br>
+First let's add the following variables to our TetrisGame.h: (add at the bottom after the rot variable)
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #B00040">bool</span> getNextPiece; 
+	<span style="color: #B00040">int</span> pieceIndex <span style="color: #666666">=</span> <span style="color: #666666">0</span>; 
+	<span style="color: #B00040">int</span> count <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
+	</pre></div>
+We will see what these do in a moment
+<br><br>
+Below we have the rest of our update function after handling user input:
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"> count<span style="color: #666666">++</span>;
+    <span style="color: #008000; font-weight: bold">if</span>(count <span style="color: #666666">==</span> <span style="color: #666666">60</span>)
+    {
+        <span style="color: #408080; font-style: italic">// first check if you can move the piece by checking conditions for each block</span>
+        <span style="color: #008000; font-weight: bold">for</span> (<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities().size(); i<span style="color: #666666">++</span>)
+        {
+            <span style="color: #408080; font-style: italic">// get the x and y coords of the entity</span>
+            <span style="color: #B00040">int</span> x <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getXPos();
+            <span style="color: #B00040">int</span> y <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getYPos();
+
+            <span style="color: #B00040">int</span> nextRow <span style="color: #666666">=</span> (getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getHeight()<span style="color: #666666">+</span>y)<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize());
+            <span style="color: #B00040">int</span> nextCol <span style="color: #666666">=</span> x<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize()); 
+            <span style="color: #408080; font-style: italic">// if the next position is the bottom or another piece, get another piece</span>
+            
+            <span style="color: #008000; font-weight: bold">if</span>(
+                (nextRow <span style="color: #666666">==</span> m<span style="color: #666666">-&gt;</span>getyDim())
+                    <span style="color: #666666">||</span>
+                ((m<span style="color: #666666">-&gt;</span>getTiles()[nextRow][nextCol]<span style="color: #666666">-&gt;</span>getState() <span style="color: #666666">==</span> <span style="color: #008000">true</span>)) <span style="color: #408080; font-style: italic">// hit a non moving block because a moving piece can have a tile above another moving tile which is valid</span>
+            )
+                {
+                    printf(<span style="color: #BA2121">&quot;</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">can&#39;t move so--new piece</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>);
+                    getNextPiece <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+                }
+            printf(<span style="color: #BA2121">&quot;</span><span style="color: #BB6622; font-weight: bold">\n\n</span><span style="color: #BA2121">&quot;</span>);
+        }
+        <span style="color: #408080; font-style: italic">// if all blocks can move then move them</span>
+        <span style="color: #008000; font-weight: bold">if</span>(<span style="color: #666666">!</span>getNextPiece)
+        {
+            moveDown(getMovingEntities());
+            rot.y <span style="color: #666666">+=</span> getMovingEntities()[<span style="color: #666666">0</span>]<span style="color: #666666">-&gt;</span>getHeight();
+        }
+        <span style="color: #008000; font-weight: bold">else</span>
+        {
+            <span style="color: #408080; font-style: italic">// otherwise set all blocks to the map</span>
+            <span style="color: #008000; font-weight: bold">for</span> (<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities().size(); i<span style="color: #666666">++</span>)
+            {
+                <span style="color: #408080; font-style: italic">//printf(&quot;placing block %i&quot;, i);</span>
+                <span style="color: #408080; font-style: italic">// get the x and y coords of the entity</span>
+                <span style="color: #B00040">int</span> x <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getXPos();
+                <span style="color: #B00040">int</span> y <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getYPos();
+
+                m<span style="color: #666666">-&gt;</span>getTiles()[y<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize())][x<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize())] <span style="color: #666666">=</span> (Tile<span style="color: #666666">*</span>)(getMovingEntities()[i]);
+                m<span style="color: #666666">-&gt;</span>getTiles()[y<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize())][x<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize())]<span style="color: #666666">-&gt;</span>setState(<span style="color: #008000">true</span>);
+            }
+            count <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
+            <span style="color: #008000; font-weight: bold">return</span> newAction;
+        }
+        count <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
+    }
+    logic();
+    <span style="color: #008000; font-weight: bold">return</span> newAction;
+</pre></div>
+Before going over the code, I will explain the general idea. What we want to do is increment
+the count every frame and after 60 frames we will try to move the piece down. By try I mean
+we first need to check if the next position is valid. If we can move it down we will
+adjust the position of each block. If we cannot move the piece down we will adjust a variable
+called getNextPiece. Basically if we cannot move our piece down anymore (because we hit the bottom or
+there is a piece below it) then we want to place it (so that it cannot move) and then get the next piece.
+We see this below:
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">count<span style="color: #666666">++</span>;
+<span style="color: #008000; font-weight: bold">if</span>(count <span style="color: #666666">==</span> <span style="color: #666666">60</span>)
+{
+	<span style="color: #408080; font-style: italic">// first check if you can move the piece by checking conditions for each block</span>
+	<span style="color: #008000; font-weight: bold">for</span> (<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities().size(); i<span style="color: #666666">++</span>)
+	{
+		<span style="color: #408080; font-style: italic">// get the x and y coords of the entity</span>
+		<span style="color: #B00040">int</span> x <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getXPos();
+		<span style="color: #B00040">int</span> y <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getYPos();
+
+		<span style="color: #B00040">int</span> nextRow <span style="color: #666666">=</span> (getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getHeight()<span style="color: #666666">+</span>y)<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize());
+		<span style="color: #B00040">int</span> nextCol <span style="color: #666666">=</span> x<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize()); 
+		<span style="color: #408080; font-style: italic">// if the next position is the bottom or another piece, get another piece</span>
+		
+		<span style="color: #008000; font-weight: bold">if</span>(
+			(nextRow <span style="color: #666666">==</span> m<span style="color: #666666">-&gt;</span>getyDim())
+				<span style="color: #666666">||</span>
+			((m<span style="color: #666666">-&gt;</span>getTiles()[nextRow][nextCol]<span style="color: #666666">-&gt;</span>getState() <span style="color: #666666">==</span> <span style="color: #008000">true</span>)) <span style="color: #408080; font-style: italic">// hit a non moving block because a moving piece can have a tile above another moving tile which is valid</span>
+		)
+			{
+				printf(<span style="color: #BA2121">&quot;</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">can&#39;t move so--new piece</span><span style="color: #BB6622; font-weight: bold">\n</span><span style="color: #BA2121">&quot;</span>);
+				getNextPiece <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+			}
+		printf(<span style="color: #BA2121">&quot;</span><span style="color: #BB6622; font-weight: bold">\n\n</span><span style="color: #BA2121">&quot;</span>);
+	}
+</pre></div>
+First we increment count, check if it is 60. We only execute the logic if it has been 60 frames.
+Next we iterate through all the blocks in the piece and store a variable to the "next row" and "next col".
+To get the next row and col we just get the y position + one block length and divide by the block length
+to convert from pixel coordinates to map coordinates. To get the next col we don't need to add
+anything because when we move down we don't change columns. Once we have the next row and col
+we check to see if it is at the bottom or if that location in the map is occupied.
+If one of these is true, then we set the bool getNextPiece to true.
+<br><br>
+Now let's see how we can actually place the piece:
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #408080; font-style: italic">// if all blocks can move then move them</span>
+	<span style="color: #008000; font-weight: bold">if</span>(<span style="color: #666666">!</span>getNextPiece)
+	{
+		moveDown(getMovingEntities());
+		rot.y <span style="color: #666666">+=</span> getMovingEntities()[<span style="color: #666666">0</span>]<span style="color: #666666">-&gt;</span>getHeight();
+	}
+	<span style="color: #008000; font-weight: bold">else</span>
+	{
+		<span style="color: #408080; font-style: italic">// otherwise set all blocks to the map</span>
+		<span style="color: #008000; font-weight: bold">for</span> (<span style="color: #B00040">int</span> i <span style="color: #666666">=</span> <span style="color: #666666">0</span>; i <span style="color: #666666">&lt;</span> getMovingEntities().size(); i<span style="color: #666666">++</span>)
+		{
+			<span style="color: #408080; font-style: italic">//printf(&quot;placing block %i&quot;, i);</span>
+			<span style="color: #408080; font-style: italic">// get the x and y coords of the entity</span>
+			<span style="color: #B00040">int</span> x <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getXPos();
+			<span style="color: #B00040">int</span> y <span style="color: #666666">=</span> getMovingEntities()[i]<span style="color: #666666">-&gt;</span>getYPos();
+
+			m<span style="color: #666666">-&gt;</span>getTiles()[y<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize())][x<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize())] <span style="color: #666666">=</span> (Tile<span style="color: #666666">*</span>)(getMovingEntities()[i]);
+			m<span style="color: #666666">-&gt;</span>getTiles()[y<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize())][x<span style="color: #666666">/</span>(m<span style="color: #666666">-&gt;</span>getSideSize())]<span style="color: #666666">-&gt;</span>setState(<span style="color: #008000">true</span>);
+		}
+		count <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
+		<span style="color: #008000; font-weight: bold">return</span> newAction;
+	}
+	count <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
+}
+logic();
+<span style="color: #008000; font-weight: bold">return</span> newAction;
+</pre></div>
+If getNextPiece is false that means the next row and col are valid so we just move our piece down one.
+Otherwise we need to place our block in the map. If you remember the current piece
+is not part of the map, it is part of moving entities. However, now that we want to place it,
+we will add it to the map as shown. We use "m->getTiles[][] = ___" which sets the 
+tile at some position on the map to whatever we want. Something to note is the (Tile*). Don't worry about this,
+it just means we are "casting" from an Entity* type to a Tile* type. Remember a Tile is an entity
+but an Entity is NOT a tile so we have to cast entity into a tile. This won't cause any issues
+necause if you remember, each block is actually a tile object on the heap, but is being referred to
+using an Entity pointer so by casting we don't lose any data.
+
+<br><br>
+The final thing we have to do is provide adjust the mechanism for adding pieces to our game.
+We already have a fully functioning addPiece function but only use it when we have a new game.
+However, now we want to use it whenever we place a piece (whenever getNextPiece is true).
+To do this we adjust the newGame function and the logic function:
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #B00040">void</span> TetrisGame<span style="color: #666666">::</span>newGame()
+{
+	<span style="color: #408080; font-style: italic">//addPiece(&quot;brickBreakerNodeImages/yellowBrickTexture.png&quot;, {0,0}, pieces.at(0));</span>
+	setisNewGame(<span style="color: #008000">false</span>);
+	getNextPiece <span style="color: #666666">=</span> <span style="color: #008000">true</span>;
+}
+
+<span style="color: #B00040">void</span> TetrisGame<span style="color: #666666">::</span>logic()
+{
+	<span style="color: #008000; font-weight: bold">if</span>(getNextPiece)
+	{
+		<span style="color: #008000; font-weight: bold">if</span>(pieceIndex <span style="color: #666666">==</span> pieces.size())
+		{
+			pieceIndex <span style="color: #666666">=</span> <span style="color: #666666">0</span>;
+		}
+		point p1 <span style="color: #666666">=</span> {<span style="color: #666666">0</span>,<span style="color: #666666">0</span>};
+		<span style="color: #008000; font-weight: bold">switch</span>(pieceIndex)
+		{
+			<span style="color: #008000; font-weight: bold">case</span>(<span style="color: #666666">0</span>):
+			{
+				addPiece(<span style="color: #BA2121">&quot;brickBreakerNodeImages/yellowBrickTexture.png&quot;</span>, p1, pieces.at(pieceIndex));
+				<span style="color: #008000; font-weight: bold">break</span>;
+			}
+			<span style="color: #008000; font-weight: bold">case</span>(<span style="color: #666666">1</span>):
+			{
+				addPiece(<span style="color: #BA2121">&quot;brickBreakerNodeImages/blueBrickTexture.png&quot;</span>, p1, pieces.at(pieceIndex));
+				<span style="color: #008000; font-weight: bold">break</span>;
+			}
+			<span style="color: #008000; font-weight: bold">case</span>(<span style="color: #666666">2</span>):
+			{
+				addPiece(<span style="color: #BA2121">&quot;brickBreakerNodeImages/redBrickTexture.png&quot;</span>, p1, pieces.at(pieceIndex));
+				<span style="color: #008000; font-weight: bold">break</span>;
+			}
+			<span style="color: #008000; font-weight: bold">case</span>(<span style="color: #666666">3</span>):
+			{
+				addPiece(<span style="color: #BA2121">&quot;brickBreakerNodeImages/redBrickTexture.png&quot;</span>, p1, pieces.at(pieceIndex));
+				<span style="color: #008000; font-weight: bold">break</span>;
+			}
+			<span style="color: #008000; font-weight: bold">case</span>(<span style="color: #666666">4</span>):
+			{
+				addPiece(<span style="color: #BA2121">&quot;brickBreakerNodeImages/purpleBrickTexture.png&quot;</span>, p1, pieces.at(pieceIndex));
+				<span style="color: #008000; font-weight: bold">break</span>;
+			}
+			<span style="color: #008000; font-weight: bold">case</span>(<span style="color: #666666">5</span>):
+			{
+				addPiece(<span style="color: #BA2121">&quot;brickBreakerNodeImages/greenBrickTexture.png&quot;</span>, p1, pieces.at(pieceIndex));
+				<span style="color: #008000; font-weight: bold">break</span>;
+			}
+			<span style="color: #008000; font-weight: bold">case</span>(<span style="color: #666666">6</span>):
+			{
+				addPiece(<span style="color: #BA2121">&quot;brickBreakerNodeImages/greenBrickTexture.png&quot;</span>, p1, pieces.at(pieceIndex));
+				<span style="color: #008000; font-weight: bold">break</span>;
+			}
+		}
+		
+		pieceIndex<span style="color: #666666">++</span>;
+		getNextPiece <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+		hasRotated <span style="color: #666666">=</span> <span style="color: #008000">false</span>;
+	}
+}
+	</pre></div>
+This is a lot of code but not much is actually happening. The first thing we do is remove addPiece from new game.
+Instead we check in logic if getNextPiece is true. If it is we want to add the next piece.
+If you remember in our TetrisNode.h we have a list of bitmaps for each piece. As of now
+the list has only one piece. We will add more later but for now we can assume there is a list of all
+the tetris pieces. What we want to do is iterate through the list and add the according piece.
+If if we reach the end of the list we just go back to the beginning (we use pieceIndex to keep track of where we are in the list).
+Then we switch through pieceIndex and add a piece according to the index in the list. Finally,
+we increment pieceIndex and set getNextPiece to false and hasRotated to false because it is a new piece.
+<br><br>
+One more thing we need to add is what happens when we press the down key. We want this to make the 
+piece move down faster. As of now we have it moving the piece down if we press down. However,
+to be consistent with the down movement and to avoid "double movement" from the count and the down
+arrow, what we will do is just set count to 59 when we press the down key so that count
+will turn to 60 this frame and move the piece down. See this below:
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%"><span style="color: #008000; font-weight: bold">if</span>((<span style="color: #666666">*</span>event).type <span style="color: #666666">==</span> SDL_KEYDOWN <span style="color: #666666">&amp;&amp;</span> (<span style="color: #666666">*</span>event).key.keysym.sym <span style="color: #666666">==</span> SDLK_DOWN)
+{
+	<span style="color: #408080; font-style: italic">//moveDown(getMovingEntities());</span>
+	
+	<span style="color: #408080; font-style: italic">//rot.y += getMovingEntities()[0]-&gt;getHeight();</span>
+
+	count<span style="color: #666666">=59</span>;
+}
+</pre></div>
+We just comment out the old line and add the new line.
+
+<br><br>
+We are finally done with our tetrisGame. The only thing we need to do now is add a few things to our tetrisNode.
+Below we see the bitmaps that we add to tetrisNode.h:
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><pre style="margin: 0; line-height: 125%">std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span><span style="color: #B00040">int</span><span style="color: #666666">&gt;</span> <span style="color: #666666">&gt;</span> longPiece <span style="color: #666666">=</span>
+	{
+		{ <span style="color: #666666">1</span>,<span style="color: #666666">0</span>,<span style="color: #666666">0</span>,<span style="color: #666666">0</span> },
+		{ <span style="color: #666666">1</span>,<span style="color: #666666">0</span>,<span style="color: #666666">0</span>,<span style="color: #666666">0</span> },
+		{ <span style="color: #666666">1</span>,<span style="color: #666666">0</span>,<span style="color: #666666">0</span>,<span style="color: #666666">0</span> },
+		{ <span style="color: #666666">1</span>,<span style="color: #666666">0</span>,<span style="color: #666666">0</span>,<span style="color: #666666">0</span> }
+	};
+	std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span><span style="color: #B00040">int</span><span style="color: #666666">&gt;</span> <span style="color: #666666">&gt;</span> squarePiece <span style="color: #666666">=</span>
+	{
+		{ <span style="color: #666666">1</span>,<span style="color: #666666">1</span> },
+		{ <span style="color: #666666">1</span>,<span style="color: #666666">1</span> }
+	};
+	std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span><span style="color: #B00040">int</span><span style="color: #666666">&gt;</span> <span style="color: #666666">&gt;</span> TPiece <span style="color: #666666">=</span>
+	{
+		{ <span style="color: #666666">1</span>,<span style="color: #666666">0</span>,<span style="color: #666666">0</span> },
+		{ <span style="color: #666666">1</span>,<span style="color: #666666">1</span>,<span style="color: #666666">0</span> },
+		{ <span style="color: #666666">1</span>,<span style="color: #666666">0</span>,<span style="color: #666666">0</span> }
+	};
+	std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span><span style="color: #B00040">int</span><span style="color: #666666">&gt;</span> <span style="color: #666666">&gt;</span> LPiece <span style="color: #666666">=</span>
+	{
+		{ <span style="color: #666666">1</span>,<span style="color: #666666">0</span>,<span style="color: #666666">0</span> },
+		{ <span style="color: #666666">1</span>,<span style="color: #666666">0</span>,<span style="color: #666666">0</span> },
+		{ <span style="color: #666666">1</span>,<span style="color: #666666">1</span>,<span style="color: #666666">0</span> }
+	};
+	std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span><span style="color: #B00040">int</span><span style="color: #666666">&gt;</span> <span style="color: #666666">&gt;</span> L2Piece <span style="color: #666666">=</span>
+	{
+		{ <span style="color: #666666">0</span>,<span style="color: #666666">1</span>,<span style="color: #666666">0</span> },
+		{ <span style="color: #666666">0</span>,<span style="color: #666666">1</span>,<span style="color: #666666">0</span> },
+		{ <span style="color: #666666">1</span>,<span style="color: #666666">1</span>,<span style="color: #666666">0</span> }
+
+	};
+	std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span><span style="color: #B00040">int</span><span style="color: #666666">&gt;</span> <span style="color: #666666">&gt;</span> zigZagPiece <span style="color: #666666">=</span>
+	{
+		{ <span style="color: #666666">1</span>,<span style="color: #666666">0</span>,<span style="color: #666666">0</span> },
+		{ <span style="color: #666666">1</span>,<span style="color: #666666">1</span>,<span style="color: #666666">0</span> },
+		{ <span style="color: #666666">0</span>,<span style="color: #666666">1</span>,<span style="color: #666666">0</span> }
+	};
+	std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span>std<span style="color: #666666">::</span>vector<span style="color: #666666">&lt;</span><span style="color: #B00040">int</span><span style="color: #666666">&gt;</span> <span style="color: #666666">&gt;</span> zigZag2Piece <span style="color: #666666">=</span>
+	{
+		{ <span style="color: #666666">0</span>,<span style="color: #666666">1</span>,<span style="color: #666666">0</span> },
+		{ <span style="color: #666666">1</span>,<span style="color: #666666">1</span>,<span style="color: #666666">0</span> },
+		{ <span style="color: #666666">1</span>,<span style="color: #666666">0</span>,<span style="color: #666666">0</span> }
+	};
+	game<span style="color: #666666">-&gt;</span>pieces <span style="color: #666666">=</span> {squarePiece, longPiece, LPiece, L2Piece, TPiece,zigZagPiece, zigZag2Piece};
+</pre></div>
+
+Now you can build and run the code and you should have pieces moving down automatically and new
+pieces showing up after the current piece is placed.
+
+<h4>That is it for this lesson. We made a lot of progress and our game is starting to look
+	like tetris. Next class we will add the clearing of lines when blocks line up across the map
+	and also add a score to the game. Don't worry if a lot of the code seems complex. What is
+	important is the general idea and logic of what is going on, NOT THE SYNTAX. C++ syntax
+	can be very tricky so focus more on the big ideas before diving into the meaning of subtlties
+	such as Tile* vs Entity*.
+</h4>
+THE CODE FOR THIS LESSON CAN BE FOUND HERE: https://github.com/geffencooper/Arcade_System_Project_Lessons/tree/master/Winter_Lessons_3-5(Tetris)/Lesson_04_RotationAndLogic
+Note that code with the comment //1+++++++++++++++ just means the
+code added for the first part of the lesson (rotation) and //2+++++ just
+means the added code for the second part of the lesson (tetris logic)
+<hr>
 	<a name="Lesson5"></a>
 	<h2>Lesson 5 Fall: Finishing the Arcade (Brick Breaker)</h2>
 	<P>
